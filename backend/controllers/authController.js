@@ -84,8 +84,41 @@ const getMe = async (req, res) => {
   res.status(200).json(req.user);
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { name, university, skillsOffered, skillsWanted } = req.body;
+
+    user.name = name || user.name;
+    user.university = university !== undefined ? university : user.university;
+    user.skillsOffered = skillsOffered || user.skillsOffered;
+    user.skillsWanted = skillsWanted || user.skillsWanted;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      university: updatedUser.university,
+      skillsOffered: updatedUser.skillsOffered,
+      skillsWanted: updatedUser.skillsWanted
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
-  getMe
+  getMe,
+  updateProfile
 };

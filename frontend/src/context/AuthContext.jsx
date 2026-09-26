@@ -43,6 +43,15 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  // Update user profile
+  const updateProfile = async (profileData) => {
+    const response = await API.put('/auth/profile', profileData);
+    const updatedUser = { ...user, ...response.data };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    return updatedUser;
+  };
+
   // Logout the current user
   const logout = () => {
     localStorage.removeItem('token');
@@ -51,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

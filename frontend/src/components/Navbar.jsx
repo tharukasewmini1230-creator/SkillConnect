@@ -33,6 +33,9 @@ const Navbar = () => {
               <Link to="/dashboard" style={{ color: isActive('/dashboard') ? '#4f46e5' : '#4b5563', fontSize: '15px', fontWeight: '500', padding: '5px 0', borderBottom: isActive('/dashboard') ? '2px solid #4f46e5' : '2px solid transparent', transition: 'all 0.2s' }}>
                 Dashboard
               </Link>
+              <Link to="/profile" style={{ color: isActive('/profile') ? '#4f46e5' : '#4b5563', fontSize: '15px', fontWeight: '500', padding: '5px 0', borderBottom: isActive('/profile') ? '2px solid #4f46e5' : '2px solid transparent', transition: 'all 0.2s' }}>
+                Profile
+              </Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: '#eef2ff', borderRadius: '20px' }}>
                   <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '600', fontSize: '13px' }}>
