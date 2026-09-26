@@ -1,16 +1,35 @@
-# React + Vite
+# SkillConnect
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Student Skill Exchange and Learning Platform built with the MERN stack (MongoDB, Express, React, Node.js).
 
-Currently, two official plugins are available:
+## 📚 Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+SkillConnect is a web application that allows students to exchange skills with each other. Users can offer to teach skills they know and request to learn skills they want to learn. This platform is built as part of the **EE4207 - Web Application Development** module.
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **User Authentication**: Register and login with JWT-based authentication
+- **Skill Management**: Create, read, update, and delete skill posts
+- **Skill Types**: Offer skills (I can teach) or Request skills (I want to learn)
+- **Categories**: Programming, Design, Languages, Music, Academic, Other
+- **Search & Filter**: Search skills by keyword and filter by category
+- **Protected Routes**: Only logged-in users can manage their skills
+- **Responsive Design**: Works on desktop and mobile devices
 
-## Expanding the ESLint configuration
+## 🛠️ Technologies Used
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **MongoDB** - Database
+- **Mongoose** - ODM for MongoDB
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
+
+### Frontend
+- **React** - UI library
+- **Vite** - Build tool
+- **React Router** - Routing
+- **Axios** - HTTP client
+
+## 📂 Project Structure
