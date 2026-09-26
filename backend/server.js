@@ -11,9 +11,11 @@ app.use(express.json());
 
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
+const skillRoutes = require('./routes/skillRoutes');
 
 // Use Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/skills', skillRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {
