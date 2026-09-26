@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [activeTab, setActiveTab] = useState('All');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -19,7 +20,6 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Fetch only the current user's skills
   useEffect(() => {
     fetchMySkills();
   }, []);
@@ -27,7 +27,6 @@ const Dashboard = () => {
   const fetchMySkills = async () => {
     try {
       const response = await API.get('/skills');
-      // Filter skills posted by the logged-in user
       const mySkills = response.data.filter(
         (skill) => skill.user?._id === user?._id
       );
@@ -50,16 +49,15 @@ const Dashboard = () => {
 
     try {
       if (editingId) {
-        // Update existing skill
         await API.put(`/skills/${editingId}`, formData);
         setSuccess('Skill updated successfully!');
       } else {
-        // Create new skill
         await API.post('/skills', formData);
         setSuccess('Skill added successfully!');
       }
       resetForm();
       fetchMySkills();
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong');
     }
@@ -74,6 +72,7 @@ const Dashboard = () => {
     });
     setEditingId(skill._id);
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = async (id) => {
@@ -83,6 +82,7 @@ const Dashboard = () => {
       await API.delete(`/skills/${id}`);
       setSuccess('Skill deleted successfully!');
       fetchMySkills();
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError('Failed to delete skill');
     }
@@ -101,41 +101,85 @@ const Dashboard = () => {
 
   const categories = ['Programming', 'Design', 'Languages', 'Music', 'Academic', 'Other'];
 
+  // Stats
+  const offerCount = skills.filter((s) => s.type === 'Offer').length;
+  const requestCount = skills.filter((s) => s.type === 'Request').length;
+
+  // Filter by tab
+  const filteredSkills = skills.filter(
+    (s) => activeTab === 'All' || s.type === activeTab
+  );
+
+  const tabs = [
+    { key: 'All', label: 'All', icon: '🌐', count: skills.length },
+    { key: 'Offer', label: 'Offers', icon: '🎓', count: offerCount },
+    { key: 'Request', label: 'Requests', icon: '📖', count: requestCount }
+  ];
+
   return (
     <div className="container" style={{ padding: '40px 20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
         <div>
-          <h1 style={{ fontSize: '32px', color: '#1f2937' }}>My Dashboard</h1>
-          <p style={{ color: '#6b7280', marginTop: '5px' }}>Manage your skill posts here</p>
+          <h1 style={{ fontSize: '32px', color: '#1f2937', fontWeight: '800', marginBottom: '5px' }}>
+            Hi, {user?.name?.split(' ')[0]} 👋
+          </h1>
+          <p style={{ color: '#6b7280', fontSize: '15px' }}>Manage your skill posts from your dashboard</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(!showForm); }}
-          style={{ padding: '12px 24px', background: '#4f46e5', color: '#fff', borderRadius: '8px', fontSize: '15px', fontWeight: '600' }}
+          style={{
+            padding: '12px 24px',
+            background: showForm ? '#fff' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+            color: showForm ? '#4b5563' : '#fff',
+            border: showForm ? '1px solid #e5e7eb' : 'none',
+            borderRadius: '10px',
+            fontSize: '15px',
+            fontWeight: '600',
+            boxShadow: showForm ? 'none' : '0 4px 12px rgba(99, 102, 241, 0.3)'
+          }}
         >
-          {showForm ? 'Cancel' : '+ Add New Skill'}
+          {showForm ? '✕ Cancel' : '+ Add New Skill'}
         </button>
       </div>
 
+      {/* Stats Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '30px' }}>
+        <div style={{ background: '#fff', padding: '22px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderLeft: '4px solid #6366f1' }}>
+          <p style={{ color: '#6b7280', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Total Skills</p>
+          <p style={{ fontSize: '32px', fontWeight: '800', color: '#1f2937' }}>{skills.length}</p>
+        </div>
+        <div style={{ background: '#fff', padding: '22px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderLeft: '4px solid #10b981' }}>
+          <p style={{ color: '#6b7280', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Offers</p>
+          <p style={{ fontSize: '32px', fontWeight: '800', color: '#10b981' }}>{offerCount}</p>
+        </div>
+        <div style={{ background: '#fff', padding: '22px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderLeft: '4px solid #f59e0b' }}>
+          <p style={{ color: '#6b7280', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Requests</p>
+          <p style={{ fontSize: '32px', fontWeight: '800', color: '#f59e0b' }}>{requestCount}</p>
+        </div>
+      </div>
+
       {success && (
-        <div style={{ background: '#d1fae5', color: '#065f46', padding: '12px', borderRadius: '6px', marginBottom: '20px' }}>
-          {success}
+        <div style={{ background: '#d1fae5', color: '#065f46', padding: '14px 20px', borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '500' }}>
+          ✅ {success}
         </div>
       )}
       {error && (
-        <div style={{ background: '#fee', color: '#c33', padding: '12px', borderRadius: '6px', marginBottom: '20px' }}>
-          {error}
+        <div style={{ background: '#fee', color: '#c33', padding: '14px 20px', borderRadius: '10px', marginBottom: '20px', fontWeight: '500' }}>
+          ⚠️ {error}
         </div>
       )}
 
       {/* Add/Edit Skill Form */}
       {showForm && (
-        <div style={{ background: '#fff', padding: '30px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', marginBottom: '30px' }}>
-          <h3 style={{ marginBottom: '20px', color: '#1f2937' }}>
-            {editingId ? 'Edit Skill' : 'Add New Skill'}
+        <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 14px rgba(0,0,0,0.08)', marginBottom: '30px', border: '1px solid #e5e7eb' }}>
+          <h3 style={{ marginBottom: '25px', color: '#1f2937', fontSize: '20px', fontWeight: '700' }}>
+            {editingId ? '✏️ Edit Skill' : '✨ Add New Skill'}
           </h3>
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', color: '#555', fontSize: '14px', fontWeight: '500' }}>Title</label>
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '14px', fontWeight: '600' }}>Title</label>
               <input
                 type="text"
                 name="title"
@@ -143,12 +187,12 @@ const Dashboard = () => {
                 onChange={handleChange}
                 required
                 placeholder="e.g., Python Programming Help"
-                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                style={{ width: '100%', padding: '12px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', background: '#fafafa' }}
               />
             </div>
 
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', color: '#555', fontSize: '14px', fontWeight: '500' }}>Description</label>
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '14px', fontWeight: '600' }}>Description</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -156,18 +200,18 @@ const Dashboard = () => {
                 required
                 rows="4"
                 placeholder="Describe what you can teach or what you want to learn..."
-                style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', resize: 'vertical' }}
+                style={{ width: '100%', padding: '12px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', resize: 'vertical', background: '#fafafa' }}
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px', marginBottom: '25px' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '6px', color: '#555', fontSize: '14px', fontWeight: '500' }}>Category</label>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '14px', fontWeight: '600' }}>Category</label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', background: '#fff' }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', background: '#fafafa', cursor: 'pointer' }}
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -175,63 +219,162 @@ const Dashboard = () => {
                 </select>
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '6px', color: '#555', fontSize: '14px', fontWeight: '500' }}>Type</label>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#374151', fontSize: '14px', fontWeight: '600' }}>Type</label>
                 <select
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
-                  style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px', background: '#fff' }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '14px', background: '#fafafa', cursor: 'pointer' }}
                 >
-                  <option value="Offer">Offer (I can teach)</option>
-                  <option value="Request">Request (I want to learn)</option>
+                  <option value="Offer">🎓 Offer (I can teach)</option>
+                  <option value="Request">📖 Request (I want to learn)</option>
                 </select>
               </div>
             </div>
 
-            <button
-              type="submit"
-              style={{ padding: '12px 30px', background: '#4f46e5', color: '#fff', borderRadius: '6px', fontSize: '15px', fontWeight: '600' }}
-            >
-              {editingId ? 'Update Skill' : 'Add Skill'}
-            </button>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                type="submit"
+                style={{ padding: '12px 30px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', borderRadius: '8px', fontSize: '15px', fontWeight: '600', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)' }}
+              >
+                {editingId ? 'Update Skill' : 'Add Skill'}
+              </button>
+              <button
+                type="button"
+                onClick={resetForm}
+                style={{ padding: '12px 30px', background: '#f3f4f6', color: '#4b5563', borderRadius: '8px', fontSize: '15px', fontWeight: '600' }}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
+        </div>
+      )}
+
+      {/* Tabs */}
+      {skills.length > 0 && (
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', background: '#fff', padding: '8px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: 'fit-content', flexWrap: 'wrap' }}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: '600',
+                background: activeTab === tab.key
+                  ? tab.key === 'Offer'
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                    : tab.key === 'Request'
+                    ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                    : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                  : 'transparent',
+                color: activeTab === tab.key ? '#fff' : '#4b5563',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+              <span style={{
+                background: activeTab === tab.key ? 'rgba(255,255,255,0.25)' : '#f3f4f6',
+                color: activeTab === tab.key ? '#fff' : '#6b7280',
+                padding: '2px 8px',
+                borderRadius: '10px',
+                fontSize: '12px',
+                fontWeight: '700'
+              }}>
+                {tab.count}
+              </span>
+            </button>
+          ))}
         </div>
       )}
 
       {/* My Skills List */}
       {loading ? (
-        <p style={{ textAlign: 'center', color: '#888' }}>Loading...</p>
+        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+          <div className="spinner"></div>
+          <p style={{ color: '#6b7280', marginTop: '15px' }}>Loading your skills...</p>
+        </div>
       ) : skills.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 20px', background: '#fff', borderRadius: '10px' }}>
-          <p style={{ color: '#888', fontSize: '16px' }}>You haven't posted any skills yet.</p>
-          <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '8px' }}>Click "+ Add New Skill" to get started!</p>
+        <div style={{ textAlign: 'center', padding: '80px 20px', background: '#fff', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+          <div style={{ fontSize: '64px', marginBottom: '15px' }}>📝</div>
+          <p style={{ color: '#1f2937', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
+            You haven't posted any skills yet
+          </p>
+          <p style={{ color: '#6b7280', fontSize: '15px', marginBottom: '25px' }}>
+            Share your knowledge or ask for help from fellow students!
+          </p>
+          <button
+            onClick={() => setShowForm(true)}
+            style={{ padding: '14px 32px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', borderRadius: '10px', fontSize: '15px', fontWeight: '600', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)' }}
+          >
+            + Add Your First Skill
+          </button>
+        </div>
+      ) : filteredSkills.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px 20px', background: '#fff', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+          <p style={{ color: '#6b7280', fontSize: '16px' }}>
+            No {activeTab.toLowerCase()} skills to display.
+          </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-          {skills.map((skill) => (
-            <div key={skill._id} style={{ background: '#fff', padding: '25px', borderRadius: '10px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', borderTop: `4px solid ${skill.type === 'Offer' ? '#10b981' : '#f59e0b'}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <span style={{ padding: '4px 12px', background: '#eef2ff', color: '#4f46e5', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+          {filteredSkills.map((skill) => (
+            <div
+              key={skill._id}
+              className="card-hover"
+              style={{
+                background: '#fff',
+                padding: '25px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                borderTop: `4px solid ${skill.type === 'Offer' ? '#10b981' : '#f59e0b'}`,
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <span style={{ padding: '5px 14px', background: '#eef2ff', color: '#4f46e5', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
                   {skill.category}
                 </span>
-                <span style={{ padding: '4px 12px', background: skill.type === 'Offer' ? '#d1fae5' : '#fef3c7', color: skill.type === 'Offer' ? '#065f46' : '#92400e', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
-                  {skill.type}
+                <span style={{
+                  padding: '5px 14px',
+                  background: skill.type === 'Offer' ? '#d1fae5' : '#fef3c7',
+                  color: skill.type === 'Offer' ? '#065f46' : '#92400e',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}>
+                  {skill.type === 'Offer' ? '🎓 Offer' : '📖 Request'}
                 </span>
               </div>
-              <h3 style={{ fontSize: '18px', color: '#1f2937', marginBottom: '10px' }}>{skill.title}</h3>
-              <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '15px', lineHeight: '1.5' }}>{skill.description}</p>
+
+              <h3 style={{ fontSize: '18px', color: '#1f2937', marginBottom: '10px', fontWeight: '700', lineHeight: '1.3' }}>
+                {skill.title}
+              </h3>
+
+              <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px', lineHeight: '1.6', flex: 1 }}>
+                {skill.description}
+              </p>
+
               <div style={{ display: 'flex', gap: '10px', borderTop: '1px solid #f3f4f6', paddingTop: '15px' }}>
                 <button
                   onClick={() => handleEdit(skill)}
-                  style={{ flex: 1, padding: '8px', background: '#eef2ff', color: '#4f46e5', borderRadius: '6px', fontSize: '14px', fontWeight: '500' }}
+                  style={{ flex: 1, padding: '10px', background: '#eef2ff', color: '#4f46e5', borderRadius: '8px', fontSize: '14px', fontWeight: '600' }}
                 >
-                  Edit
+                  ✏️ Edit
                 </button>
                 <button
                   onClick={() => handleDelete(skill._id)}
-                  style={{ flex: 1, padding: '8px', background: '#fee', color: '#c33', borderRadius: '6px', fontSize: '14px', fontWeight: '500' }}
+                  style={{ flex: 1, padding: '10px', background: '#fee', color: '#dc2626', borderRadius: '8px', fontSize: '14px', fontWeight: '600' }}
                 >
-                  Delete
+                  🗑️ Delete
                 </button>
               </div>
             </div>
