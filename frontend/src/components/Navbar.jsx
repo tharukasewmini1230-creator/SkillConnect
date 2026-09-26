@@ -33,8 +33,8 @@ const Navbar = () => {
     { path: '/', label: 'Home', requireAuth: false },
     { path: '/matches', label: 'Explore', requireAuth: true },
     { path: '/dashboard', label: 'My Skills', requireAuth: true },
-    { path: '/sessions', label: 'Sessions', requireAuth: true, comingSoon: true },
-    { path: '/community', label: 'Community', requireAuth: true, comingSoon: true }
+    { path: '/sessions', label: 'Sessions' },
+    { path: '/community', label: 'Community', comingSoon: true }
   ];
 
   return (
