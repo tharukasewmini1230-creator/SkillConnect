@@ -6,89 +6,52 @@
 }
 
 :root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #eef2ff;
-  --secondary: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --dark: #1f2937;
-  --gray: #6b7280;
-  --light-gray: #f9fafb;
-  --border: #e5e7eb;
-  --white: #ffffff;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
-}
+  /* Primary Colors */
+  --primary: #3B82F6;
+  --primary-dark: #2563EB;
+  --primary-light: #DBEAFE;
 
-/* Dark Mode Variables */
-body[data-theme='dark'] {
-  --primary: #818cf8;
-  --primary-dark: #6366f1;
-  --primary-light: #312e81;
-  --dark: #f9fafb;
-  --gray: #9ca3af;
-  --light-gray: #1f2937;
-  --border: #374151;
-  --white: #1f2937;
+  /* Secondary Colors */
+  --secondary: #6366F1;
+  --secondary-dark: #4F46E5;
+  --secondary-light: #E0E7FF;
 
-  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-  color: #f9fafb;
-}
+  /* Accent Colors */
+  --accent: #A855F7;
+  --accent-dark: #9333EA;
+  --accent-light: #F3E8FF;
 
-/* Dark mode - common overrides */
-body[data-theme='dark'] nav {
-  background: #1f2937 !important;
-  border-bottom-color: #374151 !important;
-}
+  /* Status Colors */
+  --success: #10B981;
+  --success-light: #D1FAE5;
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --danger: #EF4444;
+  --danger-light: #FEE2E2;
 
-body[data-theme='dark'] footer {
-  background: #111827 !important;
-}
+  /* Neutrals */
+  --dark: #0F172A;
+  --gray: #64748B;
+  --gray-light: #94A3B8;
+  --light-gray: #F1F5F9;
+  --background: #F8FAFC;
+  --white: #FFFFFF;
+  --border: #E2E8F0;
 
-body[data-theme='dark'] input,
-body[data-theme='dark'] textarea,
-body[data-theme='dark'] select {
-  background: #374151 !important;
-  color: #f9fafb !important;
-  border-color: #4b5563 !important;
-}
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.07);
+  --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.1);
+  --shadow-xl: 0 20px 25px rgba(15, 23, 42, 0.15);
 
-body[data-theme='dark'] input::placeholder,
-body[data-theme='dark'] textarea::placeholder {
-  color: #9ca3af !important;
-}
-
-body[data-theme='dark'] input:disabled {
-  background: #1f2937 !important;
-  color: #6b7280 !important;
-}
-
-body[data-theme='dark'] .card-hover {
-  background: #1f2937 !important;
-  border-color: #374151;
-}
-
-body[data-theme='dark'] h1,
-body[data-theme='dark'] h2,
-body[data-theme='dark'] h3,
-body[data-theme='dark'] h4 {
-  color: #f9fafb !important;
-}
-
-body[data-theme='dark'] p {
-  color: #d1d5db;
-}
-
-/* Smooth transition for theme change */
-body, nav, footer, input, textarea, select, button, div, h1, h2, h3, h4, p, span, a {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+  --gradient-secondary: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
+  --gradient-hero: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%);
 }
 
 body {
-  background: linear-gradient(135deg, #f9fafb 0%, #eef2ff 100%);
+  background: var(--background);
   color: var(--dark);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -115,7 +78,7 @@ input, textarea, select {
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .container {
@@ -124,32 +87,37 @@ input:focus, textarea:focus, select:focus {
   padding: 0 20px;
 }
 
-/* Animations */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(400px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .fade-in {
   animation: fadeIn 0.4s ease-in-out;
 }
 
-/* Loading Spinner */
+/* ============================================
+   LOADING SPINNER
+   ============================================ */
+
 .spinner {
   width: 40px;
   height: 40px;
@@ -160,15 +128,12 @@ input:focus, textarea:focus, select:focus {
   margin: 20px auto;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* ============================================
+   CARD HOVER EFFECT
+   ============================================ */
 
-/* Card Hover Effect */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card-hover:hover {
@@ -176,7 +141,10 @@ input:focus, textarea:focus, select:focus {
   box-shadow: var(--shadow-lg);
 }
 
-/* Button Hover */
+/* ============================================
+   BUTTON HOVER
+   ============================================ */
+
 button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
@@ -187,16 +155,98 @@ button:active:not(:disabled) {
 }
 
 /* ============================================
-   RESPONSIVE DESIGN - Mobile & Tablet
+   DARK MODE VARIABLES
+   ============================================ */
+
+body[data-theme='dark'] {
+  --primary: #60A5FA;
+  --primary-dark: #3B82F6;
+  --primary-light: #1E3A8A;
+
+  --secondary: #818CF8;
+  --secondary-dark: #6366F1;
+  --secondary-light: #312E81;
+
+  --accent: #C084FC;
+  --accent-dark: #A855F7;
+  --accent-light: #4C1D95;
+
+  --dark: #F8FAFC;
+  --gray: #94A3B8;
+  --gray-light: #64748B;
+  --light-gray: #1E293B;
+  --background: #0F172A;
+  --white: #1E293B;
+  --border: #334155;
+
+  --success-light: #064E3B;
+  --warning-light: #78350F;
+  --danger-light: #7F1D1D;
+
+  background: var(--background);
+  color: var(--dark);
+}
+
+body[data-theme='dark'] nav {
+  background: #1E293B !important;
+  border-bottom-color: #334155 !important;
+}
+
+body[data-theme='dark'] footer {
+  background: #0F172A !important;
+}
+
+body[data-theme='dark'] input,
+body[data-theme='dark'] textarea,
+body[data-theme='dark'] select {
+  background: #334155 !important;
+  color: #F8FAFC !important;
+  border-color: #475569 !important;
+}
+
+body[data-theme='dark'] input::placeholder,
+body[data-theme='dark'] textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+body[data-theme='dark'] input:disabled {
+  background: #1E293B !important;
+  color: #64748B !important;
+}
+
+body[data-theme='dark'] .card-hover {
+  background: #1E293B !important;
+  border-color: #334155;
+}
+
+body[data-theme='dark'] h1,
+body[data-theme='dark'] h2,
+body[data-theme='dark'] h3,
+body[data-theme='dark'] h4 {
+  color: #F8FAFC !important;
+}
+
+body[data-theme='dark'] p {
+  color: #CBD5E1;
+}
+
+/* ============================================
+   SMOOTH TRANSITION FOR THEME
+   ============================================ */
+
+body, nav, footer, input, textarea, select, button, div, h1, h2, h3, h4, p, span, a {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
    ============================================ */
 
 @media (max-width: 768px) {
-  /* Container padding on mobile */
   .container {
     padding: 0 15px !important;
   }
 
-  /* Navbar - stack on mobile */
   nav .container {
     flex-direction: column !important;
     gap: 15px !important;
@@ -209,17 +259,14 @@ button:active:not(:disabled) {
     justify-content: center !important;
   }
 
-  /* Hide user name on very small screens */
   nav span:has(+ button) {
     display: none;
   }
 
-  /* Hero section smaller text */
   h1 {
     font-size: 32px !important;
   }
 
-  /* Login/Register split screen - stack on mobile */
   .auth-container {
     grid-template-columns: 1fr !important;
   }
@@ -228,17 +275,14 @@ button:active:not(:disabled) {
     display: none !important;
   }
 
-  /* Dashboard stats - 1 column on mobile */
   .stats-grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* Skills grid - 1 column on mobile */
   .skills-grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* Dashboard header - stack */
   .dashboard-header {
     flex-direction: column !important;
     align-items: stretch !important;
@@ -249,13 +293,11 @@ button:active:not(:disabled) {
     justify-content: center !important;
   }
 
-  /* Tabs - full width on mobile */
   .tabs-container {
     width: 100% !important;
     justify-content: center !important;
   }
 
-  /* Hide navbar links spacing */
   nav > div > div a {
     font-size: 14px !important;
   }
@@ -270,27 +312,13 @@ button:active:not(:disabled) {
     font-size: 20px !important;
   }
 
-  /* Very small mobile - stack form buttons */
   form button[type="submit"],
   form button[type="button"] {
     width: 100% !important;
   }
 
-  /* Footer - single column */
   footer .container > div:first-child {
     grid-template-columns: 1fr !important;
     gap: 25px !important;
-  }
-}
-
-/* Toast Animation */
-@keyframes slideIn {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
   }
 }
