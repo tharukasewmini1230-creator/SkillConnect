@@ -40,7 +40,7 @@ const Register = () => {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', minHeight: 'calc(100vh - 68px)' }}>
+    <div className="auth-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', minHeight: 'calc(100vh - 68px)' }}>
 
       {/* Left Side - Form */}
       <div style={{ background: '#fff', padding: '60px 50px', display: 'flex', alignItems: 'center', justifyContent: 'center', order: 2 }}>
@@ -132,7 +132,7 @@ const Register = () => {
       </div>
 
       {/* Right Side - Brand Section */}
-      <div style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', color: '#fff', padding: '60px 50px', display: 'flex', flexDirection: 'column', justifyContent: 'center', order: 1 }}>
+      <div className="auth-brand-section" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', color: '#fff', padding: '60px 50px', display: 'flex', flexDirection: 'column', justifyContent: 'center', order: 1 }}>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '30px' }}>
             ✨

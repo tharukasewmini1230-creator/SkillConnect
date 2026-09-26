@@ -121,3 +121,100 @@ button:hover:not(:disabled) {
 button:active:not(:disabled) {
   transform: translateY(0);
 }
+
+/* ============================================
+   RESPONSIVE DESIGN - Mobile & Tablet
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* Container padding on mobile */
+  .container {
+    padding: 0 15px !important;
+  }
+
+  /* Navbar - stack on mobile */
+  nav .container {
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 15px !important;
+  }
+
+  nav > div > div {
+    gap: 15px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  /* Hide user name on very small screens */
+  nav span:has(+ button) {
+    display: none;
+  }
+
+  /* Hero section smaller text */
+  h1 {
+    font-size: 32px !important;
+  }
+
+  /* Login/Register split screen - stack on mobile */
+  .auth-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .auth-brand-section {
+    display: none !important;
+  }
+
+  /* Dashboard stats - 1 column on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Skills grid - 1 column on mobile */
+  .skills-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard header - stack */
+  .dashboard-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .dashboard-header button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Tabs - full width on mobile */
+  .tabs-container {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Hide navbar links spacing */
+  nav > div > div a {
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 26px !important;
+  }
+
+  h2 {
+    font-size: 20px !important;
+  }
+
+  /* Very small mobile - stack form buttons */
+  form button[type="submit"],
+  form button[type="button"] {
+    width: 100% !important;
+  }
+
+  /* Footer - single column */
+  footer .container > div:first-child {
+    grid-template-columns: 1fr !important;
+    gap: 25px !important;
+  }
+}

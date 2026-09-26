@@ -27,10 +27,10 @@ const Login = () => {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', minHeight: 'calc(100vh - 68px)' }}>
+    <div className="auth-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', minHeight: 'calc(100vh - 68px)' }}>
 
       {/* Left Side - Brand Section */}
-      <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', padding: '60px 50px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div className="auth-brand-section" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', padding: '60px 50px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '30px' }}>
             🎓
