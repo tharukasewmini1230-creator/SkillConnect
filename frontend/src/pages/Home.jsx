@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import heroIllustration from '../assets/hero-illustration.png';
 
 const Home = () => {
   const [skills, setSkills] = useState([]);
@@ -13,7 +14,6 @@ const Home = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
 
-  // Read search query from URL (from Navbar search)
   useEffect(() => {
     const urlSearch = searchParams.get('search');
     if (urlSearch) {
@@ -58,111 +58,138 @@ const Home = () => {
   return (
     <div style={{ paddingBottom: '40px' }}>
 
-      {/* ============================================
-          HERO SECTION
-          ============================================ */}
+      {/* HERO SECTION - Split Layout */}
       <div style={{
-        background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
-        color: '#fff',
-        padding: '70px 20px 90px',
+        background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
+        padding: '60px 20px',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Background Decorative Circles */}
-        <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-        <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.08)' }} />
+        <div style={{ position: 'absolute', bottom: '-100px', left: '-100px', width: '350px', height: '350px', borderRadius: '50%', background: 'rgba(168, 85, 247, 0.08)' }} />
 
-        <div className="container" style={{ position: 'relative', zIndex: 1, textAlign: 'center', maxWidth: '900px' }}>
-          <div style={{
-            display: 'inline-block',
-            background: 'rgba(255,255,255,0.15)',
-            padding: '8px 20px',
-            borderRadius: '30px',
-            fontSize: '14px',
-            fontWeight: '600',
-            marginBottom: '25px',
-            backdropFilter: 'blur(10px)'
-          }}>
-            ✨ Welcome to SkillConnect
-          </div>
+        <div className="container" style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+          gap: '50px',
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1
+        }}>
 
-          <h1 style={{
-            fontSize: '52px',
-            fontWeight: '800',
-            marginBottom: '20px',
-            lineHeight: '1.15',
-            letterSpacing: '-1.5px'
-          }}>
-            Learn from Peers<br />
-            Share Your Skills<br />
-            <span style={{ color: '#FDE68A' }}>Grow Together</span>
-          </h1>
+          {/* Left Side - Text */}
+          <div>
+            <div style={{
+              display: 'inline-block',
+              background: 'rgba(59, 130, 246, 0.1)',
+              color: '#3B82F6',
+              padding: '8px 18px',
+              borderRadius: '30px',
+              fontSize: '13px',
+              fontWeight: '700',
+              marginBottom: '20px',
+              border: '1px solid rgba(59, 130, 246, 0.2)'
+            }}>
+              ✨ Learn • Share • Grow
+            </div>
 
-          <p style={{
-            fontSize: '18px',
-            marginBottom: '40px',
-            opacity: 0.95,
-            maxWidth: '600px',
-            margin: '0 auto 40px',
-            lineHeight: '1.7'
-          }}>
-            Connect with fellow students, exchange knowledge, and build your skills together. Teach what you know, learn what you don't.
-          </p>
+            <h1 style={{
+              fontSize: '52px',
+              fontWeight: '800',
+              marginBottom: '20px',
+              lineHeight: '1.15',
+              letterSpacing: '-1.5px',
+              color: 'var(--dark)'
+            }}>
+              Student <span style={{
+                background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>Skill Exchange</span> and Learning Platform
+            </h1>
 
-          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            {!user ? (
-              <>
-                <Link to="/register">
+            <p style={{
+              fontSize: '18px',
+              marginBottom: '35px',
+              color: 'var(--gray)',
+              lineHeight: '1.7',
+              maxWidth: '500px'
+            }}>
+              Learn from peers. Share your skills. Grow together.
+            </p>
+
+            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              {!user ? (
+                <>
+                  <Link to="/register">
+                    <button style={{
+                      padding: '16px 32px',
+                      background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                      color: '#fff',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      boxShadow: '0 8px 20px rgba(59, 130, 246, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      ↗ Get Started
+                    </button>
+                  </Link>
+                  <Link to="/login">
+                    <button style={{
+                      padding: '16px 32px',
+                      background: 'transparent',
+                      color: '#3B82F6',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      fontWeight: '700',
+                      border: '2px solid #3B82F6',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      🔍 Explore Skills
+                    </button>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard">
                   <button style={{
-                    padding: '16px 36px',
-                    background: '#fff',
-                    color: '#3B82F6',
-                    borderRadius: '12px',
-                    fontSize: '16px',
-                    fontWeight: '700',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)'
-                  }}>
-                    Get Started Free →
-                  </button>
-                </Link>
-                <Link to="/login">
-                  <button style={{
-                    padding: '16px 36px',
-                    background: 'rgba(255,255,255,0.15)',
+                    padding: '16px 32px',
+                    background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
                     color: '#fff',
                     borderRadius: '12px',
                     fontSize: '16px',
                     fontWeight: '700',
-                    border: '2px solid rgba(255,255,255,0.3)',
-                    backdropFilter: 'blur(10px)'
+                    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.3)'
                   }}>
-                    Login
+                    Go to Dashboard →
                   </button>
                 </Link>
-              </>
-            ) : (
-              <Link to="/dashboard">
-                <button style={{
-                  padding: '16px 36px',
-                  background: '#fff',
-                  color: '#3B82F6',
-                  borderRadius: '12px',
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.15)'
-                }}>
-                  Go to Dashboard →
-                </button>
-              </Link>
-            )}
+              )}
+            </div>
+          </div>
+
+          {/* Right Side - Illustration */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img
+              src={heroIllustration}
+              alt="Students learning together"
+              style={{
+                width: '100%',
+                maxWidth: '500px',
+                height: 'auto'
+              }}
+            />
           </div>
         </div>
       </div>
 
-      {/* ============================================
-          FEATURES CARDS (Overlapping Hero)
-          ============================================ */}
-      <div className="container" style={{ marginTop: '-50px', position: 'relative', zIndex: 2 }}>
+      {/* FEATURE CARDS */}
+      <div className="container" style={{ marginTop: '50px' }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -178,7 +205,7 @@ const Home = () => {
               background: 'var(--white)',
               padding: '28px 24px',
               borderRadius: '16px',
-              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
+              boxShadow: '0 4px 16px rgba(15, 23, 42, 0.06)',
               textAlign: 'center',
               border: '1px solid var(--border)'
             }}>
@@ -206,11 +233,8 @@ const Home = () => {
         </div>
       </div>
 
-      {/* ============================================
-          SKILLS BROWSING SECTION
-          ============================================ */}
+      {/* SKILLS BROWSING SECTION */}
       <div className="container" style={{ marginTop: '70px' }}>
-
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h2 style={{ fontSize: '36px', fontWeight: '800', color: 'var(--dark)', marginBottom: '10px', letterSpacing: '-0.5px' }}>
             Browse Skills
@@ -220,7 +244,6 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Tabs */}
         <div className="tabs-container" style={{
           display: 'flex',
           gap: '10px',
@@ -274,7 +297,6 @@ const Home = () => {
           ))}
         </div>
 
-        {/* Search + Filter */}
         <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
           <input
             type="text"
@@ -314,14 +336,6 @@ const Home = () => {
           </select>
         </div>
 
-        {/* Results count */}
-        <div style={{ marginBottom: '20px' }}>
-          <p style={{ color: 'var(--gray)', fontSize: '14px', fontWeight: '500' }}>
-            Showing <strong style={{ color: 'var(--dark)' }}>{filteredSkills.length}</strong> {filteredSkills.length === 1 ? 'result' : 'results'}
-          </p>
-        </div>
-
-        {/* Skills Grid */}
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div className="spinner"></div>
