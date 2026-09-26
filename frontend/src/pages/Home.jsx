@@ -233,8 +233,175 @@ const Home = () => {
         </div>
       </div>
 
-      {/* SKILLS BROWSING SECTION */}
+      {/* POPULAR SKILLS SECTION */}
       <div className="container" style={{ marginTop: '70px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
+          <div>
+            <h2 style={{ fontSize: '32px', fontWeight: '800', color: 'var(--dark)', marginBottom: '8px', letterSpacing: '-0.5px' }}>
+              Popular Skills
+            </h2>
+            <p style={{ fontSize: '15px', color: 'var(--gray)' }}>
+              Explore the most in-demand skills in our community
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const skillsSection = document.getElementById('browse-skills');
+              if (skillsSection) skillsSection.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              background: 'transparent',
+              color: '#3B82F6',
+              fontSize: '14px',
+              fontWeight: '700',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            View All Skills →
+          </button>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: '20px'
+        }}>
+          {[
+            { name: 'Python Programming', category: 'Programming', level: 'Intermediate', icon: '🐍', color: '#3B82F6', count: 124 },
+            { name: 'React Development', category: 'Web Development', level: 'Advanced', icon: '⚛️', color: '#06B6D4', count: 98 },
+            { name: 'UI/UX Design', category: 'Design', level: 'Beginner', icon: '🎨', color: '#A855F7', count: 76 },
+            { name: 'Java Programming', category: 'Programming', level: 'Intermediate', icon: '☕', color: '#EF4444', count: 62 },
+            { name: 'Data Analysis', category: 'Data Science', level: 'Intermediate', icon: '📊', color: '#8B5CF6', count: 54 }
+          ].map((skill, index) => (
+            <div
+              key={index}
+              className="card-hover"
+              style={{
+                background: 'var(--white)',
+                padding: '22px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                border: '1px solid var(--border)',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '15px'
+              }}
+            >
+              {/* Icon and Arrow */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  background: `${skill.color}15`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '24px'
+                }}>
+                  {skill.icon}
+                </div>
+                <div style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  background: 'var(--light-gray)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  color: 'var(--gray)'
+                }}>
+                  →
+                </div>
+              </div>
+
+              {/* Skill Name */}
+              <div>
+                <h3 style={{
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  color: 'var(--dark)',
+                  marginBottom: '10px',
+                  lineHeight: '1.3'
+                }}>
+                  {skill.name}
+                </h3>
+
+                {/* Tags */}
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <span style={{
+                    padding: '3px 10px',
+                    background: 'var(--primary-light)',
+                    color: '#3B82F6',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    fontWeight: '600'
+                  }}>
+                    {skill.category}
+                  </span>
+                  <span style={{
+                    padding: '3px 10px',
+                    background: 'var(--light-gray)',
+                    color: 'var(--gray)',
+                    borderRadius: '12px',
+                    fontSize: '11px',
+                    fontWeight: '600'
+                  }}>
+                    {skill.level}
+                  </span>
+                </div>
+              </div>
+
+              {/* User Avatars and Count */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                paddingTop: '12px',
+                borderTop: '1px solid var(--border)'
+              }}>
+                <div style={{ display: 'flex', marginRight: '5px' }}>
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        background: `linear-gradient(135deg, ${skill.color} 0%, ${skill.color}80 100%)`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        border: '2px solid var(--white)',
+                        marginLeft: i > 1 ? '-8px' : '0'
+                      }}
+                    >
+                      {String.fromCharCode(64 + i)}
+                    </div>
+                  ))}
+                </div>
+                <span style={{ fontSize: '12px', color: 'var(--gray)', fontWeight: '500' }}>
+                  {skill.count}+ people
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SKILLS BROWSING SECTION */}
+      <div className="container" id="browse-skills" style={{ marginTop: '70px' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h2 style={{ fontSize: '36px', fontWeight: '800', color: 'var(--dark)', marginBottom: '10px', letterSpacing: '-0.5px' }}>
             Browse Skills
