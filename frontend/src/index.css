@@ -23,6 +23,70 @@
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* Dark Mode Variables */
+body[data-theme='dark'] {
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --primary-light: #312e81;
+  --dark: #f9fafb;
+  --gray: #9ca3af;
+  --light-gray: #1f2937;
+  --border: #374151;
+  --white: #1f2937;
+
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+  color: #f9fafb;
+}
+
+/* Dark mode - common overrides */
+body[data-theme='dark'] nav {
+  background: #1f2937 !important;
+  border-bottom-color: #374151 !important;
+}
+
+body[data-theme='dark'] footer {
+  background: #111827 !important;
+}
+
+body[data-theme='dark'] input,
+body[data-theme='dark'] textarea,
+body[data-theme='dark'] select {
+  background: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+}
+
+body[data-theme='dark'] input::placeholder,
+body[data-theme='dark'] textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+body[data-theme='dark'] input:disabled {
+  background: #1f2937 !important;
+  color: #6b7280 !important;
+}
+
+body[data-theme='dark'] .card-hover {
+  background: #1f2937 !important;
+  border-color: #374151;
+}
+
+body[data-theme='dark'] h1,
+body[data-theme='dark'] h2,
+body[data-theme='dark'] h3,
+body[data-theme='dark'] h4 {
+  color: #f9fafb !important;
+}
+
+body[data-theme='dark'] p {
+  color: #d1d5db;
+}
+
+/* Smooth transition for theme change */
+body, nav, footer, input, textarea, select, button, div, h1, h2, h3, h4, p, span, a {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 body {
   background: linear-gradient(135deg, #f9fafb 0%, #eef2ff 100%);
   color: var(--dark);
