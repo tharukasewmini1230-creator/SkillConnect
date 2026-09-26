@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import Toast from '../components/Toast';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -9,6 +10,7 @@ const Dashboard = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [activeTab, setActiveTab] = useState('All');
+  const [toast, setToast] = useState(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -16,9 +18,6 @@ const Dashboard = () => {
     category: 'Programming',
     type: 'Offer'
   });
-
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchMySkills();
@@ -44,22 +43,22 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     try {
       if (editingId) {
         await API.put(`/skills/${editingId}`, formData);
-        setSuccess('Skill updated successfully!');
+        setToast({ message: 'Skill updated successfully!', type: 'success' });
       } else {
         await API.post('/skills', formData);
-        setSuccess('Skill added successfully!');
+        setToast({ message: 'Skill added successfully!', type: 'success' });
       }
       resetForm();
       fetchMySkills();
-      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      setToast({
+        message: err.response?.data?.message || 'Something went wrong',
+        type: 'error'
+      });
     }
   };
 
@@ -80,11 +79,10 @@ const Dashboard = () => {
 
     try {
       await API.delete(`/skills/${id}`);
-      setSuccess('Skill deleted successfully!');
+      setToast({ message: 'Skill deleted successfully!', type: 'success' });
       fetchMySkills();
-      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to delete skill');
+      setToast({ message: 'Failed to delete skill', type: 'error' });
     }
   };
 
@@ -101,11 +99,9 @@ const Dashboard = () => {
 
   const categories = ['Programming', 'Design', 'Languages', 'Music', 'Academic', 'Other'];
 
-  // Stats
   const offerCount = skills.filter((s) => s.type === 'Offer').length;
   const requestCount = skills.filter((s) => s.type === 'Request').length;
 
-  // Filter by tab
   const filteredSkills = skills.filter(
     (s) => activeTab === 'All' || s.type === activeTab
   );
@@ -118,9 +114,16 @@ const Dashboard = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px' }}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
+      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
         <div>
           <h1 style={{ fontSize: '32px', color: '#1f2937', fontWeight: '800', marginBottom: '5px' }}>
             Hi, {user?.name?.split(' ')[0]} 👋
@@ -145,7 +148,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '30px' }}>
+      <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '30px' }}>
         <div style={{ background: '#fff', padding: '22px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', borderLeft: '4px solid #6366f1' }}>
           <p style={{ color: '#6b7280', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Total Skills</p>
           <p style={{ fontSize: '32px', fontWeight: '800', color: '#1f2937' }}>{skills.length}</p>
@@ -159,17 +162,6 @@ const Dashboard = () => {
           <p style={{ fontSize: '32px', fontWeight: '800', color: '#f59e0b' }}>{requestCount}</p>
         </div>
       </div>
-
-      {success && (
-        <div style={{ background: '#d1fae5', color: '#065f46', padding: '14px 20px', borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '500' }}>
-          ✅ {success}
-        </div>
-      )}
-      {error && (
-        <div style={{ background: '#fee', color: '#c33', padding: '14px 20px', borderRadius: '10px', marginBottom: '20px', fontWeight: '500' }}>
-          ⚠️ {error}
-        </div>
-      )}
 
       {/* Add/Edit Skill Form */}
       {showForm && (
@@ -232,7 +224,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <button
                 type="submit"
                 style={{ padding: '12px 30px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', borderRadius: '8px', fontSize: '15px', fontWeight: '600', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)' }}
@@ -253,7 +245,7 @@ const Dashboard = () => {
 
       {/* Tabs */}
       {skills.length > 0 && (
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '25px', background: '#fff', padding: '8px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: 'fit-content', flexWrap: 'wrap' }}>
+        <div className="tabs-container" style={{ display: 'flex', gap: '10px', marginBottom: '25px', background: '#fff', padding: '8px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', width: 'fit-content', flexWrap: 'wrap' }}>
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -323,7 +315,7 @@ const Dashboard = () => {
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+        <div className="skills-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
           {filteredSkills.map((skill) => (
             <div
               key={skill._id}

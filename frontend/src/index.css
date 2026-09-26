@@ -218,3 +218,15 @@ button:active:not(:disabled) {
     gap: 25px !important;
   }
 }
+
+/* Toast Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
