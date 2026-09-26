@@ -58,7 +58,9 @@ const Home = () => {
   return (
     <div style={{ paddingBottom: '40px' }}>
 
-      {/* HERO SECTION - Split Layout */}
+      {/* ============================================
+          HERO SECTION
+          ============================================ */}
       <div style={{
         background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
         padding: '60px 20px',
@@ -122,51 +124,77 @@ const Home = () => {
             <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
               {!user ? (
                 <>
-                  <Link to="/register">
+                  <Link to="/register" style={{ textDecoration: 'none' }}>
                     <button style={{
                       padding: '16px 32px',
-                      background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                      background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
                       color: '#fff',
-                      borderRadius: '12px',
+                      borderRadius: '50px',
                       fontSize: '16px',
                       fontWeight: '700',
-                      boxShadow: '0 8px 20px rgba(59, 130, 246, 0.3)',
+                      boxShadow: '0 8px 20px rgba(59, 130, 246, 0.35)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px'
+                      gap: '10px',
+                      border: 'none'
                     }}>
-                      ↗ Get Started
+                      <span style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        background: 'rgba(255,255,255,0.25)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '13px'
+                      }}>↗</span>
+                      Get Started
                     </button>
                   </Link>
-                  <Link to="/login">
+                  <Link to="/login" style={{ textDecoration: 'none' }}>
                     <button style={{
                       padding: '16px 32px',
-                      background: 'transparent',
+                      background: '#fff',
                       color: '#3B82F6',
-                      borderRadius: '12px',
+                      borderRadius: '50px',
                       fontSize: '16px',
                       fontWeight: '700',
                       border: '2px solid #3B82F6',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px'
+                      gap: '10px'
                     }}>
-                      🔍 Explore Skills
+                      <span style={{ fontSize: '16px' }}>🔍</span>
+                      Explore Skills
                     </button>
                   </Link>
                 </>
               ) : (
-                <Link to="/dashboard">
+                <Link to="/dashboard" style={{ textDecoration: 'none' }}>
                   <button style={{
                     padding: '16px 32px',
-                    background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                    background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
                     color: '#fff',
-                    borderRadius: '12px',
+                    borderRadius: '50px',
                     fontSize: '16px',
                     fontWeight: '700',
-                    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.3)'
+                    boxShadow: '0 8px 20px rgba(59, 130, 246, 0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    border: 'none'
                   }}>
-                    Go to Dashboard →
+                    <span style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.25)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '13px'
+                    }}>↗</span>
+                    Go to Dashboard
                   </button>
                 </Link>
               )}
@@ -188,7 +216,9 @@ const Home = () => {
         </div>
       </div>
 
-      {/* FEATURE CARDS */}
+      {/* ============================================
+          FEATURE CARDS
+          ============================================ */}
       <div className="container" style={{ marginTop: '50px' }}>
         <div style={{
           display: 'grid',
@@ -233,7 +263,9 @@ const Home = () => {
         </div>
       </div>
 
-      {/* POPULAR SKILLS SECTION */}
+      {/* ============================================
+          POPULAR SKILLS SECTION
+          ============================================ */}
       <div className="container" style={{ marginTop: '70px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' }}>
           <div>
@@ -258,59 +290,58 @@ const Home = () => {
               alignItems: 'center',
               gap: '6px',
               padding: '8px 16px',
-              borderRadius: '8px',
-              transition: 'all 0.2s'
+              borderRadius: '8px'
             }}
           >
             View All Skills →
           </button>
         </div>
 
-        <div style={{
+        <div className="popular-skills-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-          gap: '20px'
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '18px'
         }}>
-                    {[
-            { 
-              name: 'Python Programming', 
-              category: 'Programming', 
-              level: 'Intermediate', 
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', 
-              color: '#3B82F6', 
-              count: 124 
+          {[
+            {
+              name: 'Python Programming',
+              category: 'Programming',
+              level: 'Intermediate',
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+              color: '#3B82F6',
+              count: 124
             },
-            { 
-              name: 'React Development', 
-              category: 'Web Development', 
-              level: 'Advanced', 
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', 
-              color: '#06B6D4', 
-              count: 98 
+            {
+              name: 'React Development',
+              category: 'Web Development',
+              level: 'Advanced',
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+              color: '#06B6D4',
+              count: 98
             },
-            { 
-              name: 'UI/UX Design', 
-              category: 'Design', 
-              level: 'Beginner', 
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg', 
-              color: '#A855F7', 
-              count: 76 
+            {
+              name: 'UI/UX Design',
+              category: 'Design',
+              level: 'Beginner',
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+              color: '#A855F7',
+              count: 76
             },
-            { 
-              name: 'Java Programming', 
-              category: 'Programming', 
-              level: 'Intermediate', 
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg', 
-              color: '#EF4444', 
-              count: 62 
+            {
+              name: 'Java Programming',
+              category: 'Programming',
+              level: 'Intermediate',
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
+              color: '#EF4444',
+              count: 62
             },
-            { 
-              name: 'Data Analysis', 
-              category: 'Data Science', 
-              level: 'Intermediate', 
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg', 
-              color: '#8B5CF6', 
-              count: 54 
+            {
+              name: 'Data Analysis',
+              category: 'Data Science',
+              level: 'Intermediate',
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
+              color: '#8B5CF6',
+              count: 54
             }
           ].map((skill, index) => (
             <div
@@ -323,13 +354,11 @@ const Home = () => {
                 boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
                 border: '1px solid var(--border)',
                 cursor: 'pointer',
-                transition: 'all 0.25s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '15px'
               }}
             >
-              {/* Icon and Arrow */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{
                   width: '48px',
@@ -339,13 +368,13 @@ const Home = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '24px'
+                  padding: '10px'
                 }}>
-                <img 
-                    src={skill.icon} 
+                  <img
+                    src={skill.icon}
                     alt={skill.name}
-                    style={{ width: '30px', height: '30px', objectFit: 'contain' }}
-                />
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
                 </div>
                 <div style={{
                   width: '28px',
@@ -362,7 +391,6 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Skill Name */}
               <div>
                 <h3 style={{
                   fontSize: '16px',
@@ -374,7 +402,6 @@ const Home = () => {
                   {skill.name}
                 </h3>
 
-                {/* Tags */}
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   <span style={{
                     padding: '3px 10px',
@@ -399,7 +426,6 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* User Avatars and Count */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -439,7 +465,9 @@ const Home = () => {
         </div>
       </div>
 
-      {/* SKILLS BROWSING SECTION */}
+      {/* ============================================
+          SKILLS BROWSING SECTION
+          ============================================ */}
       <div className="container" id="browse-skills" style={{ marginTop: '70px' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h2 style={{ fontSize: '36px', fontWeight: '800', color: 'var(--dark)', marginBottom: '10px', letterSpacing: '-0.5px' }}>
@@ -476,8 +504,8 @@ const Home = () => {
                   ? tab.key === 'Offer'
                     ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
                     : tab.key === 'Request'
-                    ? 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)'
-                    : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)'
+                      ? 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)'
+                      : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)'
                   : 'transparent',
                 color: activeTab === tab.key ? '#fff' : 'var(--gray)',
                 display: 'flex',
@@ -566,8 +594,8 @@ const Home = () => {
               {search || filter !== 'All'
                 ? 'Try adjusting your search or filter.'
                 : user
-                ? 'Be the first to post a skill!'
-                : 'Login to add a skill!'}
+                  ? 'Be the first to post a skill!'
+                  : 'Login to add a skill!'}
             </p>
           </div>
         ) : (
