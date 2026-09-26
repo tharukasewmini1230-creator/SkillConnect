@@ -271,12 +271,47 @@ const Home = () => {
           gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
           gap: '20px'
         }}>
-          {[
-            { name: 'Python Programming', category: 'Programming', level: 'Intermediate', icon: '🐍', color: '#3B82F6', count: 124 },
-            { name: 'React Development', category: 'Web Development', level: 'Advanced', icon: '⚛️', color: '#06B6D4', count: 98 },
-            { name: 'UI/UX Design', category: 'Design', level: 'Beginner', icon: '🎨', color: '#A855F7', count: 76 },
-            { name: 'Java Programming', category: 'Programming', level: 'Intermediate', icon: '☕', color: '#EF4444', count: 62 },
-            { name: 'Data Analysis', category: 'Data Science', level: 'Intermediate', icon: '📊', color: '#8B5CF6', count: 54 }
+                    {[
+            { 
+              name: 'Python Programming', 
+              category: 'Programming', 
+              level: 'Intermediate', 
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', 
+              color: '#3B82F6', 
+              count: 124 
+            },
+            { 
+              name: 'React Development', 
+              category: 'Web Development', 
+              level: 'Advanced', 
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', 
+              color: '#06B6D4', 
+              count: 98 
+            },
+            { 
+              name: 'UI/UX Design', 
+              category: 'Design', 
+              level: 'Beginner', 
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg', 
+              color: '#A855F7', 
+              count: 76 
+            },
+            { 
+              name: 'Java Programming', 
+              category: 'Programming', 
+              level: 'Intermediate', 
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg', 
+              color: '#EF4444', 
+              count: 62 
+            },
+            { 
+              name: 'Data Analysis', 
+              category: 'Data Science', 
+              level: 'Intermediate', 
+              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg', 
+              color: '#8B5CF6', 
+              count: 54 
+            }
           ].map((skill, index) => (
             <div
               key={index}
@@ -306,7 +341,11 @@ const Home = () => {
                   justifyContent: 'center',
                   fontSize: '24px'
                 }}>
-                  {skill.icon}
+                <img 
+                    src={skill.icon} 
+                    alt={skill.name}
+                    style={{ width: '30px', height: '30px', objectFit: 'contain' }}
+                />
                 </div>
                 <div style={{
                   width: '28px',
