@@ -65,7 +65,7 @@ const updateSkill = async (req, res) => {
       return res.status(404).json({ message: 'Skill not found' });
     }
 
-    // මේ skill post එක හදපු user මද කියලා බලනවා
+    // Check if the logged-in user is the owner of this skill post
     if (skill.user.toString() !== req.user.id) {
       return res.status(401).json({ message: 'User not authorized' });
     }
@@ -92,7 +92,7 @@ const deleteSkill = async (req, res) => {
       return res.status(404).json({ message: 'Skill not found' });
     }
 
-    // මේ skill post එක හදපු user මද කියලා බලනවා
+    // Check if the logged-in user is the owner of this skill post
     if (skill.user.toString() !== req.user.id) {
       return res.status(401).json({ message: 'User not authorized' });
     }
