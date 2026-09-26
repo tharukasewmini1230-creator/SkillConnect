@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import ReviewModal from '../components/ReviewModal';
 
 const Sessions = () => {
   const { user } = useAuth();
@@ -9,9 +10,12 @@ const Sessions = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('incoming');
   const [toast, setToast] = useState(null);
+  const [reviewModal, setReviewModal] = useState(null); // { session, reviewee }
+  const [reviewedSessions, setReviewedSessions] = useState([]);
 
   useEffect(() => {
     fetchSessions();
+    fetchReviewedSessions();
   }, []);
 
   const fetchSessions = async () => {
@@ -26,6 +30,31 @@ const Sessions = () => {
     }
   };
 
+  const fetchReviewedSessions = async () => {
+    try {
+      // Get all my sessions and check if I've reviewed them
+      const response = await API.get('/sessions');
+      const completedSessions = response.data.filter(
+        (s) => s.status === 'Completed'
+      );
+
+      const reviewed = [];
+      for (const session of completedSessions) {
+        try {
+          const checkRes = await API.get(`/reviews/check/${session._id}`);
+          if (checkRes.data.hasReviewed) {
+            reviewed.push(session._id);
+          }
+        } catch (err) {
+          // Ignore errors
+        }
+      }
+      setReviewedSessions(reviewed);
+    } catch (err) {
+      console.error('Error fetching reviewed sessions:', err);
+    }
+  };
+
   const updateStatus = async (sessionId, status) => {
     try {
       await API.put(`/sessions/${sessionId}`, { status });
@@ -34,6 +63,12 @@ const Sessions = () => {
     } catch (err) {
       setToast({ message: 'Failed to update session', type: 'error' });
     }
+  };
+
+    const handleReviewSuccess = () => {
+    setReviewModal(null);
+    setToast({ message: 'Review submitted successfully! ⭐', type: 'success' });
+    fetchReviewedSessions();
   };
 
   // Split sessions into incoming and outgoing
@@ -394,7 +429,29 @@ const Sessions = () => {
                   )}
 
                   {/* Completed message */}
-                  {isCompleted && (
+                                    {isCompleted && !reviewedSessions.includes(session._id) && (
+                    <button
+                      onClick={() => setReviewModal({
+                        session,
+                        reviewee: activeTab === 'incoming' ? session.requester : session.mentor
+                      })}
+                      style={{
+                        flex: 1,
+                        minWidth: '200px',
+                        padding: '11px 20px',
+                        background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                        color: '#fff',
+                        borderRadius: '10px',
+                        fontSize: '14px',
+                        fontWeight: '700',
+                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
+                      }}
+                    >
+                      ⭐ Leave a Review
+                    </button>
+                  )}
+
+                  {isCompleted && reviewedSessions.includes(session._id) && (
                     <p style={{
                       flex: 1,
                       padding: '11px 20px',
@@ -405,7 +462,7 @@ const Sessions = () => {
                       background: '#D1FAE5',
                       borderRadius: '10px'
                     }}>
-                      🎉 Session Completed!
+                      ✅ Review Submitted
                     </p>
                   )}
 
@@ -443,6 +500,15 @@ const Sessions = () => {
             );
           })}
         </div>
+      )}
+      {/* Review Modal */}
+      {reviewModal && (
+        <ReviewModal
+          session={reviewModal.session}
+          reviewee={reviewModal.reviewee}
+          onClose={() => setReviewModal(null)}
+          onSuccess={handleReviewSuccess}
+        />
       )}
     </div>
   );
