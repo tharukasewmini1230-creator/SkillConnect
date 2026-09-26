@@ -322,3 +322,22 @@ body, nav, footer, input, textarea, select, button, div, h1, h2, h3, h4, p, span
     gap: 25px !important;
   }
 }
+
+/* Popular Skills Grid - Responsive */
+@media (max-width: 1024px) {
+  .popular-skills-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .popular-skills-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .popular-skills-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

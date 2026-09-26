@@ -122,21 +122,22 @@ const Home = () => {
             </p>
 
             <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-              {!user ? (
+                            {!user ? (
                 <>
-                  <Link to="/register" style={{ textDecoration: 'none' }}>
+                  <Link to="/register" style={{ textDecoration: 'none', display: 'inline-block' }}>
                     <button style={{
-                      padding: '16px 32px',
+                      padding: '16px 36px',
                       background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
                       color: '#fff',
-                      borderRadius: '50px',
+                      borderRadius: '999px',
                       fontSize: '16px',
                       fontWeight: '700',
                       boxShadow: '0 8px 20px rgba(59, 130, 246, 0.35)',
-                      display: 'flex',
+                      display: 'inline-flex',
                       alignItems: 'center',
                       gap: '10px',
-                      border: 'none'
+                      border: 'none',
+                      cursor: 'pointer'
                     }}>
                       <span style={{
                         width: '24px',
@@ -146,43 +147,47 @@ const Home = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '13px'
+                        fontSize: '13px',
+                        lineHeight: 1
                       }}>↗</span>
-                      Get Started
+                      <span>Get Started</span>
                     </button>
                   </Link>
-                  <Link to="/login" style={{ textDecoration: 'none' }}>
+
+                  <Link to="/login" style={{ textDecoration: 'none', display: 'inline-block' }}>
                     <button style={{
-                      padding: '16px 32px',
+                      padding: '16px 36px',
                       background: '#fff',
                       color: '#3B82F6',
-                      borderRadius: '50px',
+                      borderRadius: '999px',
                       fontSize: '16px',
                       fontWeight: '700',
                       border: '2px solid #3B82F6',
-                      display: 'flex',
+                      display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '10px'
+                      gap: '10px',
+                      cursor: 'pointer'
                     }}>
-                      <span style={{ fontSize: '16px' }}>🔍</span>
-                      Explore Skills
+                      <span style={{ fontSize: '16px', lineHeight: 1 }}>🔍</span>
+                      <span>Explore Skills</span>
                     </button>
                   </Link>
                 </>
               ) : (
-                <Link to="/dashboard" style={{ textDecoration: 'none' }}>
+                <Link to="/dashboard" style={{ textDecoration: 'none', display: 'inline-block' }}>
                   <button style={{
-                    padding: '16px 32px',
+                    padding: '16px 36px',
                     background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
                     color: '#fff',
-                    borderRadius: '50px',
+                    borderRadius: '999px',
                     fontSize: '16px',
                     fontWeight: '700',
                     boxShadow: '0 8px 20px rgba(59, 130, 246, 0.35)',
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: '10px',
-                    border: 'none'
+                    border: 'none',
+                    cursor: 'pointer'
                   }}>
                     <span style={{
                       width: '24px',
@@ -192,9 +197,10 @@ const Home = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '13px'
+                      fontSize: '13px',
+                      lineHeight: 1
                     }}>↗</span>
-                    Go to Dashboard
+                    <span>Go to Dashboard</span>
                   </button>
                 </Link>
               )}
