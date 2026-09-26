@@ -8,6 +8,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
+  const [activeTab, setActiveTab] = useState('All'); // 'All' | 'Offer' | 'Request'
 
   const { user } = useAuth();
 
@@ -26,22 +27,34 @@ const Home = () => {
     fetchSkills();
   }, []);
 
-  // Filter skills based on search and category filter
+  // Count of offers and requests
+  const offerCount = skills.filter((s) => s.type === 'Offer').length;
+  const requestCount = skills.filter((s) => s.type === 'Request').length;
+
+  // Filter skills based on tab, search and category filter
   const filteredSkills = skills.filter((skill) => {
+    const matchesTab = activeTab === 'All' || skill.type === activeTab;
     const matchesSearch =
       skill.title.toLowerCase().includes(search.toLowerCase()) ||
       skill.description.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === 'All' || skill.category === filter;
-    return matchesSearch && matchesFilter;
+    return matchesTab && matchesSearch && matchesFilter;
   });
 
   const categories = ['All', 'Programming', 'Design', 'Languages', 'Music', 'Academic', 'Other'];
+
+  // Tabs configuration
+  const tabs = [
+    { key: 'All', label: 'All Skills', icon: '🌐', count: skills.length },
+    { key: 'Offer', label: 'Offers', icon: '🎓', count: offerCount },
+    { key: 'Request', label: 'Requests', icon: '📖', count: requestCount }
+  ];
 
   return (
     <div className="container" style={{ padding: '40px 20px' }}>
 
       {/* Hero Section */}
-      <div style={{ textAlign: 'center', marginBottom: '60px', padding: '50px 30px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', borderRadius: '20px', color: '#fff', boxShadow: '0 10px 30px rgba(99, 102, 241, 0.25)' }}>
+      <div style={{ textAlign: 'center', marginBottom: '50px', padding: '50px 30px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', borderRadius: '20px', color: '#fff', boxShadow: '0 10px 30px rgba(99, 102, 241, 0.25)' }}>
         <h1 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '15px', letterSpacing: '-1px' }}>
           Welcome to <span style={{ color: '#fde68a' }}>SkillConnect</span>
         </h1>
@@ -64,14 +77,46 @@ const Home = () => {
         )}
       </div>
 
-      {/* Section Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '10px' }}>
-        <h2 style={{ fontSize: '26px', color: '#1f2937', fontWeight: '700' }}>
-          Browse Skills
-          <span style={{ marginLeft: '12px', fontSize: '15px', color: '#6b7280', fontWeight: '500', background: '#f3f4f6', padding: '4px 12px', borderRadius: '20px' }}>
-            {filteredSkills.length} {filteredSkills.length === 1 ? 'skill' : 'skills'}
-          </span>
-        </h2>
+      {/* Tabs Section - Offer / Request / All */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', background: '#fff', padding: '8px', borderRadius: '14px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', width: 'fit-content', flexWrap: 'wrap' }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              padding: '12px 24px',
+              borderRadius: '10px',
+              fontSize: '15px',
+              fontWeight: '600',
+              background: activeTab === tab.key
+                ? tab.key === 'Offer'
+                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                  : tab.key === 'Request'
+                  ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                  : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                : 'transparent',
+              color: activeTab === tab.key ? '#fff' : '#4b5563',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.25s ease',
+              boxShadow: activeTab === tab.key ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
+            }}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+            <span style={{
+              background: activeTab === tab.key ? 'rgba(255,255,255,0.25)' : '#f3f4f6',
+              color: activeTab === tab.key ? '#fff' : '#6b7280',
+              padding: '2px 9px',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: '700'
+            }}>
+              {tab.count}
+            </span>
+          </button>
+        ))}
       </div>
 
       {/* Search and Filter */}
@@ -94,6 +139,18 @@ const Home = () => {
         </select>
       </div>
 
+      {/* Section Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+        <h2 style={{ fontSize: '24px', color: '#1f2937', fontWeight: '700' }}>
+          {activeTab === 'All' && '🌐 All Skills'}
+          {activeTab === 'Offer' && '🎓 Skills Being Offered'}
+          {activeTab === 'Request' && '📖 Skills Being Requested'}
+          <span style={{ marginLeft: '12px', fontSize: '14px', color: '#6b7280', fontWeight: '500', background: '#f3f4f6', padding: '4px 12px', borderRadius: '20px' }}>
+            {filteredSkills.length} {filteredSkills.length === 1 ? 'result' : 'results'}
+          </span>
+        </h2>
+      </div>
+
       {/* Skills Grid */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '60px 20px' }}>
@@ -102,16 +159,22 @@ const Home = () => {
         </div>
       ) : filteredSkills.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '80px 20px', background: '#fff', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-          <div style={{ fontSize: '56px', marginBottom: '15px' }}>🔍</div>
+          <div style={{ fontSize: '56px', marginBottom: '15px' }}>
+            {activeTab === 'Offer' ? '🎓' : activeTab === 'Request' ? '📖' : '🔍'}
+          </div>
           <p style={{ color: '#1f2937', fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
-            No skills found
+            {activeTab === 'Offer'
+              ? 'No skills are being offered yet'
+              : activeTab === 'Request'
+              ? 'No skills are being requested yet'
+              : 'No skills found'}
           </p>
           <p style={{ color: '#6b7280', fontSize: '15px' }}>
             {search || filter !== 'All'
               ? 'Try adjusting your search or filter.'
               : user
-              ? 'Be the first to post a skill!'
-              : 'Login to add your first skill!'}
+              ? 'Be the first to post one!'
+              : 'Login to add a skill!'}
           </p>
         </div>
       ) : (
@@ -135,7 +198,14 @@ const Home = () => {
                 <span style={{ padding: '5px 14px', background: '#eef2ff', color: '#4f46e5', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
                   {skill.category}
                 </span>
-                <span style={{ padding: '5px 14px', background: skill.type === 'Offer' ? '#d1fae5' : '#fef3c7', color: skill.type === 'Offer' ? '#065f46' : '#92400e', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
+                <span style={{
+                  padding: '5px 14px',
+                  background: skill.type === 'Offer' ? '#d1fae5' : '#fef3c7',
+                  color: skill.type === 'Offer' ? '#065f46' : '#92400e',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}>
                   {skill.type === 'Offer' ? '🎓 Offer' : '📖 Request'}
                 </span>
               </div>
