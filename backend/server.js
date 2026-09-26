@@ -9,6 +9,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Import Routes
+const authRoutes = require('./routes/authRoutes');
+
+// Use Routes
+app.use('/api/auth', authRoutes);
+
 // Basic test route
 app.get('/', (req, res) => {
   res.send('SkillConnect API is running...');
