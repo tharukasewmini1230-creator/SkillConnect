@@ -29,12 +29,17 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const navLinks = [
-    { path: '/', label: 'Home', requireAuth: false },
-    { path: '/matches', label: 'Explore', requireAuth: true },
-    { path: '/dashboard', label: 'My Skills', requireAuth: true },
-    { path: '/sessions', label: 'Sessions' },
-    { path: '/community', label: 'Community', comingSoon: true }
+  // Links visible to everyone
+  const publicLinks = [
+    { path: '/', label: 'Home' },
+    { path: '/how-it-works', label: 'How It Works' },
+    { path: '/about', label: 'About' }
+  ];
+
+  // Links visible only when logged in
+  const privateLinks = [
+    { path: '/matches', label: 'Explore' },
+    { path: '/sessions', label: 'Sessions' }
   ];
 
   return (
@@ -51,14 +56,11 @@ const Navbar = () => {
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '12px 20px',
-        gap: '20px'
+        gap: '15px'
       }}>
 
-        {/* ============================================
-            LOGO WITH TAGLINE
-            ============================================ */}
+        {/* LOGO */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, textDecoration: 'none' }}>
-          {/* People Icon SVG */}
           <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -66,10 +68,8 @@ const Navbar = () => {
                 <stop offset="100%" stopColor="#A855F7" />
               </linearGradient>
             </defs>
-            {/* Left person (blue) */}
             <circle cx="15" cy="14" r="5" fill="#3B82F6" />
             <path d="M5 32c0-5.5 4.5-10 10-10s10 4.5 10 10v2H5v-2z" fill="#3B82F6" />
-            {/* Right person (purple) */}
             <circle cx="28" cy="14" r="5" fill="#A855F7" />
             <path d="M18 32c0-5.5 4.5-10 10-10s10 4.5 10 10v2H18v-2z" fill="#A855F7" />
           </svg>
@@ -78,7 +78,7 @@ const Navbar = () => {
             <span style={{
               fontSize: '22px',
               fontWeight: '800',
-              color: '#0F172A',
+              color: 'var(--dark)',
               letterSpacing: '-0.5px',
               marginBottom: '3px'
             }}>
@@ -100,72 +100,67 @@ const Navbar = () => {
           </div>
         </Link>
 
-        {/* ============================================
-            NAV LINKS
-            ============================================ */}
+        {/* NAV LINKS */}
         <div style={{
           display: 'flex',
           gap: '4px',
           alignItems: 'center',
           flexWrap: 'wrap'
         }}>
-          {navLinks
-            .filter((link) => !link.requireAuth || user)
-            .map((link) => (
-              <Link
-                key={link.path}
-                to={link.comingSoon ? '#' : link.path}
-                onClick={(e) => {
-                  if (link.comingSoon) {
-                    e.preventDefault();
-                    alert(`${link.label} page is coming soon! 🚀`);
-                  }
-                }}
-                style={{
-                  color: isActive(link.path) ? '#3B82F6' : 'var(--gray)',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  padding: '8px 14px',
-                  borderRadius: '8px',
-                  background: isActive(link.path) ? 'var(--primary-light)' : 'transparent',
-                  transition: 'all 0.2s',
-                  position: 'relative'
-                }}
-              >
-                {link.label}
-                {isActive(link.path) && (
-                  <span style={{
-                    position: 'absolute',
-                    bottom: '-12px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '20px',
-                    height: '3px',
-                    borderRadius: '2px',
-                    background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)'
-                  }} />
-                )}
-              </Link>
-            ))}
+          {publicLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              style={{
+                color: isActive(link.path) ? '#3B82F6' : 'var(--gray)',
+                fontSize: '14px',
+                fontWeight: '600',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                background: isActive(link.path) ? 'var(--primary-light)' : 'transparent',
+                transition: 'all 0.2s',
+                textDecoration: 'none'
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          {user && privateLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              style={{
+                color: isActive(link.path) ? '#3B82F6' : 'var(--gray)',
+                fontSize: '14px',
+                fontWeight: '600',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                background: isActive(link.path) ? 'var(--primary-light)' : 'transparent',
+                transition: 'all 0.2s',
+                textDecoration: 'none'
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
-        {/* ============================================
-            SEARCH BAR
-            ============================================ */}
+        {/* SEARCH BAR (only when logged in) */}
         {user && (
           <form onSubmit={handleSearch} style={{
             flex: 1,
-            maxWidth: '300px',
+            maxWidth: '280px',
             display: 'flex',
             alignItems: 'center',
             background: 'var(--light-gray)',
-            borderRadius: '10px',
-            padding: '9px 15px',
+            borderRadius: '30px',
+            padding: '9px 18px',
             gap: '10px',
             border: '1px solid transparent',
             transition: 'all 0.2s'
           }}>
-            <span style={{ fontSize: '15px', color: 'var(--gray)' }}>🔍</span>
+            <span style={{ fontSize: '14px', color: 'var(--gray)' }}>🔍</span>
             <input
               type="text"
               placeholder="Search skills, people..."
@@ -183,9 +178,7 @@ const Navbar = () => {
           </form>
         )}
 
-        {/* ============================================
-            RIGHT SIDE - NOTIFICATIONS, THEME, USER
-            ============================================ */}
+        {/* RIGHT SIDE */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
 
           {/* Theme Toggle */}
@@ -195,14 +188,16 @@ const Navbar = () => {
             style={{
               width: '40px',
               height: '40px',
-              borderRadius: '10px',
-              background: theme === 'light' ? 'var(--light-gray)' : '#334155',
+              borderRadius: '50%',
+              background: 'var(--light-gray)',
               color: theme === 'light' ? 'var(--gray)' : '#FBBF24',
               fontSize: '16px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              border: 'none',
+              cursor: 'pointer'
             }}
           >
             {theme === 'light' ? '🌙' : '☀️'}
@@ -220,21 +215,23 @@ const Navbar = () => {
                   style={{
                     width: '40px',
                     height: '40px',
-                    borderRadius: '10px',
+                    borderRadius: '50%',
                     background: 'var(--light-gray)',
                     color: 'var(--gray)',
                     fontSize: '16px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    position: 'relative'
+                    position: 'relative',
+                    border: 'none',
+                    cursor: 'pointer'
                   }}
                 >
                   🔔
                   <span style={{
                     position: 'absolute',
-                    top: '-3px',
-                    right: '-3px',
+                    top: '-2px',
+                    right: '-2px',
                     background: '#EF4444',
                     color: '#fff',
                     fontSize: '10px',
@@ -251,7 +248,6 @@ const Navbar = () => {
                   </span>
                 </button>
 
-                {/* Notifications Dropdown */}
                 {showNotifications && (
                   <div style={{
                     position: 'absolute',
@@ -263,8 +259,7 @@ const Navbar = () => {
                     border: '1px solid var(--border)',
                     minWidth: '300px',
                     padding: '15px',
-                    zIndex: 1000,
-                    animation: 'fadeIn 0.2s ease-out'
+                    zIndex: 1000
                   }}>
                     <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--dark)', marginBottom: '12px' }}>
                       Notifications
@@ -305,7 +300,9 @@ const Navbar = () => {
                     padding: '5px 12px 5px 5px',
                     background: 'var(--light-gray)',
                     borderRadius: '30px',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    border: 'none',
+                    cursor: 'pointer'
                   }}
                 >
                   <div style={{
@@ -334,7 +331,6 @@ const Navbar = () => {
                   </span>
                 </button>
 
-                {/* User Dropdown */}
                 {showUserMenu && (
                   <div style={{
                     position: 'absolute',
@@ -346,8 +342,7 @@ const Navbar = () => {
                     border: '1px solid var(--border)',
                     minWidth: '220px',
                     padding: '8px',
-                    zIndex: 1000,
-                    animation: 'fadeIn 0.2s ease-out'
+                    zIndex: 1000
                   }}>
                     <div style={{
                       padding: '12px',
@@ -372,12 +367,10 @@ const Navbar = () => {
                         fontSize: '14px',
                         color: 'var(--dark)',
                         fontWeight: '500',
-                        transition: 'all 0.2s'
+                        textDecoration: 'none'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'var(--light-gray)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                     >
-                      📊 My Skills
+                      📊 My Dashboard
                     </Link>
 
                     <Link
@@ -392,10 +385,8 @@ const Navbar = () => {
                         fontSize: '14px',
                         color: 'var(--dark)',
                         fontWeight: '500',
-                        transition: 'all 0.2s'
+                        textDecoration: 'none'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'var(--light-gray)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                     >
                       🎯 Explore Matches
                     </Link>
@@ -412,10 +403,8 @@ const Navbar = () => {
                         fontSize: '14px',
                         color: 'var(--dark)',
                         fontWeight: '500',
-                        transition: 'all 0.2s'
+                        textDecoration: 'none'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = 'var(--light-gray)'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                     >
                       👤 My Profile
                     </Link>
@@ -435,10 +424,9 @@ const Navbar = () => {
                           fontWeight: '600',
                           background: 'transparent',
                           textAlign: 'left',
-                          transition: 'all 0.2s'
+                          border: 'none',
+                          cursor: 'pointer'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--danger-light)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                       >
                         🚪 Logout
                       </button>
@@ -449,26 +437,36 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" style={{
-                color: isActive('/login') ? '#3B82F6' : 'var(--gray)',
-                fontSize: '15px',
-                fontWeight: '600',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                transition: 'all 0.2s'
-              }}>
-                Login
-              </Link>
-
-              <Link to="/register">
+              {/* Login Button - White with Border */}
+              <Link to="/login" style={{ textDecoration: 'none' }}>
                 <button style={{
-                  padding: '9px 20px',
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-                  color: '#fff',
-                  borderRadius: '10px',
+                  padding: '10px 24px',
+                  background: '#fff',
+                  color: '#3B82F6',
+                  borderRadius: '50px',
                   fontSize: '14px',
                   fontWeight: '700',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                  border: '2px solid #3B82F6',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}>
+                  Login
+                </button>
+              </Link>
+
+              {/* Sign Up Button - Gradient */}
+              <Link to="/register" style={{ textDecoration: 'none' }}>
+                <button style={{
+                  padding: '10px 24px',
+                  background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
+                  color: '#fff',
+                  borderRadius: '50px',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                  transition: 'all 0.2s ease'
                 }}>
                   Sign Up
                 </button>

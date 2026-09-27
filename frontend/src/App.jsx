@@ -10,6 +10,8 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Matches from './pages/Matches';
 import Sessions from './pages/Sessions';
+import HowItWorks from './pages/HowItWorks';
+import About from './pages/About';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -36,6 +38,8 @@ function App() {
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
                 <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/about" element={<About />} />
               </Routes>
             </main>
             <Footer />
