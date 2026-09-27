@@ -7,11 +7,14 @@ import DashboardLayout from '../components/DashboardLayout';
 const Leaderboard = () => {
   const { user } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
+  const [mentors, setMentors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mentorsLoading, setMentorsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('top');
 
   useEffect(() => {
     fetchLeaderboard();
+    fetchTopMentors();
   }, []);
 
   const fetchLeaderboard = async () => {
@@ -25,13 +28,28 @@ const Leaderboard = () => {
     }
   };
 
+  const fetchTopMentors = async () => {
+    try {
+      const response = await API.get('/points/top-mentors');
+      setMentors(response.data);
+    } catch (err) {
+      console.error('Error fetching top mentors:', err);
+    } finally {
+      setMentorsLoading(false);
+    }
+  };
+
+  // Current data based on active tab
+  const currentData = activeTab === 'top' ? leaderboard : mentors;
+  const isLoading = activeTab === 'top' ? loading : mentorsLoading;
+
   // Find current user's rank
-  const myRank = leaderboard.findIndex((u) => u._id === user?._id) + 1;
-  const myData = leaderboard.find((u) => u._id === user?._id);
+  const myRank = currentData.findIndex((u) => u._id === user?._id) + 1;
+  const myData = currentData.find((u) => u._id === user?._id);
 
   // Top 3 for podium
-  const top3 = leaderboard.slice(0, 3);
-  const others = leaderboard.slice(3);
+  const top3 = currentData.slice(0, 3);
+  const others = currentData.slice(3);
 
   const getRankIcon = (rank) => {
     if (rank === 1) return '🥇';
@@ -40,18 +58,12 @@ const Leaderboard = () => {
     return `#${rank}`;
   };
 
-  const getRankColor = (rank) => {
-    if (rank === 1) return '#F59E0B';
-    if (rank === 2) return '#9CA3AF';
-    if (rank === 3) return '#B45309';
-    return '#64748B';
-  };
-
-  const getRankBgColor = (rank) => {
-    if (rank === 1) return '#FEF3C7';
-    if (rank === 2) return '#F3F4F6';
-    if (rank === 3) return '#FED7AA';
-    return 'transparent';
+  // Get primary value (points or sessions based on tab)
+  const getPrimaryValue = (student) => {
+    if (activeTab === 'top') {
+      return `⭐ ${student.points} pts`;
+    }
+    return `🎓 ${student.completedSessions} sessions`;
   };
 
   return (
@@ -70,7 +82,9 @@ const Leaderboard = () => {
             🏆 Leaderboard
           </h1>
           <p style={{ color: 'var(--gray)', fontSize: '15px' }}>
-            See who's leading the skill exchange community
+            {activeTab === 'top'
+              ? "See who's leading the skill exchange community"
+              : 'Meet our most active mentors'}
           </p>
         </div>
 
@@ -121,7 +135,7 @@ const Leaderboard = () => {
                   YOUR RANK
                 </p>
                 <p style={{ fontSize: '22px', fontWeight: '800' }}>
-                  #{myRank} {myRank === 1 ? 'of the community!' : `out of ${leaderboard.length}`}
+                  #{myRank} out of {currentData.length}
                 </p>
               </div>
             </div>
@@ -129,10 +143,10 @@ const Leaderboard = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '25px', position: 'relative', zIndex: 1 }}>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ fontSize: '12px', opacity: 0.85, fontWeight: '600', marginBottom: '3px', letterSpacing: '0.5px' }}>
-                  POINTS
+                  {activeTab === 'top' ? 'POINTS' : 'SESSIONS'}
                 </p>
                 <p style={{ fontSize: '22px', fontWeight: '800' }}>
-                  ⭐ {myData.points}
+                  {activeTab === 'top' ? `⭐ ${myData.points}` : `🎓 ${myData.completedSessions}`}
                 </p>
               </div>
             </div>
@@ -200,12 +214,14 @@ const Leaderboard = () => {
         </div>
 
         {/* LOADING / EMPTY */}
-        {loading ? (
+        {isLoading ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div className="spinner"></div>
-            <p style={{ color: 'var(--gray)', marginTop: '15px' }}>Loading leaderboard...</p>
+            <p style={{ color: 'var(--gray)', marginTop: '15px' }}>
+              Loading {activeTab === 'top' ? 'leaderboard' : 'mentors'}...
+            </p>
           </div>
-        ) : leaderboard.length === 0 ? (
+        ) : currentData.length === 0 ? (
           <div style={{
             textAlign: 'center',
             padding: '80px 20px',
@@ -213,12 +229,16 @@ const Leaderboard = () => {
             borderRadius: '16px',
             border: '1px solid var(--border)'
           }}>
-            <div style={{ fontSize: '64px', marginBottom: '15px' }}>🏆</div>
+            <div style={{ fontSize: '64px', marginBottom: '15px' }}>
+              {activeTab === 'top' ? '🏆' : '🎓'}
+            </div>
             <p style={{ color: 'var(--dark)', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
-              No students yet
+              {activeTab === 'top' ? 'No students yet' : 'No mentors yet'}
             </p>
             <p style={{ color: 'var(--gray)', fontSize: '15px' }}>
-              Be the first to earn points!
+              {activeTab === 'top'
+                ? 'Be the first to earn points!'
+                : 'Complete a session as a mentor to appear here!'}
             </p>
           </div>
         ) : (
@@ -232,7 +252,7 @@ const Leaderboard = () => {
                 marginBottom: '30px',
                 alignItems: 'end'
               }}>
-                {/* 2nd Place (Left) */}
+                {/* 2nd Place */}
                 {top3[1] && (
                   <div style={{
                     background: 'var(--white)',
@@ -293,15 +313,15 @@ const Leaderboard = () => {
                       color: '#374151',
                       padding: '6px 14px',
                       borderRadius: '20px',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       fontWeight: '800'
                     }}>
-                      ⭐ {top3[1].points} pts
+                      {getPrimaryValue(top3[1])}
                     </div>
                   </div>
                 )}
 
-                {/* 1st Place (Center) */}
+                {/* 1st Place */}
                 {top3[0] && (
                   <div style={{
                     background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
@@ -370,16 +390,16 @@ const Leaderboard = () => {
                       color: '#fff',
                       padding: '8px 18px',
                       borderRadius: '20px',
-                      fontSize: '15px',
+                      fontSize: '13px',
                       fontWeight: '800',
                       boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
                     }}>
-                      ⭐ {top3[0].points} pts
+                      {getPrimaryValue(top3[0])}
                     </div>
                   </div>
                 )}
 
-                {/* 3rd Place (Right) */}
+                {/* 3rd Place */}
                 {top3[2] && (
                   <div style={{
                     background: 'var(--white)',
@@ -440,10 +460,10 @@ const Leaderboard = () => {
                       color: '#92400E',
                       padding: '6px 14px',
                       borderRadius: '20px',
-                      fontSize: '13px',
+                      fontSize: '12px',
                       fontWeight: '800'
                     }}>
-                      ⭐ {top3[2].points} pts
+                      {getPrimaryValue(top3[2])}
                     </div>
                   </div>
                 )}
@@ -534,17 +554,21 @@ const Leaderboard = () => {
                         alignItems: 'center',
                         gap: '6px',
                         padding: '6px 14px',
-                        background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+                        background: activeTab === 'top'
+                          ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)'
+                          : 'linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%)',
                         borderRadius: '20px',
                         flexShrink: 0
                       }}>
-                        <span style={{ fontSize: '13px' }}>⭐</span>
+                        <span style={{ fontSize: '13px' }}>
+                          {activeTab === 'top' ? '⭐' : '🎓'}
+                        </span>
                         <span style={{
-                          color: '#92400E',
+                          color: activeTab === 'top' ? '#92400E' : '#065F46',
                           fontSize: '13px',
                           fontWeight: '800'
                         }}>
-                          {student.points}
+                          {activeTab === 'top' ? student.points : student.completedSessions}
                         </span>
                       </div>
                     </div>
@@ -553,7 +577,7 @@ const Leaderboard = () => {
               </div>
             )}
 
-            {/* CTAs */}
+            {/* CTA */}
             <div style={{
               marginTop: '30px',
               background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
@@ -564,10 +588,14 @@ const Leaderboard = () => {
               boxShadow: '0 10px 25px rgba(59, 130, 246, 0.2)'
             }}>
               <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '10px' }}>
-                Want to climb the leaderboard? 🚀
+                {activeTab === 'top'
+                  ? 'Want to climb the leaderboard? 🚀'
+                  : 'Want to become a top mentor? 🎓'}
               </h3>
               <p style={{ fontSize: '14px', opacity: 0.95, marginBottom: '20px', maxWidth: '500px', margin: '0 auto 20px' }}>
-                Complete sessions, leave reviews, and share your skills to earn points!
+                {activeTab === 'top'
+                  ? 'Complete sessions, leave reviews, and share your skills to earn points!'
+                  : 'Complete sessions as a mentor to appear on this leaderboard!'}
               </p>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link to="/dashboard" style={{ textDecoration: 'none' }}>
