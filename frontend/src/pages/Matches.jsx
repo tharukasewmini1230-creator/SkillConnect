@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
@@ -7,6 +7,7 @@ import BookingModal from '../components/BookingModal';
 
 const Matches = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
@@ -337,8 +338,8 @@ const Matches = () => {
 
               {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button
-                  onClick={() => setBookingModal({ mentor: match.user, skill: match.theyCanTeachMe[0] })}
+              <button
+                  onClick={() => navigate(`/book/${match.user._id}`)}
                   style={{
                     flex: 1,
                     minWidth: '200px',
