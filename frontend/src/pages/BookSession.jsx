@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import bookIllustration from '../assets/book-illustration.png';
 
 const BookSession = () => {
   const { mentorId } = useParams();
@@ -207,49 +208,122 @@ const BookSession = () => {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-      {/* HEADER BANNER */}
+            {/* HEADER BANNER WITH ILLUSTRATION */}
       <div style={{
         background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%)',
-        padding: '30px 20px 60px',
+        padding: '40px 20px 60px',
         position: 'relative',
         overflow: 'hidden',
         borderBottom: '1px solid var(--border)'
       }}>
         <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.08)' }} />
 
-        <div className="container" style={{ maxWidth: '1200px', position: 'relative', zIndex: 1 }}>
-          <Link to="/matches" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            color: '#3B82F6',
-            fontSize: '14px',
-            fontWeight: '600',
-            textDecoration: 'none',
-            marginBottom: '20px'
-          }}>
-            ← Back to Explore
-          </Link>
+        <div className="container" style={{
+          maxWidth: '1200px',
+          position: 'relative',
+          zIndex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 0.8fr)',
+          gap: '30px',
+          alignItems: 'center'
+        }}>
+          {/* LEFT: Text */}
+          <div>
+            <Link to="/matches" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#3B82F6',
+              fontSize: '14px',
+              fontWeight: '600',
+              textDecoration: 'none',
+              marginBottom: '20px'
+            }}>
+              ← Back to Explore
+            </Link>
 
-          <h1 style={{
-            fontSize: '42px',
-            fontWeight: '800',
-            color: 'var(--dark)',
-            marginBottom: '10px',
-            letterSpacing: '-1px'
-          }}>
-            Book a <span style={{
-              background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>Learning Session</span>
-          </h1>
+            <h1 style={{
+              fontSize: '42px',
+              fontWeight: '800',
+              color: 'var(--dark)',
+              marginBottom: '10px',
+              letterSpacing: '-1px'
+            }}>
+              Book a <span style={{
+                background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>Learning Session</span>
+            </h1>
 
-          <p style={{ fontSize: '16px', color: 'var(--gray)', maxWidth: '500px', lineHeight: '1.6' }}>
-            Connect with a peer, schedule a session, and learn something new.
-            Build your skills, share your knowledge, and grow together.
-          </p>
+            <p style={{ fontSize: '16px', color: 'var(--gray)', maxWidth: '500px', lineHeight: '1.6' }}>
+              Connect with a peer, schedule a session, and learn something new.
+              Build your skills, share your knowledge, and grow together.
+            </p>
+          </div>
+
+          {/* RIGHT: Illustration + Decorative Text */}
+          <div style={{
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            {/* Illustration */}
+            <img
+              src={bookIllustration}
+              alt="Students learning together"
+              style={{
+                width: '100%',
+                maxWidth: '320px',
+                height: 'auto',
+                borderRadius: '20px'
+              }}
+            />
+
+            {/* Decorative "Better Together" Text */}
+            <div style={{
+              position: 'absolute',
+              top: '5%',
+              right: '-20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px'
+            }}>
+              <span style={{
+                fontSize: '18px',
+                fontWeight: '800',
+                fontStyle: 'italic',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontFamily: 'Georgia, serif',
+                letterSpacing: '-0.5px',
+                lineHeight: 1.1,
+                transform: 'rotate(-8deg)'
+              }}>
+                Better
+              </span>
+              <span style={{
+                fontSize: '18px',
+                fontWeight: '800',
+                fontStyle: 'italic',
+                background: 'linear-gradient(135deg, #A855F7 0%, #6366F1 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontFamily: 'Georgia, serif',
+                letterSpacing: '-0.5px',
+                lineHeight: 1.1,
+                transform: 'rotate(-8deg)'
+              }}>
+                Together
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
