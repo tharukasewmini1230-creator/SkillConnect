@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -13,6 +13,7 @@ import Sessions from './pages/Sessions';
 import HowItWorks from './pages/HowItWorks';
 import About from './pages/About';
 
+// Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -22,28 +23,47 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// Layout Wrapper - shows/hides Navbar and Footer based on route
+const Layout = ({ children }) => {
+  const location = useLocation();
+
+  // These pages have their own layout (with Sidebar), so no Navbar/Footer
+  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/matches'];
+  const shouldHideNavbar = pagesWithSidebar.some((path) =>
+    location.pathname.startsWith(path)
+  );
+
+  if (shouldHideNavbar) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Navbar />
+      <main style={{ flex: 1 }}>{children}</main>
+      <Footer />
+    </div>
+  );
+};
+
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <Router>
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Navbar />
-            <main style={{ flex: 1 }}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
-                <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/about" element={<About />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
+              <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
+            </Routes>
+          </Layout>
         </Router>
       </AuthProvider>
     </ThemeProvider>
