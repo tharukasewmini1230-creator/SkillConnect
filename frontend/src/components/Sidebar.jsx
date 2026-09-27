@@ -41,7 +41,7 @@ const Sidebar = () => {
       section: 'Account',
       items: [
         { path: '/profile', label: 'Profile', icon: '👤' },
-        { path: '/settings', label: 'Settings', icon: '⚙️', comingSoon: true }
+        { path: '/settings', label: 'Settings', icon: '⚙️' }
       ]
     }
   ];
