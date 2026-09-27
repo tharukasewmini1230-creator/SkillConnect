@@ -19,6 +19,7 @@ const skillRoutes = require('./routes/skillRoutes');
 const matchRoutes = require('./routes/matchRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const pointsRoutes = require('./routes/pointsRoutes');
 
 // ============================================
 // USE ROUTES
@@ -28,6 +29,7 @@ app.use('/api/skills', skillRoutes);
 app.use('/api/match', matchRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/points', pointsRoutes);
 
 // ============================================
 // BASIC TEST ROUTE

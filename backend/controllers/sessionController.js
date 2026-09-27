@@ -1,4 +1,5 @@
 const Session = require('../models/Session');
+const { addPointsToUser } = require('./pointsController');
 
 // @desc    Create a new session request
 // @route   POST /api/sessions
@@ -72,6 +73,13 @@ const updateSessionStatus = async (req, res) => {
 
     session.status = status;
     await session.save();
+
+    // Add points when session is completed
+    if (status === 'Completed') {
+      // Both users get +10 points for completing a session
+      await addPointsToUser(session.requester, 10);
+      await addPointsToUser(session.mentor, 10);
+    }
 
     const updatedSession = await Session.findById(session._id)
       .populate('requester', 'name email university')

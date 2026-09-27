@@ -1,4 +1,5 @@
 const Skill = require('../models/Skill');
+const { addPointsToUser } = require('./pointsController');
 
 // @desc    Get all skills
 // @route   GET /api/skills
@@ -45,6 +46,9 @@ const createSkill = async (req, res) => {
       category,
       type
     });
+
+    // Add points for creating a skill
+    await addPointsToUser(req.user.id, 5);
 
     const populatedSkill = await Skill.findById(skill._id)
       .populate('user', 'name email university');

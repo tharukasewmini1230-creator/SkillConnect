@@ -1,6 +1,7 @@
 const Review = require('../models/Review');
 const Session = require('../models/Session');
 const User = require('../models/User');
+const { addPointsToUser } = require('./pointsController');
 
 // @desc    Create a review for a completed session
 // @route   POST /api/reviews
@@ -49,6 +50,11 @@ const createReview = async (req, res) => {
       rating,
       comment
     });
+
+    // Add bonus points if 5-star review
+    if (rating === 5) {
+      await addPointsToUser(reviewee, 5);
+    }
 
     const populatedReview = await Review.findById(review._id)
       .populate('reviewer', 'name email university')
