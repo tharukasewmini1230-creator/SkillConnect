@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is already logged in on app load
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -16,13 +15,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Register a new user
   const register = async (name, email, password) => {
-    const response = await API.post('/auth/register', {
-      name,
-      email,
-      password
-    });
+    const response = await API.post('/auth/register', { name, email, password });
     const data = response.data;
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data));
@@ -30,12 +24,8 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // Login an existing user
   const login = async (email, password) => {
-    const response = await API.post('/auth/login', {
-      email,
-      password
-    });
+    const response = await API.post('/auth/login', { email, password });
     const data = response.data;
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data));
@@ -43,7 +33,6 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // Update user profile
   const updateProfile = async (profileData) => {
     const response = await API.put('/auth/profile', profileData);
     const updatedUser = { ...user, ...response.data };
@@ -52,7 +41,19 @@ export const AuthProvider = ({ children }) => {
     return updatedUser;
   };
 
-  // Logout the current user
+  const refreshUser = async () => {
+    try {
+      const response = await API.get('/auth/me');
+      const updatedUser = { ...user, ...response.data };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return updatedUser;
+    } catch (err) {
+      console.error('Error refreshing user:', err);
+      return null;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -60,13 +61,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use auth context
 export const useAuth = () => useContext(AuthContext);
 
 export default AuthContext;

@@ -6,7 +6,7 @@ import Toast from '../components/Toast';
 import DashboardLayout from '../components/DashboardLayout';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const [skills, setSkills] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -79,6 +79,7 @@ const Dashboard = () => {
       }
       resetForm();
       fetchMySkills();
+      await refreshUser();
     } catch (err) {
       setToast({
         message: err.response?.data?.message || 'Something went wrong',
@@ -150,7 +151,7 @@ const Dashboard = () => {
   };
 
   // Points (dummy for now)
-  const userPoints = 0;
+  const userPoints = user?.points || 0;
 
   return (
     <DashboardLayout>

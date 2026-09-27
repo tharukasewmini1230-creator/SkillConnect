@@ -91,6 +91,26 @@ const DashboardLayout = ({ children }) => {
           {/* Right Side */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
 
+                        {/* Points Badge */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+              borderRadius: '30px',
+              border: '1px solid rgba(245, 158, 11, 0.3)'
+            }}>
+              <span style={{ fontSize: '15px' }}>⭐</span>
+              <span style={{
+                color: '#92400E',
+                fontSize: '14px',
+                fontWeight: '700'
+              }}>
+                {user?.points || 0}
+              </span>
+            </div>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
