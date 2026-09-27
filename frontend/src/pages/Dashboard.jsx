@@ -125,8 +125,8 @@ const Dashboard = () => {
 
   const categories = ['Programming', 'Design', 'Languages', 'Music', 'Academic', 'Other'];
 
-  const offeredSkills = skills.filter((s) => s.type === 'Offer').length;
-  const wantedSkills = skills.filter((s) => s.type === 'Request').length;
+  const offeredSkills = user?.skillsOffered?.length || 0;
+  const wantedSkills = user?.skillsWanted?.length || 0;
 
   // Sessions stats
   const completedSessions = sessions.filter((s) => s.status === 'Completed').length;

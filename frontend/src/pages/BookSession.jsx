@@ -28,23 +28,83 @@ const BookSession = () => {
     fetchMentorData();
   }, [mentorId]);
 
-  const fetchMentorData = async () => {
+    const fetchMentorData = async () => {
     try {
-      // Fetch all skills to find the mentor's offered skills
-      const skillsRes = await API.get('/skills');
-      const mentorSkills = skillsRes.data.filter(
-        (s) => s.user?._id === mentorId && s.type === 'Offer'
-      );
-
-      if (mentorSkills.length === 0) {
-        setToast({ message: 'This mentor has no offered skills yet', type: 'error' });
+      // Check if user is trying to book themselves
+      if (mentorId === user?._id) {
+        setToast({ message: 'You cannot book a session with yourself! 😅', type: 'error' });
         setLoading(false);
         return;
       }
 
-      setMentor(mentorSkills[0].user);
-      setSkills(mentorSkills);
-      setSelectedSkill(mentorSkills[0].title);
+      // Get all users to find the mentor
+      const usersRes = await API.get('/skills');
+      
+      // Find a skill post from this mentor to get their user info
+      const mentorSkillPost = usersRes.data.find(
+        (s) => String(s.user?._id) === String(mentorId)
+      );
+
+      if (!mentorSkillPost) {
+        // If no skill posts, try to get mentor info from matches API
+        const matchesRes = await API.get('/match');
+        const match = matchesRes.data.find(
+          (m) => String(m.user?._id) === String(mentorId)
+        );
+
+        if (!match) {
+          setToast({ message: 'Mentor not found', type: 'error' });
+          setLoading(false);
+          return;
+        }
+
+        // Use match data
+        setMentor(match.user);
+        
+        // Use the skills they can teach (from match data)
+        if (match.theyCanTeachMe && match.theyCanTeachMe.length > 0) {
+          setSkills(match.theyCanTeachMe.map((skill, i) => ({
+            _id: `skill-${i}`,
+            title: skill,
+            type: 'Offer'
+          })));
+          setSelectedSkill(match.theyCanTeachMe[0]);
+        } else {
+          setToast({ message: 'This mentor has no offered skills yet', type: 'error' });
+        }
+        
+        setLoading(false);
+        return;
+      }
+
+      // If mentor has skill posts, use those
+      setMentor(mentorSkillPost.user);
+      
+      const mentorOfferedSkills = usersRes.data.filter(
+        (s) => String(s.user?._id) === String(mentorId) && s.type === 'Offer'
+      );
+      
+      if (mentorOfferedSkills.length > 0) {
+        setSkills(mentorOfferedSkills);
+        setSelectedSkill(mentorOfferedSkills[0].title);
+      } else {
+        // Fallback to match API
+        const matchesRes = await API.get('/match');
+        const match = matchesRes.data.find(
+          (m) => String(m.user?._id) === String(mentorId)
+        );
+        
+        if (match && match.theyCanTeachMe && match.theyCanTeachMe.length > 0) {
+          setSkills(match.theyCanTeachMe.map((skill, i) => ({
+            _id: `skill-${i}`,
+            title: skill,
+            type: 'Offer'
+          })));
+          setSelectedSkill(match.theyCanTeachMe[0]);
+        } else {
+          setToast({ message: 'This mentor has no offered skills yet', type: 'error' });
+        }
+      }
     } catch (err) {
       console.error('Error fetching mentor:', err);
       setToast({ message: 'Failed to load mentor data', type: 'error' });

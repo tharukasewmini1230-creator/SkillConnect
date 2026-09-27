@@ -15,34 +15,33 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // 1. Check if all fields are provided
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Please add all fields' });
     }
 
-    // 2. Check if user already exists with this email
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // 3. Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 4. Create new user
     const user = await User.create({
       name,
       email,
       password: hashedPassword
     });
 
-    // 5. Send success response with token
     if (user) {
       res.status(201).json({
         _id: user.id,
         name: user.name,
         email: user.email,
+        university: user.university,
+        skillsOffered: user.skillsOffered,
+        skillsWanted: user.skillsWanted,
+        points: user.points,
         token: generateToken(user._id)
       });
     } else {
@@ -59,15 +58,17 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Find user by email
     const user = await User.findOne({ email });
 
-    // 2. If user found, compare the password
     if (user && (await bcrypt.compare(password, user.password))) {
       res.json({
         _id: user.id,
         name: user.name,
         email: user.email,
+        university: user.university,
+        skillsOffered: user.skillsOffered,
+        skillsWanted: user.skillsWanted,
+        points: user.points,
         token: generateToken(user._id)
       });
     } else {
@@ -96,10 +97,14 @@ const updateProfile = async (req, res) => {
 
     const { name, university, skillsOffered, skillsWanted } = req.body;
 
-    user.name = name || user.name;
-    user.university = university !== undefined ? university : user.university;
-    user.skillsOffered = skillsOffered || user.skillsOffered;
-    user.skillsWanted = skillsWanted || user.skillsWanted;
+    if (name !== undefined) user.name = name;
+    if (university !== undefined) user.university = university;
+    if (skillsOffered !== undefined && Array.isArray(skillsOffered)) {
+      user.skillsOffered = skillsOffered;
+    }
+    if (skillsWanted !== undefined && Array.isArray(skillsWanted)) {
+      user.skillsWanted = skillsWanted;
+    }
 
     const updatedUser = await user.save();
 
@@ -109,7 +114,8 @@ const updateProfile = async (req, res) => {
       email: updatedUser.email,
       university: updatedUser.university,
       skillsOffered: updatedUser.skillsOffered,
-      skillsWanted: updatedUser.skillsWanted
+      skillsWanted: updatedUser.skillsWanted,
+      points: updatedUser.points
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -136,14 +142,12 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check current password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
-    // Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 

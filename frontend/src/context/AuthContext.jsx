@@ -33,12 +33,18 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  // Update user profile
   const updateProfile = async (profileData) => {
-    const response = await API.put('/auth/profile', profileData);
-    const updatedUser = { ...user, ...response.data };
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    setUser(updatedUser);
-    return updatedUser;
+    try {
+      const response = await API.put('/auth/profile', profileData);
+      const updatedUser = { ...user, ...response.data };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return updatedUser;
+    } catch (err) {
+      console.error('updateProfile error:', err);
+      throw err;
+    }
   };
 
   const refreshUser = async () => {
