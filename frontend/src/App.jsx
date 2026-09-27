@@ -12,6 +12,7 @@ import Matches from './pages/Matches';
 import Sessions from './pages/Sessions';
 import HowItWorks from './pages/HowItWorks';
 import About from './pages/About';
+import Leaderboard from './pages/Leaderboard';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -28,7 +29,7 @@ const Layout = ({ children }) => {
   const location = useLocation();
 
   // These pages have their own layout (with Sidebar), so no Navbar/Footer
-  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/matches'];
+  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/matches', '/leaderboard'];
   const shouldHideNavbar = pagesWithSidebar.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -62,6 +63,7 @@ function App() {
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/matches" element={<ProtectedRoute><Matches /></ProtectedRoute>} />
               <Route path="/sessions" element={<ProtectedRoute><Sessions /></ProtectedRoute>} />
+              <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
             </Routes>
           </Layout>
         </Router>
