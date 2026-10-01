@@ -17,6 +17,7 @@ import Settings from './pages/Settings';
 import BookSession from './pages/BookSession';
 import Messages from './pages/Messages';
 import Achievements from './pages/Achievements';
+import { SocketProvider } from './context/SocketContext';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -55,6 +56,7 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <SocketProvider>
         <Router>
           <Layout>
             <Routes>
@@ -75,6 +77,7 @@ function App() {
             </Routes>
           </Layout>
         </Router>
+        </SocketProvider>
       </AuthProvider>
     </ThemeProvider>
   );

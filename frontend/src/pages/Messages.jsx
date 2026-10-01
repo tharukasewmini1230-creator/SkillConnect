@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 import Toast from '../components/Toast';
 import DashboardLayout from '../components/DashboardLayout';
 
 const Messages = () => {
   const { user } = useAuth();
+  const { socket, onlineUsers } = useSocket();
   const location = useLocation();
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
@@ -20,13 +22,14 @@ const Messages = () => {
   const [sending, setSending] = useState(false);
   const [toast, setToast] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [typingUser, setTypingUser] = useState(null);
 
   // Fetch conversations on mount
   useEffect(() => {
     fetchConversations();
   }, []);
 
-  // Handle navigation from other pages (e.g., from Profile "Send Message" button)
+  // Handle navigation from other pages (e.g., from Matches "Send Message" button)
   useEffect(() => {
     const state = location.state;
     if (state && state.partner) {
@@ -39,7 +42,44 @@ const Messages = () => {
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, typingUser]);
+
+  // Real-time: Listen for incoming messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleReceiveMessage = (message) => {
+      console.log('📩 Received message:', message);
+
+      if (
+        selectedPartner &&
+        (message.sender._id === selectedPartner._id ||
+          message.receiver._id === selectedPartner._id)
+      ) {
+        setMessages((prev) => [...prev, message]);
+      }
+
+      fetchConversations();
+    };
+
+    const handleUserTyping = ({ senderName }) => {
+      setTypingUser(senderName);
+    };
+
+    const handleStopTyping = () => {
+      setTypingUser(null);
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+    socket.on('user_typing', handleUserTyping);
+    socket.on('user_stop_typing', handleStopTyping);
+
+    return () => {
+      socket.off('receive_message', handleReceiveMessage);
+      socket.off('user_typing', handleUserTyping);
+      socket.off('user_stop_typing', handleStopTyping);
+    };
+  }, [socket, selectedPartner]);
 
   const fetchConversations = async () => {
     try {
@@ -47,7 +87,6 @@ const Messages = () => {
       setConversations(response.data);
     } catch (err) {
       console.error('Error fetching conversations:', err);
-      setToast({ message: 'Failed to load conversations', type: 'error' });
     } finally {
       setLoadingConversations(false);
     }
@@ -58,7 +97,6 @@ const Messages = () => {
     try {
       const response = await API.get(`/messages/conversation/${partnerId}`);
       setMessages(response.data);
-      // Refresh conversations to update unread counts
       fetchConversations();
     } catch (err) {
       console.error('Error fetching messages:', err);
@@ -70,6 +108,7 @@ const Messages = () => {
 
   const handleSelectConversation = (conv) => {
     setSelectedPartner(conv.partner);
+    setTypingUser(null);
     fetchMessages(conv.partner._id);
   };
 
@@ -88,13 +127,43 @@ const Messages = () => {
 
       setMessages([...messages, response.data]);
       setNewMessage('');
-      // Refresh conversations to update last message
+
+      // Send via socket for real-time delivery
+      if (socket) {
+        socket.emit('send_message', {
+          receiverId: selectedPartner._id,
+          message: response.data
+        });
+
+        // Stop typing indicator
+        socket.emit('stop_typing', {
+          receiverId: selectedPartner._id
+        });
+      }
+
       fetchConversations();
     } catch (err) {
       console.error('Error sending message:', err);
       setToast({ message: 'Failed to send message', type: 'error' });
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setNewMessage(e.target.value);
+
+    if (socket && selectedPartner) {
+      if (e.target.value.length > 0) {
+        socket.emit('typing', {
+          receiverId: selectedPartner._id,
+          senderName: user?.name
+        });
+      } else {
+        socket.emit('stop_typing', {
+          receiverId: selectedPartner._id
+        });
+      }
     }
   };
 
@@ -127,6 +196,8 @@ const Messages = () => {
     conv.partner.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const isPartnerOnline = selectedPartner && onlineUsers.includes(selectedPartner._id);
+
   return (
     <DashboardLayout>
       <div style={{
@@ -153,7 +224,6 @@ const Messages = () => {
           overflow: 'hidden'
         }}>
 
-          {/* Header */}
           <div style={{
             padding: '20px',
             borderBottom: '1px solid var(--border)'
@@ -170,7 +240,6 @@ const Messages = () => {
               💬 Messages
             </h2>
 
-            {/* Search */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -197,32 +266,18 @@ const Messages = () => {
             </div>
           </div>
 
-          {/* Conversations List */}
           <div style={{ flex: 1, overflowY: 'auto' }}>
             {loadingConversations ? (
               <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                 <div className="spinner"></div>
               </div>
             ) : filteredConversations.length === 0 ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '60px 20px'
-              }}>
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <div style={{ fontSize: '56px', marginBottom: '15px' }}>💬</div>
-                <p style={{
-                  fontSize: '15px',
-                  color: 'var(--dark)',
-                  fontWeight: '600',
-                  marginBottom: '8px'
-                }}>
+                <p style={{ fontSize: '15px', color: 'var(--dark)', fontWeight: '600', marginBottom: '8px' }}>
                   No messages yet
                 </p>
-                <p style={{
-                  fontSize: '13px',
-                  color: 'var(--gray)',
-                  lineHeight: '1.6',
-                  marginBottom: '20px'
-                }}>
+                <p style={{ fontSize: '13px', color: 'var(--gray)', lineHeight: '1.6', marginBottom: '20px' }}>
                   Start a conversation with someone from your matches!
                 </p>
                 <Link to="/matches" style={{ textDecoration: 'none' }}>
@@ -243,6 +298,8 @@ const Messages = () => {
             ) : (
               filteredConversations.map((conv) => {
                 const isSelected = selectedPartner?._id === conv.partner._id;
+                const partnerOnline = onlineUsers.includes(conv.partner._id);
+
                 return (
                   <div
                     key={conv.partner._id}
@@ -259,7 +316,6 @@ const Messages = () => {
                       transition: 'all 0.2s'
                     }}
                   >
-                    {/* Avatar */}
                     <div style={{
                       width: '48px',
                       height: '48px',
@@ -275,9 +331,20 @@ const Messages = () => {
                       position: 'relative'
                     }}>
                       {conv.partner.name?.charAt(0).toUpperCase()}
+                      {partnerOnline && (
+                        <span style={{
+                          position: 'absolute',
+                          bottom: '0',
+                          right: '0',
+                          width: '13px',
+                          height: '13px',
+                          borderRadius: '50%',
+                          background: '#10B981',
+                          border: '2px solid var(--white)'
+                        }} />
+                      )}
                     </div>
 
-                    {/* Info */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{
                         display: 'flex',
@@ -296,11 +363,7 @@ const Messages = () => {
                         }}>
                           {conv.partner.name}
                         </p>
-                        <span style={{
-                          fontSize: '11px',
-                          color: 'var(--gray)',
-                          flexShrink: 0
-                        }}>
+                        <span style={{ fontSize: '11px', color: 'var(--gray)', flexShrink: 0 }}>
                           {formatTime(conv.lastMessageTime)}
                         </span>
                       </div>
@@ -357,7 +420,6 @@ const Messages = () => {
           overflow: 'hidden'
         }}>
           {!selectedPartner ? (
-            // Empty State
             <div style={{
               flex: 1,
               display: 'flex',
@@ -383,7 +445,6 @@ const Messages = () => {
                 lineHeight: '1.6'
               }}>
                 Choose a conversation from the list on the left to start chatting.
-                Or find new matches to message.
               </p>
             </div>
           ) : (
@@ -409,9 +470,22 @@ const Messages = () => {
                   color: '#fff',
                   fontWeight: '700',
                   fontSize: '18px',
-                  flexShrink: 0
+                  flexShrink: 0,
+                  position: 'relative'
                 }}>
                   {selectedPartner.name?.charAt(0).toUpperCase()}
+                  {isPartnerOnline && (
+                    <span style={{
+                      position: 'absolute',
+                      bottom: '0',
+                      right: '0',
+                      width: '12px',
+                      height: '12px',
+                      borderRadius: '50%',
+                      background: '#10B981',
+                      border: '2px solid var(--white)'
+                    }} />
+                  )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
@@ -422,20 +496,37 @@ const Messages = () => {
                   }}>
                     {selectedPartner.name}
                   </p>
-                  <p style={{
-                    fontSize: '12px',
-                    color: 'var(--gray)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {selectedPartner.university || 'Student'}
-                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <p style={{
+                      fontSize: '12px',
+                      color: 'var(--gray)',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {selectedPartner.university || 'Student'}
+                    </p>
+                    {isPartnerOnline && (
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '11px',
+                        color: '#10B981',
+                        fontWeight: '600'
+                      }}>
+                        <span style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          background: '#10B981'
+                        }} />
+                        Online
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <Link
-                  to={`/book/${selectedPartner._id}`}
-                  style={{ textDecoration: 'none' }}
-                >
+                <Link to={`/book/${selectedPartner._id}`} style={{ textDecoration: 'none' }}>
                   <button style={{
                     padding: '8px 16px',
                     background: 'var(--primary-light)',
@@ -454,7 +545,7 @@ const Messages = () => {
                 </Link>
               </div>
 
-              {/* Messages */}
+              {/* Messages Area */}
               <div style={{
                 flex: 1,
                 overflowY: 'auto',
@@ -468,15 +559,8 @@ const Messages = () => {
                     <div className="spinner"></div>
                   </div>
                 ) : messages.length === 0 ? (
-                  <div style={{
-                    textAlign: 'center',
-                    padding: '40px 20px',
-                    margin: 'auto'
-                  }}>
-                    <p style={{
-                      fontSize: '14px',
-                      color: 'var(--gray)'
-                    }}>
+                  <div style={{ textAlign: 'center', padding: '40px 20px', margin: 'auto' }}>
+                    <p style={{ fontSize: '14px', color: 'var(--gray)' }}>
                       No messages yet. Say hi! 👋
                     </p>
                   </div>
@@ -544,6 +628,33 @@ const Messages = () => {
                     );
                   })
                 )}
+
+                {/* Typing Indicator */}
+                {typingUser && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 14px',
+                    background: 'var(--white)',
+                    borderRadius: '16px 16px 16px 4px',
+                    width: 'fit-content',
+                    border: '1px solid var(--border)',
+                    fontSize: '13px',
+                    color: 'var(--gray)',
+                    fontStyle: 'italic'
+                  }}>
+                    <span style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      background: '#3B82F6',
+                      animation: 'pulse 1s infinite'
+                    }} />
+                    {typingUser} is typing...
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} />
               </div>
 
@@ -562,7 +673,7 @@ const Messages = () => {
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="Type a message..."
                   disabled={sending}
                   style={{

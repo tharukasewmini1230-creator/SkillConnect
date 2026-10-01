@@ -341,3 +341,15 @@ body, nav, footer, input, textarea, select, button, div, h1, h2, h3, h4, p, span
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Typing Indicator Pulse */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
