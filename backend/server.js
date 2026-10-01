@@ -21,6 +21,7 @@ const sessionRoutes = require('./routes/sessionRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const pointsRoutes = require('./routes/pointsRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const achievementRoutes = require('./routes/achievementRoutes');
 
 // ============================================
 // USE ROUTES
@@ -32,6 +33,7 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/points', pointsRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/achievements', achievementRoutes);
 
 // ============================================
 // BASIC TEST ROUTE
