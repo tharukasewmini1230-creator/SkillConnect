@@ -1,5 +1,6 @@
 const Session = require('../models/Session');
 const { addPointsToUser } = require('./pointsController');
+const { createNotification } = require('./notificationController');
 
 // @desc    Create a new session request
 // @route   POST /api/sessions
@@ -28,6 +29,16 @@ const createSession = async (req, res) => {
     const populatedSession = await Session.findById(session._id)
       .populate('requester', 'name email university')
       .populate('mentor', 'name email university');
+
+    // Notify the mentor about the new session request
+    await createNotification({
+      recipient: mentor,
+      sender: req.user.id,
+      type: 'session_request',
+      title: '📅 New Session Request',
+      message: `${req.user.name} requested a session for "${skill}"`,
+      link: '/sessions'
+    });
 
     res.status(201).json(populatedSession);
   } catch (error) {
@@ -72,6 +83,38 @@ const updateSessionStatus = async (req, res) => {
     }
 
     session.status = status;
+    // Create notification based on status change
+    if (status === 'Accepted') {
+      const notifyUser = session.requester.toString() === req.user.id ? session.mentor : session.requester;
+      await createNotification({
+        recipient: notifyUser,
+        sender: req.user.id,
+        type: 'session_accepted',
+        title: '✅ Session Accepted',
+        message: `Your session for "${session.skill}" has been accepted!`,
+        link: '/sessions'
+      });
+    } else if (status === 'Rejected') {
+      const notifyUser = session.requester.toString() === req.user.id ? session.mentor : session.requester;
+      await createNotification({
+        recipient: notifyUser,
+        sender: req.user.id,
+        type: 'session_rejected',
+        title: '❌ Session Rejected',
+        message: `Your session for "${session.skill}" was rejected`,
+        link: '/sessions'
+      });
+    } else if (status === 'Completed') {
+      const notifyUser = session.requester.toString() === req.user.id ? session.mentor : session.requester;
+      await createNotification({
+        recipient: notifyUser,
+        sender: req.user.id,
+        type: 'session_completed',
+        title: '🎉 Session Completed',
+        message: `Session for "${session.skill}" has been completed!`,
+        link: '/sessions'
+      });
+    }
     await session.save();
 
     // Add points when session is completed

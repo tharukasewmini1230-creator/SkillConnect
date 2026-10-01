@@ -2,6 +2,7 @@ const Review = require('../models/Review');
 const Session = require('../models/Session');
 const User = require('../models/User');
 const { addPointsToUser } = require('./pointsController');
+const { createNotification } = require('./notificationController');
 
 // @desc    Create a review for a completed session
 // @route   POST /api/reviews
@@ -59,6 +60,16 @@ const createReview = async (req, res) => {
     const populatedReview = await Review.findById(review._id)
       .populate('reviewer', 'name email university')
       .populate('reviewee', 'name email university');
+
+    // Notify the reviewee about the new review
+    await createNotification({
+      recipient: reviewee,
+      sender: req.user.id,
+      type: 'new_review',
+      title: `⭐ New ${rating}-Star Review`,
+      message: `${req.user.name} left you a review: "${comment.substring(0, 60)}${comment.length > 60 ? '...' : ''}"`,
+      link: '/profile'
+    });
 
     res.status(201).json(populatedReview);
   } catch (error) {

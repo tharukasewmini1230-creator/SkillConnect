@@ -1,5 +1,6 @@
 const Message = require('../models/Message');
 const User = require('../models/User');
+const { createNotification } = require('./notificationController');
 
 // @desc    Send a new message
 // @route   POST /api/messages
@@ -29,6 +30,16 @@ const sendMessage = async (req, res) => {
     const populatedMessage = await Message.findById(message._id)
       .populate('sender', 'name email university')
       .populate('receiver', 'name email university');
+    
+    // Create notification for receiver
+    await createNotification({
+      recipient: receiverId,
+      sender: req.user.id,
+      type: 'new_message',
+      title: '💬 New Message',
+      message: `${req.user.name}: ${content.substring(0, 50)}${content.length > 50 ? '...' : ''}`,
+      link: '/messages'
+    });
 
     res.status(201).json(populatedMessage);
   } catch (error) {
