@@ -34,7 +34,7 @@ const Sidebar = () => {
       section: 'Progress',
       items: [
         { path: '/leaderboard', label: 'Leaderboard', icon: '🏆' },
-        { path: '/achievements', label: 'Achievements', icon: '🏅', comingSoon: true }
+        { path: '/achievements', label: 'Achievements', icon: '🏅' }
       ]
     },
     {
