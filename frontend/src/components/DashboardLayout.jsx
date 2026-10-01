@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import Sidebar from './Sidebar';
+import NotificationDropdown from './NotificationDropdown';
+import API from '../services/api';
 
 const DashboardLayout = ({ children }) => {
   const { user, logout } = useAuth();
@@ -12,6 +14,7 @@ const DashboardLayout = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const handleLogout = () => {
     logout();
@@ -25,6 +28,25 @@ const DashboardLayout = ({ children }) => {
       setSearchQuery('');
     }
   };
+
+  // Fetch notification count
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      if (!user) return;
+      try {
+        const response = await API.get('/notifications/unread-count');
+        setNotificationCount(response.data.count);
+      } catch (err) {
+        console.error('Error fetching notification count:', err);
+      }
+    };
+
+    fetchNotificationCount();
+
+    // Poll every 30 seconds
+    const interval = setInterval(fetchNotificationCount, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   return (
     <div style={{
@@ -91,7 +113,7 @@ const DashboardLayout = ({ children }) => {
           {/* Right Side */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
 
-                        {/* Points Badge */}
+            {/* Points Badge */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -142,73 +164,47 @@ const DashboardLayout = ({ children }) => {
                   width: '42px',
                   height: '42px',
                   borderRadius: '50%',
-                  background: 'var(--light-gray)',
-                  color: 'var(--gray)',
+                  background: showNotifications ? 'var(--primary-light)' : 'var(--light-gray)',
+                  color: showNotifications ? '#3B82F6' : 'var(--gray)',
                   fontSize: '17px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   position: 'relative',
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
                 }}
               >
                 🔔
-                <span style={{
-                  position: 'absolute',
-                  top: '0',
-                  right: '0',
-                  background: '#EF4444',
-                  color: '#fff',
-                  fontSize: '10px',
-                  fontWeight: '700',
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid var(--white)'
-                }}>
-                  3
-                </span>
+                {notificationCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '0',
+                    right: '0',
+                    background: '#EF4444',
+                    color: '#fff',
+                    fontSize: '10px',
+                    fontWeight: '700',
+                    minWidth: '20px',
+                    height: '20px',
+                    padding: '0 4px',
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid var(--white)'
+                  }}>
+                    {notificationCount > 9 ? '9+' : notificationCount}
+                  </span>
+                )}
               </button>
 
+              {/* Notification Dropdown */}
               {showNotifications && (
-                <div style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 10px)',
-                  right: 0,
-                  background: 'var(--white)',
-                  borderRadius: '14px',
-                  boxShadow: '0 10px 30px rgba(15, 23, 42, 0.15)',
-                  border: '1px solid var(--border)',
-                  minWidth: '320px',
-                  padding: '18px',
-                  zIndex: 1000
-                }}>
-                  <h4 style={{ fontSize: '15px', fontWeight: '700', color: 'var(--dark)', marginBottom: '14px' }}>
-                    🔔 Notifications
-                  </h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ padding: '12px', borderRadius: '10px', background: 'var(--light-gray)' }}>
-                      <p style={{ fontSize: '13px', color: 'var(--dark)', fontWeight: '600' }}>
-                        🎉 Welcome to SkillConnect!
-                      </p>
-                      <p style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '3px' }}>
-                        Just now
-                      </p>
-                    </div>
-                    <div style={{ padding: '12px', borderRadius: '10px' }}>
-                      <p style={{ fontSize: '13px', color: 'var(--dark)', fontWeight: '600' }}>
-                        ✨ Add your skills to find matches
-                      </p>
-                      <p style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '3px' }}>
-                        Yesterday
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <NotificationDropdown
+                  onClose={() => setShowNotifications(false)}
+                />
               )}
             </div>
 
@@ -280,19 +276,57 @@ const DashboardLayout = ({ children }) => {
                     <p style={{ fontSize: '12px', color: 'var(--gray)' }}>{user?.email}</p>
                   </div>
 
-                  <Link to="/profile" onClick={() => setShowUserMenu(false)} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '10px 12px', borderRadius: '8px', fontSize: '14px',
-                    color: 'var(--dark)', fontWeight: '500', textDecoration: 'none'
-                  }}>
+                  <Link
+                    to="/profile"
+                    onClick={() => setShowUserMenu(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--dark)',
+                      fontWeight: '500',
+                      textDecoration: 'none'
+                    }}
+                  >
                     👤 My Profile
                   </Link>
 
-                  <Link to="/how-it-works" onClick={() => setShowUserMenu(false)} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '10px 12px', borderRadius: '8px', fontSize: '14px',
-                    color: 'var(--dark)', fontWeight: '500', textDecoration: 'none'
-                  }}>
+                  <Link
+                    to="/achievements"
+                    onClick={() => setShowUserMenu(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--dark)',
+                      fontWeight: '500',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    🏅 Achievements
+                  </Link>
+
+                  <Link
+                    to="/how-it-works"
+                    onClick={() => setShowUserMenu(false)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--dark)',
+                      fontWeight: '500',
+                      textDecoration: 'none'
+                    }}
+                  >
                     📖 How It Works
                   </Link>
 
@@ -300,10 +334,19 @@ const DashboardLayout = ({ children }) => {
                     <button
                       onClick={handleLogout}
                       style={{
-                        width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '10px 12px', borderRadius: '8px', fontSize: '14px',
-                        color: '#EF4444', fontWeight: '600', background: 'transparent',
-                        border: 'none', cursor: 'pointer', textAlign: 'left'
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: '#EF4444',
+                        fontWeight: '600',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left'
                       }}
                     >
                       🚪 Logout
@@ -312,6 +355,7 @@ const DashboardLayout = ({ children }) => {
                 </div>
               )}
             </div>
+
           </div>
         </header>
 
