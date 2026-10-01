@@ -354,8 +354,8 @@ const Matches = () => {
                 >
                   📅 Request Session
                 </button>
-                <button
-                  onClick={() => setToast({ message: 'Messaging feature coming soon!', type: 'info' })}
+                  <button
+                  onClick={() => navigate('/messages', { state: { partner: match.user } })}
                   style={{
                     flex: 1,
                     minWidth: '200px',
