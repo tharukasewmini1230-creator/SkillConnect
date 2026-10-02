@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 
 // Helper function to generate JWT token
 const generateToken = (id) => {
@@ -8,6 +9,20 @@ const generateToken = (id) => {
     expiresIn: '30d'
   });
 };
+
+// Helper to format user response
+const formatUserResponse = (user) => ({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  university: user.university,
+  skillsOffered: user.skillsOffered,
+  skillsWanted: user.skillsWanted,
+  points: user.points,
+  avatar: user.avatar,
+  authProvider: user.authProvider,
+  token: generateToken(user._id)
+});
 
 // @desc    Register new user
 // @route   POST /api/auth/register
@@ -30,20 +45,12 @@ const registerUser = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      authProvider: 'local'
     });
 
     if (user) {
-      res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        university: user.university,
-        skillsOffered: user.skillsOffered,
-        skillsWanted: user.skillsWanted,
-        points: user.points,
-        token: generateToken(user._id)
-      });
+      res.status(201).json(formatUserResponse(user));
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
@@ -60,22 +67,79 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        university: user.university,
-        skillsOffered: user.skillsOffered,
-        skillsWanted: user.skillsWanted,
-        points: user.points,
-        token: generateToken(user._id)
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // If user signed up with Google, they don't have a password
+    if (user.authProvider === 'google') {
+      return res.status(400).json({
+        message: 'This account was created with Google. Please use "Continue with Google" to login.'
       });
+    }
+
+    if (await bcrypt.compare(password, user.password)) {
+      res.json(formatUserResponse(user));
     } else {
       res.status(400).json({ message: 'Invalid credentials' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Google OAuth Login / Signup
+// @route   POST /api/auth/google
+const googleLogin = async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({ message: 'Google credential is required' });
+    }
+
+    // Verify the Google ID token
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture, email_verified } = payload;
+
+    if (!email_verified) {
+      return res.status(400).json({ message: 'Google email is not verified' });
+    }
+
+    // Check if user exists (by email)
+    let user = await User.findOne({ email });
+
+    if (user) {
+      // User exists — link Google ID if not linked
+      if (!user.googleId) {
+        user.googleId = googleId;
+        // If existing local user, keep their local auth but store Google ID
+        // (Don't override authProvider so they can still use password)
+        if (!user.avatar) user.avatar = picture || '';
+        await user.save();
+      }
+    } else {
+      // New user — create account with Google
+      user = await User.create({
+        name: name || email.split('@')[0],
+        email,
+        googleId,
+        authProvider: 'google',
+        avatar: picture || '',
+        university: ''
+      });
+    }
+
+    res.status(200).json(formatUserResponse(user));
+  } catch (error) {
+    console.error('Google login error:', error);
+    res.status(401).json({ message: 'Google authentication failed. Please try again.' });
   }
 };
 
@@ -115,7 +179,9 @@ const updateProfile = async (req, res) => {
       university: updatedUser.university,
       skillsOffered: updatedUser.skillsOffered,
       skillsWanted: updatedUser.skillsWanted,
-      points: updatedUser.points
+      points: updatedUser.points,
+      avatar: updatedUser.avatar,
+      authProvider: updatedUser.authProvider
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -142,6 +208,12 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    if (user.authProvider === 'google') {
+      return res.status(400).json({
+        message: 'Google accounts cannot change passwords here. Please manage your password through Google.'
+      });
+    }
+
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
@@ -163,6 +235,7 @@ const changePassword = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
+  googleLogin,
   getMe,
   updateProfile,
   changePassword
