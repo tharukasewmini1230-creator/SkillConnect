@@ -33,9 +33,24 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // Google Login — accepts the credential (ID token) from Google
-  const googleLogin = async (credential) => {
-    const response = await API.post('/auth/google', { credential });
+  // Google Login — accepts either credential (ID token) OR access_token
+  const googleLogin = async (tokenData) => {
+    // tokenData can be:
+    //   - a string (access_token or credential)  → old call signature
+    //   - an object with { credential } or { access_token }
+    let payload;
+    if (typeof tokenData === 'string') {
+      // Detect if it looks like a JWT (contains 2 dots) → credential, else access_token
+      if (tokenData.split('.').length === 3) {
+        payload = { credential: tokenData };
+      } else {
+        payload = { access_token: tokenData };
+      }
+    } else {
+      payload = tokenData;
+    }
+
+    const response = await API.post('/auth/google', payload);
     const data = response.data;
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data));

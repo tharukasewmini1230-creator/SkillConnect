@@ -72,7 +72,7 @@ const loginUser = async (req, res) => {
     }
 
     // If user signed up with Google, they don't have a password
-    if (user.authProvider === 'google') {
+    if (user.authProvider === 'google' && !user.password) {
       return res.status(400).json({
         message: 'This account was created with Google. Please use "Continue with Google" to login.'
       });
@@ -90,42 +90,82 @@ const loginUser = async (req, res) => {
 
 // @desc    Google OAuth Login / Signup
 // @route   POST /api/auth/google
+// Accepts BOTH: { credential: "<ID_TOKEN>" } OR { access_token: "<ACCESS_TOKEN>" }
 const googleLogin = async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential, access_token } = req.body;
 
-    if (!credential) {
-      return res.status(400).json({ message: 'Google credential is required' });
+    if (!credential && !access_token) {
+      return res.status(400).json({ message: 'Google credential or access token is required' });
     }
 
-    // Verify the Google ID token
+    let email, name, picture, googleId, emailVerified;
+
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID
-    });
 
-    const payload = ticket.getPayload();
-    const { sub: googleId, email, name, picture, email_verified } = payload;
+    if (credential) {
+      // Path 1: ID token (from GoogleLogin component)
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+      const payload = ticket.getPayload();
+      googleId = payload.sub;
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+      emailVerified = payload.email_verified;
+    } else {
+      // Path 2: Access token (from useGoogleLogin hook)
+      // Fetch user info from Google's userinfo endpoint
+      const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${access_token}` }
+      });
 
-    if (!email_verified) {
+      if (!userInfoResponse.ok) {
+        return res.status(401).json({ message: 'Invalid Google access token' });
+      }
+
+      const userInfo = await userInfoResponse.json();
+      googleId = userInfo.sub;
+      email = userInfo.email;
+      name = userInfo.name;
+      picture = userInfo.picture;
+      emailVerified = userInfo.email_verified;
+    }
+
+    if (!email) {
+      return res.status(400).json({ message: 'Could not get email from Google' });
+    }
+
+    if (emailVerified === false) {
       return res.status(400).json({ message: 'Google email is not verified' });
     }
 
-    // Check if user exists (by email)
+    // Check if user exists by email
     let user = await User.findOne({ email });
 
     if (user) {
-      // User exists — link Google ID if not linked
+      // Existing user — link Google ID if not linked
+      let needsSave = false;
+
       if (!user.googleId) {
         user.googleId = googleId;
-        // If existing local user, keep their local auth but store Google ID
-        // (Don't override authProvider so they can still use password)
-        if (!user.avatar) user.avatar = picture || '';
-        await user.save();
+        needsSave = true;
       }
+      if (!user.avatar && picture) {
+        user.avatar = picture;
+        needsSave = true;
+      }
+      // If user was created locally but has no password (shouldn't happen but safety)
+      if (user.authProvider === 'local' && !user.password) {
+        user.authProvider = 'google';
+        needsSave = true;
+      }
+
+      if (needsSave) await user.save();
     } else {
-      // New user — create account with Google
+      // New user — create account
       user = await User.create({
         name: name || email.split('@')[0],
         email,
@@ -208,7 +248,7 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    if (user.authProvider === 'google') {
+    if (user.authProvider === 'google' && !user.password) {
       return res.status(400).json({
         message: 'Google accounts cannot change passwords here. Please manage your password through Google.'
       });
