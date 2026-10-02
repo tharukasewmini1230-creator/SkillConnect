@@ -13,7 +13,6 @@ const Matches = () => {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
-  // Read filter from URL
   const skillFilter = searchParams.get('skill') || 'All';
 
   useEffect(() => {
@@ -37,27 +36,29 @@ const Matches = () => {
     return '#6B7280';
   };
 
-  // Filter matches by skill name
   const filteredMatches = matches.filter((match) => {
     if (skillFilter === 'All') return true;
-
     const filterLower = skillFilter.toLowerCase();
-
-    const hasMatchingSkill =
+    return (
       match.theyCanTeachMe?.some((skill) =>
         skill.toLowerCase().includes(filterLower)
       ) ||
       match.iCanTeachThem?.some((skill) =>
         skill.toLowerCase().includes(filterLower)
-      );
-
-    return hasMatchingSkill;
+      )
+    );
   });
 
-  // Clear filter handler
   const handleClearFilter = () => {
     setSearchParams({});
   };
+
+  const totalMatches = matches.length;
+  const perfectMatches = matches.filter((m) => m.isPerfectMatch).length;
+  const averageScore =
+    matches.length > 0
+      ? Math.round(matches.reduce((sum, m) => sum + m.matchScore, 0) / matches.length)
+      : 0;
 
   return (
     <div style={{ paddingBottom: '60px' }}>
@@ -65,32 +66,26 @@ const Matches = () => {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-      {/* ============================================
-          HERO SECTION - FULL WIDTH
-          ============================================ */}
+      {/* HERO SECTION - FULL WIDTH */}
       <div style={{
         background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
-        padding: '60px 20px',
+        padding: '60px 20px 30px',
         position: 'relative',
-        overflow: 'hidden',
-        borderBottom: '1px solid var(--border)'
+        overflow: 'hidden'
       }}>
-        {/* Decorative Background Circles */}
         <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.08)' }} />
         <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(168, 85, 247, 0.08)' }} />
 
-        <div className="container" style={{
+        <div style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.9fr)',
           gap: '40px',
           alignItems: 'center',
           position: 'relative',
           zIndex: 1,
-          maxWidth: '1100px',
+          maxWidth: '1200px',
           margin: '0 auto'
         }}>
-
-          {/* Left Side - Text */}
           <div>
             <div style={{
               display: 'inline-flex',
@@ -135,7 +130,6 @@ const Matches = () => {
             </p>
           </div>
 
-          {/* Right Side - Illustration + Decorative Text */}
           <div style={{
             display: 'flex',
             justifyContent: 'center',
@@ -153,7 +147,6 @@ const Matches = () => {
               }}
             />
 
-            {/* "Learn Share Grow" Decorative Text */}
             <div style={{
               position: 'absolute',
               top: '5%',
@@ -164,445 +157,616 @@ const Matches = () => {
               gap: '2px',
               pointerEvents: 'none'
             }}>
-              <span style={{
-                fontSize: '22px',
-                fontWeight: '800',
-                fontStyle: 'italic',
-                background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontFamily: 'Georgia, serif',
-                transform: 'rotate(-12deg)',
-                lineHeight: 1,
-                letterSpacing: '-0.5px'
-              }}>
-                Learn
-              </span>
-              <span style={{
-                fontSize: '22px',
-                fontWeight: '800',
-                fontStyle: 'italic',
-                background: 'linear-gradient(135deg, #A855F7 0%, #6366F1 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontFamily: 'Georgia, serif',
-                transform: 'rotate(-12deg)',
-                lineHeight: 1,
-                letterSpacing: '-0.5px',
-                marginLeft: '10px'
-              }}>
-                Share
-              </span>
-              <span style={{
-                fontSize: '22px',
-                fontWeight: '800',
-                fontStyle: 'italic',
-                background: 'linear-gradient(135deg, #6366F1 0%, #3B82F6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontFamily: 'Georgia, serif',
-                transform: 'rotate(-12deg)',
-                lineHeight: 1,
-                letterSpacing: '-0.5px'
-              }}>
-                Grow
-              </span>
+              <span style={{ fontSize: '22px', fontWeight: '800', fontStyle: 'italic', background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontFamily: 'Georgia, serif', transform: 'rotate(-12deg)', lineHeight: 1 }}>Learn</span>
+              <span style={{ fontSize: '22px', fontWeight: '800', fontStyle: 'italic', background: 'linear-gradient(135deg, #A855F7 0%, #6366F1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontFamily: 'Georgia, serif', transform: 'rotate(-12deg)', lineHeight: 1, marginLeft: '10px' }}>Share</span>
+              <span style={{ fontSize: '22px', fontWeight: '800', fontStyle: 'italic', background: 'linear-gradient(135deg, #6366F1 0%, #3B82F6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', fontFamily: 'Georgia, serif', transform: 'rotate(-12deg)', lineHeight: 1 }}>Grow</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ============================================
-          MAIN CONTENT - CONTAINER
-          ============================================ */}
-      <div className="container" style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto' }}>
+      {/* MAIN CONTENT CONTAINER */}
+      <div style={{ padding: '20px 30px 0' }}>
 
-        {/* Filter Info Banner */}
-        {skillFilter !== 'All' && (
-          <div style={{
-            background: 'var(--primary-light)',
-            borderRadius: '12px',
-            padding: '14px 20px',
-            marginBottom: '20px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '10px',
-            border: '1px solid #BFDBFE'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '18px' }}>🔍</span>
-              <span style={{ fontSize: '14px', color: '#1E40AF', fontWeight: '600' }}>
-                Showing matches for: <strong>{skillFilter}</strong>
-              </span>
-            </div>
-            <button
-              onClick={handleClearFilter}
-              style={{
-                padding: '6px 16px',
-                background: '#fff',
-                color: '#3B82F6',
-                borderRadius: '20px',
-                fontSize: '13px',
-                fontWeight: '700',
-                border: '1px solid #3B82F6',
-                cursor: 'pointer'
-              }}
-            >
-              ✕ Clear Filter
-            </button>
-          </div>
-        )}
-
-        {/* Your Skills Summary */}
+        {/* GRID LAYOUT: Left (Skills + Matches) | Right (Filter Sidebar) */}
         <div style={{
-          background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-          color: '#fff',
-          padding: '25px',
-          borderRadius: '16px',
-          marginBottom: '30px',
-          boxShadow: '0 10px 25px rgba(59, 130, 246, 0.2)'
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
+          gap: '10px',
+          alignItems: 'flex-start'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                🎓 Skills I Can Teach
-              </h3>
-              {user?.skillsOffered?.length > 0 ? (
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {user.skillsOffered.map((skill, i) => (
-                    <span key={i} style={{
-                      background: 'rgba(255,255,255,0.2)',
-                      padding: '5px 12px',
-                      borderRadius: '20px',
-                      fontSize: '13px',
-                      fontWeight: '600'
-                    }}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ opacity: 0.8, fontSize: '14px' }}>
-                  No skills added yet.{' '}
-                  <Link to="/profile" style={{ color: '#FDE68A', fontWeight: '600', textDecoration: 'underline' }}>
-                    Add now →
-                  </Link>
-                </p>
-              )}
-            </div>
 
-            <div style={{ flex: 1, minWidth: '200px' }}>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                📖 Skills I Want to Learn
-              </h3>
-              {user?.skillsWanted?.length > 0 ? (
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {user.skillsWanted.map((skill, i) => (
-                    <span key={i} style={{
-                      background: 'rgba(255,255,255,0.2)',
-                      padding: '5px 12px',
-                      borderRadius: '20px',
-                      fontSize: '13px',
-                      fontWeight: '600'
-                    }}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ opacity: 0.8, fontSize: '14px' }}>
-                  No skills added yet.{' '}
-                  <Link to="/profile" style={{ color: '#FDE68A', fontWeight: '600', textDecoration: 'underline' }}>
-                    Add now →
-                  </Link>
-                </p>
-              )}
-            </div>
-          </div>
+          {/* LEFT COLUMN */}
+          <div>
 
-          <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-            <Link to="/profile">
-              <button style={{
-                padding: '10px 24px',
-                background: '#fff',
-                color: '#3B82F6',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: '700',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                border: 'none',
-                cursor: 'pointer'
-              }}>
-                ✏️ Edit My Skills
-              </button>
-            </Link>
-          </div>
-        </div>
+            {/* YOUR SKILLS BANNER */}
+            <div style={{
+              background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 60%, #8B5CF6 100%)',
+              color: '#fff',
+              padding: '24px 28px',
+              borderRadius: '20px',
+              marginBottom: '10px',
+              boxShadow: '0 12px 30px rgba(59, 130, 246, 0.25)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
 
-        {/* Matches List */}
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div className="spinner"></div>
-            <p style={{ color: 'var(--gray)', marginTop: '15px' }}>Finding your matches...</p>
-          </div>
-        ) : filteredMatches.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '80px 20px',
-            background: 'var(--white)',
-            borderRadius: '16px',
-            boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
-            border: '1px solid var(--border)'
-          }}>
-            <div style={{ fontSize: '64px', marginBottom: '15px' }}>
-              {skillFilter !== 'All' ? '🔍' : '🤝'}
-            </div>
-            <p style={{ color: 'var(--dark)', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
-              {skillFilter !== 'All'
-                ? `No matches found for "${skillFilter}"`
-                : 'No matches found yet'}
-            </p>
-            <p style={{ color: 'var(--gray)', fontSize: '15px', marginBottom: '25px', maxWidth: '400px', margin: '0 auto 25px' }}>
-              {skillFilter !== 'All'
-                ? 'Try a different skill or clear the filter.'
-                : user?.skillsOffered?.length === 0 || user?.skillsWanted?.length === 0
-                  ? 'Please add your skills (both offered and wanted) to find matches.'
-                  : 'No students match with your skills yet. Check back later!'}
-            </p>
-            {skillFilter !== 'All' ? (
-              <button
-                onClick={handleClearFilter}
-                style={{
-                  padding: '14px 32px',
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-                  color: '#fff',
-                  borderRadius: '10px',
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                Clear Filter
-              </button>
-            ) : (
-              <Link to="/profile">
-                <button style={{
-                  padding: '14px 32px',
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-                  color: '#fff',
-                  borderRadius: '10px',
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}>
-                  Update My Skills
-                </button>
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {filteredMatches.map((match) => (
-              <div
-                key={match.user._id}
-                className="card-hover"
-                style={{
-                  background: 'var(--white)',
-                  padding: '25px',
-                  borderRadius: '16px',
-                  boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
-                  border: '1px solid var(--border)',
-                  borderLeft: match.isPerfectMatch
-                    ? '4px solid #10B981'
-                    : '4px solid #F59E0B'
-                }}
-              >
-                {/* Match Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px', gap: '15px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{
-                      width: '60px',
-                      height: '60px',
-                      borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '12px',
+                      background: 'rgba(255,255,255,0.2)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: '#fff',
-                      fontWeight: '700',
-                      fontSize: '24px',
+                      fontSize: '22px',
                       flexShrink: 0
                     }}>
-                      {match.user.name?.charAt(0).toUpperCase()}
+                      🎯
                     </div>
                     <div>
-                      <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '3px' }}>
-                        {match.user.name}
+                      <h3 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.3px', marginBottom: '2px' }}>
+                        Your Skills
                       </h3>
-                      <p style={{ fontSize: '13px', color: 'var(--gray)' }}>
-                        {match.user.university || 'University not specified'}
+                      <p style={{ fontSize: '12px', opacity: 0.9 }}>
+                        These are the skills you can teach and want to learn.
                       </p>
                     </div>
                   </div>
 
-                  <div style={{ textAlign: 'right' }}>
+                  <Link to="/profile" style={{ textDecoration: 'none' }}>
+                    <button style={{
+                      padding: '9px 18px',
+                      background: '#fff',
+                      color: '#3B82F6',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      ✏️ Edit Skills
+                    </button>
+                  </Link>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div>
                     <div style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '8px',
-                      padding: '8px 16px',
+                      background: 'rgba(16, 185, 129, 0.25)',
+                      padding: '5px 12px',
                       borderRadius: '20px',
-                      background: match.isPerfectMatch ? '#D1FAE5' : '#FEF3C7',
-                      color: match.isPerfectMatch ? '#065F46' : '#92400E',
-                      fontWeight: '700',
-                      fontSize: '14px'
-                    }}>
-                      {match.isPerfectMatch ? '🎯 Perfect Match' : '🔸 Partial Match'}
-                    </div>
-                    <p style={{
-                      marginTop: '8px',
-                      fontSize: '24px',
-                      fontWeight: '800',
-                      color: getScoreColor(match.matchScore)
-                    }}>
-                      {match.matchScore}%
-                    </p>
-                  </div>
-                </div>
-
-                {/* Match Details */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr auto 1fr',
-                  gap: '20px',
-                  alignItems: 'center',
-                  padding: '20px',
-                  background: 'var(--light-gray)',
-                  borderRadius: '12px',
-                  marginBottom: '20px'
-                }}>
-                  <div>
-                    <p style={{
                       fontSize: '12px',
                       fontWeight: '700',
-                      color: '#10B981',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      marginBottom: '10px'
+                      marginBottom: '10px',
+                      border: '1px solid rgba(255,255,255,0.2)'
                     }}>
-                      ⬇️ They Can Teach You
-                    </p>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {match.theyCanTeachMe.map((skill, i) => (
-                        <span key={i} style={{
-                          background: '#D1FAE5',
-                          color: '#065F46',
-                          padding: '4px 10px',
-                          borderRadius: '16px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          {skill}
-                        </span>
-                      ))}
+                      <span>🌱</span>
+                      <span>Can Teach</span>
+                      <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: '10px', fontSize: '11px' }}>
+                        {user?.skillsOffered?.length || 0}
+                      </span>
                     </div>
+                    {user?.skillsOffered?.length > 0 ? (
+                      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                        {user.skillsOffered.slice(0, 4).map((skill, i) => (
+                          <span key={i} style={{ background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '14px', fontSize: '11px', fontWeight: '600' }}>
+                            {skill}
+                          </span>
+                        ))}
+                        {user.skillsOffered.length > 4 && (
+                          <span style={{ background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '14px', fontSize: '11px', fontWeight: '600' }}>
+                            +{user.skillsOffered.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <p style={{ opacity: 0.85, fontSize: '12px' }}>
+                        <Link to="/profile" style={{ color: '#FDE68A', fontWeight: '700', textDecoration: 'underline' }}>
+                          Add skills →
+                        </Link>
+                      </p>
+                    )}
                   </div>
 
-                  <div style={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#fff',
-                    fontSize: '22px',
+                  <div>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'rgba(168, 85, 247, 0.3)',
+                      padding: '5px 12px',
+                      borderRadius: '20px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      marginBottom: '10px',
+                      border: '1px solid rgba(255,255,255,0.2)'
+                    }}>
+                      <span>📖</span>
+                      <span>Want to Learn</span>
+                      <span style={{ background: 'rgba(255,255,255,0.25)', padding: '1px 8px', borderRadius: '10px', fontSize: '11px' }}>
+                        {user?.skillsWanted?.length || 0}
+                      </span>
+                    </div>
+                    {user?.skillsWanted?.length > 0 ? (
+                      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                        {user.skillsWanted.slice(0, 4).map((skill, i) => (
+                          <span key={i} style={{ background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '14px', fontSize: '11px', fontWeight: '600' }}>
+                            {skill}
+                          </span>
+                        ))}
+                        {user.skillsWanted.length > 4 && (
+                          <span style={{ background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: '14px', fontSize: '11px', fontWeight: '600' }}>
+                            +{user.skillsWanted.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <p style={{ opacity: 0.85, fontSize: '12px' }}>
+                        <Link to="/profile" style={{ color: '#FDE68A', fontWeight: '700', textDecoration: 'underline' }}>
+                          Add skills →
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {skillFilter !== 'All' && (
+              <div style={{
+                background: 'var(--primary-light)',
+                borderRadius: '12px',
+                padding: '14px 20px',
+                marginBottom: '20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '10px',
+                border: '1px solid #BFDBFE'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '18px' }}>🔍</span>
+                  <span style={{ fontSize: '14px', color: '#1E40AF', fontWeight: '600' }}>
+                    Showing matches for: <strong>{skillFilter}</strong>
+                  </span>
+                </div>
+                <button
+                  onClick={handleClearFilter}
+                  style={{
+                    padding: '6px 16px',
+                    background: '#fff',
+                    color: '#3B82F6',
+                    borderRadius: '20px',
+                    fontSize: '13px',
                     fontWeight: '700',
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                  }}>
-                    ⇄
-                  </div>
+                    border: '1px solid #3B82F6',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ✕ Clear Filter
+                </button>
+              </div>
+            )}
 
-                  <div>
-                    <p style={{
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      color: '#3B82F6',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      marginBottom: '10px'
-                    }}>
-                      ⬆️ You Can Teach Them
-                    </p>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {match.iCanTeachThem.map((skill, i) => (
-                        <span key={i} style={{
-                          background: '#DBEAFE',
-                          color: '#1E40AF',
-                          padding: '4px 10px',
-                          borderRadius: '16px',
-                          fontSize: '12px',
-                          fontWeight: '600'
-                        }}>
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div className="spinner"></div>
+                <p style={{ color: 'var(--gray)', marginTop: '15px' }}>Finding your matches...</p>
+              </div>
+            ) : filteredMatches.length === 0 ? (
+              <div style={{
+                textAlign: 'center',
+                padding: '60px 20px',
+                background: 'var(--white)',
+                borderRadius: '16px',
+                boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                border: '1px solid var(--border)'
+              }}>
+                <div style={{ fontSize: '56px', marginBottom: '15px' }}>
+                  {skillFilter !== 'All' ? '🔍' : '🤝'}
                 </div>
-
-                {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <p style={{ color: 'var(--dark)', fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>
+                  {skillFilter !== 'All'
+                    ? `No matches found for "${skillFilter}"`
+                    : 'No matches found yet'}
+                </p>
+                <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '20px' }}>
+                  {skillFilter !== 'All'
+                    ? 'Try a different skill or clear the filter.'
+                    : 'Add your skills to find matches!'}
+                </p>
+                {skillFilter !== 'All' ? (
                   <button
-                    onClick={() => navigate(`/book/${match.user._id}`)}
+                    onClick={handleClearFilter}
                     style={{
-                      flex: 1,
-                      minWidth: '200px',
-                      padding: '12px 20px',
+                      padding: '12px 28px',
                       background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
                       color: '#fff',
                       borderRadius: '10px',
                       fontSize: '14px',
                       fontWeight: '600',
-                      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)',
                       border: 'none',
                       cursor: 'pointer'
                     }}
                   >
-                    📅 Request Session
+                    Clear Filter
                   </button>
-                  <button
-                    onClick={() => navigate('/messages', { state: { partner: match.user } })}
-                    style={{
-                      flex: 1,
-                      minWidth: '200px',
-                      padding: '12px 20px',
-                      background: 'var(--light-gray)',
-                      color: 'var(--dark)',
+                ) : (
+                  <Link to="/profile">
+                    <button style={{
+                      padding: '12px 28px',
+                      background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                      color: '#fff',
                       borderRadius: '10px',
                       fontSize: '14px',
                       fontWeight: '600',
                       border: 'none',
                       cursor: 'pointer'
+                    }}>
+                      Update My Skills
+                    </button>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                {filteredMatches.map((match) => (
+                  <div
+                    key={match.user._id}
+                    className="card-hover"
+                    style={{
+                      background: 'var(--white)',
+                      padding: '22px',
+                      borderRadius: '16px',
+                      boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                      border: '1px solid var(--border)',
+                      borderLeft: match.isPerfectMatch ? '4px solid #10B981' : '4px solid #F59E0B'
                     }}
                   >
-                    💬 Send Message
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '52px',
+                          height: '52px',
+                          borderRadius: '50%',
+                          background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontWeight: '700',
+                          fontSize: '20px',
+                          flexShrink: 0
+                        }}>
+                          {match.user.name?.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark)', marginBottom: '2px' }}>
+                            {match.user.name}
+                          </h3>
+                          <p style={{ fontSize: '12px', color: 'var(--gray)' }}>
+                            {match.user.university || 'University not specified'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '6px 14px',
+                          borderRadius: '20px',
+                          background: match.isPerfectMatch ? '#D1FAE5' : '#FEF3C7',
+                          color: match.isPerfectMatch ? '#065F46' : '#92400E',
+                          fontWeight: '700',
+                          fontSize: '12px'
+                        }}>
+                          {match.isPerfectMatch ? '🎯 Perfect' : '🔸 Partial'}
+                        </div>
+                        <p style={{
+                          marginTop: '6px',
+                          fontSize: '22px',
+                          fontWeight: '800',
+                          color: getScoreColor(match.matchScore)
+                        }}>
+                          {match.matchScore}%
+                        </p>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr auto 1fr',
+                      gap: '12px',
+                      alignItems: 'center',
+                      padding: '14px',
+                      background: 'var(--light-gray)',
+                      borderRadius: '10px',
+                      marginBottom: '16px'
+                    }}>
+                      <div>
+                        <p style={{ fontSize: '10px', fontWeight: '700', color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                          ⬇️ They Teach You
+                        </p>
+                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                          {match.theyCanTeachMe.map((skill, i) => (
+                            <span key={i} style={{ background: '#D1FAE5', color: '#065F46', padding: '3px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600' }}>
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '18px',
+                        fontWeight: '700'
+                      }}>
+                        ⇄
+                      </div>
+
+                      <div>
+                        <p style={{ fontSize: '10px', fontWeight: '700', color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                          ⬆️ You Teach Them
+                        </p>
+                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                          {match.iCanTeachThem.map((skill, i) => (
+                            <span key={i} style={{ background: '#DBEAFE', color: '#1E40AF', padding: '3px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600' }}>
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => navigate(`/book/${match.user._id}`)}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                          color: '#fff',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        📅 Request Session
+                      </button>
+                      <button
+                        onClick={() => navigate('/messages', { state: { partner: match.user } })}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          background: 'var(--light-gray)',
+                          color: 'var(--dark)',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        💬 Message
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT COLUMN - FILTER SIDEBAR */}
+          <div style={{
+            position: 'sticky',
+            top: '90px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px'
+          }}>
+
+            <div style={{
+              background: 'var(--white)',
+              borderRadius: '16px',
+              padding: '20px',
+              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+              border: '1px solid var(--border)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--dark)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  🔽 Filter Matches
+                </h3>
+                {skillFilter !== 'All' && (
+                  <button
+                    onClick={handleClearFilter}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#3B82F6',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      padding: 0
+                    }}
+                  >
+                    Clear All
                   </button>
+                )}
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
+                  📂 Category
+                </label>
+                <select style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--light-gray)',
+                  color: 'var(--dark)',
+                  fontSize: '13px',
+                  cursor: 'pointer'
+                }}>
+                  <option>All Categories</option>
+                  <option>Programming</option>
+                  <option>Design</option>
+                  <option>Languages</option>
+                  <option>Music</option>
+                  <option>Academic</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
+                  📊 Skill Level
+                </label>
+                <select style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--light-gray)',
+                  color: 'var(--dark)',
+                  fontSize: '13px',
+                  cursor: 'pointer'
+                }}>
+                  <option>Any Level</option>
+                  <option>Beginner</option>
+                  <option>Intermediate</option>
+                  <option>Advanced</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
+                  🎯 Match Percentage
+                </label>
+                <input
+                  type="range"
+                  min="50"
+                  max="100"
+                  defaultValue="50"
+                  style={{ width: '100%', accentColor: '#3B82F6' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--gray)', marginTop: '4px' }}>
+                  <span>50%</span>
+                  <span>100%</span>
                 </div>
               </div>
-            ))}
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
+                  📅 Availability
+                </label>
+                <select style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border)',
+                  background: 'var(--light-gray)',
+                  color: 'var(--dark)',
+                  fontSize: '13px',
+                  cursor: 'pointer'
+                }}>
+                  <option>Any Time</option>
+                  <option>Weekdays</option>
+                  <option>Weekends</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
+                  🏷️ Type
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--dark)', cursor: 'pointer' }}>
+                    <input type="checkbox" defaultChecked style={{ accentColor: '#3B82F6' }} />
+                    Offers (Teaches)
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--dark)', cursor: 'pointer' }}>
+                    <input type="checkbox" defaultChecked style={{ accentColor: '#3B82F6' }} />
+                    Requests (Wants to learn)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div style={{
+              background: 'var(--white)',
+              borderRadius: '16px',
+              padding: '20px',
+              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+              border: '1px solid var(--border)'
+            }}>
+              <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--dark)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                🎯 Your Match Summary
+              </h3>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#3B82F6' }}>{totalMatches}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Total Matches</div>
+                </div>
+                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#10B981' }}>{perfectMatches}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Perfect</div>
+                </div>
+                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#A855F7' }}>{averageScore}%</div>
+                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Avg Score</div>
+                </div>
+                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#F59E0B' }}>
+                    {(user?.skillsOffered?.length || 0) + (user?.skillsWanted?.length || 0)}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Your Skills</div>
+                </div>
+              </div>
+
+              <div style={{
+                marginTop: '16px',
+                padding: '12px',
+                background: 'var(--primary-light)',
+                borderRadius: '10px',
+                fontSize: '12px',
+                color: '#1E40AF',
+                lineHeight: '1.5',
+                display: 'flex',
+                gap: '8px'
+              }}>
+                <span>💡</span>
+                <span>The more skills you add, the better your matches will be!</span>
+              </div>
+            </div>
+
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
