@@ -183,6 +183,8 @@ body[data-theme='dark'] {
   --warning-light: #78350F;
   --danger-light: #7F1D1D;
 
+  --hero-bg: linear-gradient(135deg, #1E293B 0%, #1E1B4B 50%, #2E1065 100%);
+
   background: var(--background);
   color: var(--dark);
 }

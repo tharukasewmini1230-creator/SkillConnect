@@ -42,7 +42,7 @@ const About = () => {
 
       {/* HERO SECTION */}
       <section style={{
-        background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%)',
+        background: 'var(--hero-bg, linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%))',
         padding: '70px 20px',
         position: 'relative',
         overflow: 'hidden',

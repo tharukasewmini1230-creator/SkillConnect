@@ -210,7 +210,7 @@ const BookSession = () => {
 
             {/* HEADER BANNER WITH ILLUSTRATION */}
       <div style={{
-        background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%)',
+        background: 'var(--hero-bg, linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%))',
         padding: '40px 20px 60px',
         position: 'relative',
         overflow: 'hidden',
