@@ -33,6 +33,16 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  // Google Login — accepts the credential (ID token) from Google
+  const googleLogin = async (credential) => {
+    const response = await API.post('/auth/google', { credential });
+    const data = response.data;
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data));
+    setUser(data);
+    return data;
+  };
+
   // Update user profile
   const updateProfile = async (profileData) => {
     try {
@@ -67,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateProfile, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, register, login, googleLogin, logout, updateProfile, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

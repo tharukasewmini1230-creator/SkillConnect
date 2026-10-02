@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -7,8 +8,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -24,6 +26,23 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setGoogleLoading(true);
+    try {
+      await googleLogin(credentialResponse.credential);
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Google login failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login was cancelled or failed. Please try again.');
   };
 
   return (
@@ -115,7 +134,7 @@ const Login = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || googleLoading}
               style={{
                 width: '100%',
                 padding: '14px',
@@ -131,6 +150,32 @@ const Login = () => {
               {loading ? 'Logging in...' : 'Login →'}
             </button>
           </form>
+
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '22px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
+            <span style={{ color: '#9ca3af', fontSize: '13px', fontWeight: '600' }}>OR</span>
+            <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
+          </div>
+
+          {/* Google Sign-in Button */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+            {googleLoading ? (
+              <div style={{ padding: '12px 16px', color: '#6b7280', fontSize: '14px', fontWeight: '600' }}>
+                Signing you in with Google...
+              </div>
+            ) : (
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                theme="outline"
+                size="large"
+                text="continue_with"
+                shape="rectangular"
+                width="360"
+              />
+            )}
+          </div>
 
           <p style={{ textAlign: 'center', marginTop: '25px', color: '#6b7280', fontSize: '14px' }}>
             Don't have an account?{' '}
