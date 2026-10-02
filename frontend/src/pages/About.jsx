@@ -79,7 +79,7 @@ const About = () => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
-            }}>SkillConnect</span>
+            }}>SkillSwap</span>
           </h1>
 
           <p style={{
@@ -123,7 +123,7 @@ const About = () => {
             maxWidth: '700px',
             margin: '0 auto'
           }}>
-            We believe that knowledge should be shared, not bought. SkillConnect was created to solve
+            We believe that knowledge should be shared, not bought. SkillSwap was created to solve
             a simple problem - students want to learn new skills but often cannot afford expensive courses.
             At the same time, many students already have valuable skills that they could teach others.
             Our mission is to connect these two groups and create a community where everyone grows together.
@@ -138,7 +138,7 @@ const About = () => {
           borderRadius: '24px',
           padding: '50px 40px',
           color: '#fff',
-          boxShadow: '0 20px 40px rgba(79, 70, 229, 0.20)',
+          boxShadow: '0 20px 40px rgba(59, 130, 246, 0.20)',
           position: 'relative',
           overflow: 'hidden'
         }}>
@@ -175,7 +175,7 @@ const About = () => {
                 opacity: 0.95,
                 marginBottom: '20px'
               }}>
-                SkillConnect is a project created by <strong>Tharuka Sewmini</strong> as part of the
+                SkillSwap is a project created by <strong>Tharuka Sewmini</strong> as part of the
                 <strong> EC4307 - Web Application Development</strong> module. It is a full-stack web
                 application built using the MERN stack.
               </p>
@@ -248,7 +248,7 @@ const About = () => {
             marginBottom: '12px',
             letterSpacing: '-0.8px'
           }}>
-            Everything you need to exchange skills
+            Everything you need to swap skills
           </h2>
 
           <p style={{
@@ -347,7 +347,7 @@ const About = () => {
           </p>
 
           <a
-            href="mailto:tharuka@skillconnect.lk"
+            href="mailto:tharuka@skillswap.lk"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -362,7 +362,7 @@ const About = () => {
               boxShadow: '0 8px 20px rgba(59, 130, 246, 0.25)'
             }}
           >
-            📧 tharuka@skillconnect.lk
+            📧 tharuka@skillswap.lk
           </a>
         </div>
       </section>
@@ -375,7 +375,7 @@ const About = () => {
           padding: '50px 40px',
           textAlign: 'center',
           color: '#fff',
-          boxShadow: '0 20px 40px rgba(79, 70, 229, 0.25)',
+          boxShadow: '0 20px 40px rgba(59, 130, 246, 0.25)',
           position: 'relative',
           overflow: 'hidden'
         }}>
@@ -387,7 +387,7 @@ const About = () => {
             position: 'relative',
             zIndex: 1
           }}>
-            Join the SkillConnect community
+            Join the SkillSwap community
           </h2>
 
           <p style={{
@@ -399,7 +399,7 @@ const About = () => {
             position: 'relative',
             zIndex: 1
           }}>
-            Start exchanging skills and grow together with students from around the world.
+            Start swapping skills and grow together with students from around the world.
           </p>
 
           {!user ? (
