@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import matchIllustration from '../assets/match-illustration.png';
 
 const Matches = () => {
   const { user } = useAuth();
@@ -64,38 +65,151 @@ const Matches = () => {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-            {/* Hero Section with Gradient Background */}
+      {/* Hero Section */}
       <div style={{
-        background: 'var(--hero-bg, linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%))',
-        padding: '60px 20px',
+        background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
+        borderRadius: '24px',
+        padding: '50px 40px',
+        marginBottom: '30px',
         position: 'relative',
         overflow: 'hidden',
-        marginBottom: '40px',
-        borderRadius: '20px'
+        border: '1px solid var(--border)'
       }}>
+        {/* Decorative Background Circles */}
         <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.08)' }} />
         <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(168, 85, 247, 0.08)' }} />
 
-        <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          <div style={{
-            display: 'inline-block',
-            background: 'rgba(59, 130, 246, 0.1)',
-            color: '#3B82F6',
-            padding: '8px 20px',
-            borderRadius: '30px',
-            fontSize: '14px',
-            fontWeight: '700',
-            marginBottom: '20px',
-            border: '1px solid rgba(59, 130, 246, 0.2)'
-          }}>
-            🤝 Skill Exchange Matches
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 0.9fr)',
+          gap: '30px',
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1
+        }}>
+
+          {/* Left Side - Text */}
+          <div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(99, 102, 241, 0.1)',
+              color: '#6366F1',
+              padding: '8px 18px',
+              borderRadius: '30px',
+              fontSize: '13px',
+              fontWeight: '700',
+              marginBottom: '20px',
+              border: '1px solid rgba(99, 102, 241, 0.2)'
+            }}>
+              <span>🔗</span>
+              <span>Skill Matching</span>
+            </div>
+
+            <h1 style={{
+              fontSize: '48px',
+              fontWeight: '800',
+              color: 'var(--dark)',
+              marginBottom: '18px',
+              letterSpacing: '-1.5px',
+              lineHeight: '1.1'
+            }}>
+              Skill Exchange <span style={{
+                background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>Matches</span>
+            </h1>
+
+            <p style={{
+              fontSize: '17px',
+              color: 'var(--gray)',
+              maxWidth: '500px',
+              lineHeight: '1.7'
+            }}>
+              Find people who can teach you what you want to learn and what you can teach.
+            </p>
           </div>
-          <h1 style={{ fontSize: '42px', fontWeight: '800', color: 'var(--dark)', marginBottom: '15px', letterSpacing: '-1.5px' }}>
-            Your Perfect Matches
-          </h1>
-          <p style={{ fontSize: '17px', color: 'var(--gray)', maxWidth: '600px', margin: '0 auto', lineHeight: '1.7' }}>
-            Find students who can teach you what you want to learn, and want to learn what you can teach.
-          </p>
+
+          {/* Right Side - Illustration + Decorative Text */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative'
+          }}>
+            <img
+              src={matchIllustration}
+              alt="Skill exchange"
+              style={{
+                width: '100%',
+                maxWidth: '340px',
+                height: 'auto',
+                filter: 'drop-shadow(0 15px 25px rgba(30, 41, 59, 0.1))'
+              }}
+            />
+
+            {/* "Learn Share Grow" Decorative Text */}
+            <div style={{
+              position: 'absolute',
+              top: '10%',
+              right: '-15px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px',
+              pointerEvents: 'none'
+            }}>
+              <span style={{
+                fontSize: '22px',
+                fontWeight: '800',
+                fontStyle: 'italic',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontFamily: 'Georgia, serif',
+                transform: 'rotate(-12deg)',
+                lineHeight: 1,
+                letterSpacing: '-0.5px'
+              }}>
+                Learn
+              </span>
+              <span style={{
+                fontSize: '22px',
+                fontWeight: '800',
+                fontStyle: 'italic',
+                background: 'linear-gradient(135deg, #A855F7 0%, #6366F1 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontFamily: 'Georgia, serif',
+                transform: 'rotate(-12deg)',
+                lineHeight: 1,
+                letterSpacing: '-0.5px',
+                marginLeft: '10px'
+              }}>
+                Share
+              </span>
+              <span style={{
+                fontSize: '22px',
+                fontWeight: '800',
+                fontStyle: 'italic',
+                background: 'linear-gradient(135deg, #6366F1 0%, #3B82F6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontFamily: 'Georgia, serif',
+                transform: 'rotate(-12deg)',
+                lineHeight: 1,
+                letterSpacing: '-0.5px'
+              }}>
+                Grow
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
