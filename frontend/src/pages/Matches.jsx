@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
-import BookingModal from '../components/BookingModal';
 
 const Matches = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
-  const [bookingModal, setBookingModal] = useState(null);
+
+  // Read filter from URL
+  const skillFilter = searchParams.get('skill') || 'All';
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -32,6 +34,28 @@ const Matches = () => {
     if (score >= 90) return '#10B981';
     if (score >= 70) return '#F59E0B';
     return '#6B7280';
+  };
+
+  // Filter matches by skill name
+  const filteredMatches = matches.filter((match) => {
+    if (skillFilter === 'All') return true;
+
+    const filterLower = skillFilter.toLowerCase();
+
+    const hasMatchingSkill =
+      match.theyCanTeachMe?.some((skill) =>
+        skill.toLowerCase().includes(filterLower)
+      ) ||
+      match.iCanTeachThem?.some((skill) =>
+        skill.toLowerCase().includes(filterLower)
+      );
+
+    return hasMatchingSkill;
+  });
+
+  // Clear filter handler
+  const handleClearFilter = () => {
+    setSearchParams({});
   };
 
   return (
@@ -61,6 +85,44 @@ const Matches = () => {
           Find students who can teach you what you want to learn, and want to learn what you can teach.
         </p>
       </div>
+
+      {/* Filter Info Banner (only if filtered) */}
+      {skillFilter !== 'All' && (
+        <div style={{
+          background: 'var(--primary-light)',
+          borderRadius: '12px',
+          padding: '14px 20px',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '10px',
+          border: '1px solid #BFDBFE'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '18px' }}>🔍</span>
+            <span style={{ fontSize: '14px', color: '#1E40AF', fontWeight: '600' }}>
+              Showing matches for: <strong>{skillFilter}</strong>
+            </span>
+          </div>
+          <button
+            onClick={handleClearFilter}
+            style={{
+              padding: '6px 16px',
+              background: '#fff',
+              color: '#3B82F6',
+              borderRadius: '20px',
+              fontSize: '13px',
+              fontWeight: '700',
+              border: '1px solid #3B82F6',
+              cursor: 'pointer'
+            }}
+          >
+            ✕ Clear Filter
+          </button>
+        </div>
+      )}
 
       {/* Your Skills Summary */}
       <div style={{
@@ -138,7 +200,9 @@ const Matches = () => {
               borderRadius: '10px',
               fontSize: '14px',
               fontWeight: '700',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              border: 'none',
+              cursor: 'pointer'
             }}>
               ✏️ Edit My Skills
             </button>
@@ -152,7 +216,7 @@ const Matches = () => {
           <div className="spinner"></div>
           <p style={{ color: 'var(--gray)', marginTop: '15px' }}>Finding your matches...</p>
         </div>
-      ) : matches.length === 0 ? (
+      ) : filteredMatches.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '80px 20px',
@@ -161,32 +225,59 @@ const Matches = () => {
           boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
           border: '1px solid var(--border)'
         }}>
-          <div style={{ fontSize: '64px', marginBottom: '15px' }}>🔍</div>
+          <div style={{ fontSize: '64px', marginBottom: '15px' }}>
+            {skillFilter !== 'All' ? '🔍' : '🤝'}
+          </div>
           <p style={{ color: 'var(--dark)', fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
-            No matches found yet
+            {skillFilter !== 'All'
+              ? `No matches found for "${skillFilter}"`
+              : 'No matches found yet'}
           </p>
           <p style={{ color: 'var(--gray)', fontSize: '15px', marginBottom: '25px', maxWidth: '400px', margin: '0 auto 25px' }}>
-            {user?.skillsOffered?.length === 0 || user?.skillsWanted?.length === 0
-              ? 'Please add your skills (both offered and wanted) to find matches.'
-              : 'No students match with your skills yet. Check back later!'}
+            {skillFilter !== 'All'
+              ? 'Try a different skill or clear the filter.'
+              : user?.skillsOffered?.length === 0 || user?.skillsWanted?.length === 0
+                ? 'Please add your skills (both offered and wanted) to find matches.'
+                : 'No students match with your skills yet. Check back later!'}
           </p>
-          <Link to="/profile">
-            <button style={{
-              padding: '14px 32px',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-              color: '#fff',
-              borderRadius: '10px',
-              fontSize: '15px',
-              fontWeight: '600',
-              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-            }}>
-              Update My Skills
+          {skillFilter !== 'All' ? (
+            <button
+              onClick={handleClearFilter}
+              style={{
+                padding: '14px 32px',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                color: '#fff',
+                borderRadius: '10px',
+                fontSize: '15px',
+                fontWeight: '600',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              Clear Filter
             </button>
-          </Link>
+          ) : (
+            <Link to="/profile">
+              <button style={{
+                padding: '14px 32px',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                color: '#fff',
+                borderRadius: '10px',
+                fontSize: '15px',
+                fontWeight: '600',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                border: 'none',
+                cursor: 'pointer'
+              }}>
+                Update My Skills
+              </button>
+            </Link>
+          )}
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {matches.map((match) => (
+          {filteredMatches.map((match) => (
             <div
               key={match.user._id}
               className="card-hover"
@@ -338,7 +429,7 @@ const Matches = () => {
 
               {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button
+                <button
                   onClick={() => navigate(`/book/${match.user._id}`)}
                   style={{
                     flex: 1,
@@ -349,12 +440,14 @@ const Matches = () => {
                     borderRadius: '10px',
                     fontSize: '14px',
                     fontWeight: '600',
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)'
+                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)',
+                    border: 'none',
+                    cursor: 'pointer'
                   }}
                 >
                   📅 Request Session
                 </button>
-                  <button
+                <button
                   onClick={() => navigate('/messages', { state: { partner: match.user } })}
                   style={{
                     flex: 1,
@@ -364,7 +457,9 @@ const Matches = () => {
                     color: 'var(--dark)',
                     borderRadius: '10px',
                     fontSize: '14px',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    border: 'none',
+                    cursor: 'pointer'
                   }}
                 >
                   💬 Send Message
@@ -373,19 +468,6 @@ const Matches = () => {
             </div>
           ))}
         </div>
-      )}
-
-      {/* Booking Modal */}
-      {bookingModal && (
-        <BookingModal
-          mentor={bookingModal.mentor}
-          skill={bookingModal.skill}
-          onClose={() => setBookingModal(null)}
-          onSuccess={() => {
-            setBookingModal(null);
-            setToast({ message: 'Session request sent successfully!', type: 'success' });
-          }}
-        />
       )}
     </div>
   );

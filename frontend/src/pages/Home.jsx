@@ -5,6 +5,49 @@ import heroIllustration from '../assets/hero-illustration.png';
 const Home = () => {
   const { user } = useAuth();
 
+  const popularSkills = [
+    {
+      name: 'Python Programming',
+      category: 'Programming',
+      level: 'Intermediate',
+      icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
+      color: '#3B82F6',
+      count: 124
+    },
+    {
+      name: 'React Development',
+      category: 'Web Development',
+      level: 'Advanced',
+      icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+      color: '#06B6D4',
+      count: 98
+    },
+    {
+      name: 'UI/UX Design',
+      category: 'Design',
+      level: 'Beginner',
+      icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
+      color: '#A855F7',
+      count: 76
+    },
+    {
+      name: 'Java Programming',
+      category: 'Programming',
+      level: 'Intermediate',
+      icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
+      color: '#EF4444',
+      count: 62
+    },
+    {
+      name: 'Data Analysis',
+      category: 'Data Science',
+      level: 'Intermediate',
+      icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
+      color: '#8B5CF6',
+      count: 54
+    }
+  ];
+
   return (
     <div style={{ paddingBottom: '40px' }}>
 
@@ -104,7 +147,7 @@ const Home = () => {
                     </button>
                   </Link>
 
-                  <Link to="/login" style={{ textDecoration: 'none', display: 'inline-block' }}>
+                  <Link to="/matches" style={{ textDecoration: 'none', display: 'inline-block' }}>
                     <button style={{
                       padding: '16px 36px',
                       background: '#fff',
@@ -258,165 +301,131 @@ const Home = () => {
           gridTemplateColumns: 'repeat(5, 1fr)',
           gap: '18px'
         }}>
-          {[
-            {
-              name: 'Python Programming',
-              category: 'Programming',
-              level: 'Intermediate',
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',
-              color: '#3B82F6',
-              count: 124
-            },
-            {
-              name: 'React Development',
-              category: 'Web Development',
-              level: 'Advanced',
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
-              color: '#06B6D4',
-              count: 98
-            },
-            {
-              name: 'UI/UX Design',
-              category: 'Design',
-              level: 'Beginner',
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg',
-              color: '#A855F7',
-              count: 76
-            },
-            {
-              name: 'Java Programming',
-              category: 'Programming',
-              level: 'Intermediate',
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',
-              color: '#EF4444',
-              count: 62
-            },
-            {
-              name: 'Data Analysis',
-              category: 'Data Science',
-              level: 'Intermediate',
-              icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg',
-              color: '#8B5CF6',
-              count: 54
-            }
-          ].map((skill, index) => (
-            <div
+          {popularSkills.map((skill, index) => (
+            <Link
               key={index}
-              className="card-hover"
-              style={{
-                background: 'var(--white)',
-                padding: '22px',
-                borderRadius: '16px',
-                boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
-                border: '1px solid var(--border)',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '15px'
-              }}
+              to={`/matches?skill=${encodeURIComponent(skill.name.split(' ')[0])}`}
+              style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: `${skill.color}15`,
+              <div
+                className="card-hover"
+                style={{
+                  background: 'var(--white)',
+                  padding: '22px',
+                  borderRadius: '16px',
+                  boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+                  border: '1px solid var(--border)',
+                  cursor: 'pointer',
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '10px'
-                }}>
-                  <img
-                    src={skill.icon}
-                    alt={skill.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                  />
-                </div>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  background: 'var(--light-gray)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  color: 'var(--gray)'
-                }}>
-                  →
-                </div>
-              </div>
-
-              <div>
-                <h3 style={{
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  color: 'var(--dark)',
-                  marginBottom: '10px',
-                  lineHeight: '1.3'
-                }}>
-                  {skill.name}
-                </h3>
-
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  <span style={{
-                    padding: '3px 10px',
-                    background: 'var(--primary-light)',
-                    color: '#3B82F6',
+                  flexDirection: 'column',
+                  gap: '15px',
+                  height: '100%'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
                     borderRadius: '12px',
-                    fontSize: '11px',
-                    fontWeight: '600'
+                    background: `${skill.color}15`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '10px'
                   }}>
-                    {skill.category}
-                  </span>
-                  <span style={{
-                    padding: '3px 10px',
+                    <img
+                      src={skill.icon}
+                      alt={skill.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                  </div>
+                  <div style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
                     background: 'var(--light-gray)',
-                    color: 'var(--gray)',
-                    borderRadius: '12px',
-                    fontSize: '11px',
-                    fontWeight: '600'
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    color: 'var(--gray)'
                   }}>
-                    {skill.level}
+                    →
+                  </div>
+                </div>
+
+                <div>
+                  <h3 style={{
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    color: 'var(--dark)',
+                    marginBottom: '10px',
+                    lineHeight: '1.3'
+                  }}>
+                    {skill.name}
+                  </h3>
+
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <span style={{
+                      padding: '3px 10px',
+                      background: 'var(--primary-light)',
+                      color: '#3B82F6',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: '600'
+                    }}>
+                      {skill.category}
+                    </span>
+                    <span style={{
+                      padding: '3px 10px',
+                      background: 'var(--light-gray)',
+                      color: 'var(--gray)',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: '600'
+                    }}>
+                      {skill.level}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid var(--border)',
+                  marginTop: 'auto'
+                }}>
+                  <div style={{ display: 'flex', marginRight: '5px' }}>
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          background: `linear-gradient(135deg, ${skill.color} 0%, ${skill.color}80 100%)`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          border: '2px solid var(--white)',
+                          marginLeft: i > 1 ? '-8px' : '0'
+                        }}
+                      >
+                        {String.fromCharCode(64 + i)}
+                      </div>
+                    ))}
+                  </div>
+                  <span style={{ fontSize: '12px', color: 'var(--gray)', fontWeight: '500' }}>
+                    {skill.count}+ people
                   </span>
                 </div>
               </div>
-
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                paddingTop: '12px',
-                borderTop: '1px solid var(--border)'
-              }}>
-                <div style={{ display: 'flex', marginRight: '5px' }}>
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        background: `linear-gradient(135deg, ${skill.color} 0%, ${skill.color}80 100%)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#fff',
-                        fontSize: '10px',
-                        fontWeight: '700',
-                        border: '2px solid var(--white)',
-                        marginLeft: i > 1 ? '-8px' : '0'
-                      }}
-                    >
-                      {String.fromCharCode(64 + i)}
-                    </div>
-                  ))}
-                </div>
-                <span style={{ fontSize: '12px', color: 'var(--gray)', fontWeight: '500' }}>
-                  {skill.count}+ people
-                </span>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
