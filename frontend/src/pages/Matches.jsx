@@ -55,10 +55,17 @@ const Matches = () => {
 
   const totalMatches = matches.length;
   const perfectMatches = matches.filter((m) => m.isPerfectMatch).length;
-  const averageScore =
-    matches.length > 0
-      ? Math.round(matches.reduce((sum, m) => sum + m.matchScore, 0) / matches.length)
-      : 0;
+
+  // Count new matches (users created in last 7 days)
+  const newMatchesCount = matches.filter((m) => {
+    if (!m.user?.createdAt) return false;
+    const userCreatedAt = new Date(m.user.createdAt);
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    return userCreatedAt >= sevenDaysAgo;
+  }).length;
+
+  // Sessions booked (dummy for now, can be replaced with real API later)
+  const sessionsBookedCount = 0;
 
   return (
     <div style={{ paddingBottom: '60px' }}>
@@ -66,7 +73,7 @@ const Matches = () => {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-      {/* HERO SECTION - FULL WIDTH */}
+      {/* HERO SECTION */}
       <div style={{
         background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
         padding: '60px 20px 30px',
@@ -168,7 +175,7 @@ const Matches = () => {
       {/* MAIN CONTENT CONTAINER */}
       <div style={{ padding: '20px 30px 0' }}>
 
-        {/* GRID LAYOUT: Left (Skills + Matches) | Right (Filter Sidebar) */}
+        {/* GRID LAYOUT */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
@@ -330,7 +337,7 @@ const Matches = () => {
                 background: 'var(--primary-light)',
                 borderRadius: '12px',
                 padding: '14px 20px',
-                marginBottom: '20px',
+                marginBottom: '10px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -423,7 +430,7 @@ const Matches = () => {
                 )}
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {filteredMatches.map((match) => (
                   <div
                     key={match.user._id}
@@ -590,6 +597,7 @@ const Matches = () => {
             gap: '10px'
           }}>
 
+            {/* Filter Matches Card */}
             <div style={{
               background: 'var(--white)',
               borderRadius: '16px',
@@ -717,6 +725,7 @@ const Matches = () => {
               </div>
             </div>
 
+            {/* Your Match Summary Card */}
             <div style={{
               background: 'var(--white)',
               borderRadius: '16px',
@@ -729,23 +738,36 @@ const Matches = () => {
               </h3>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#3B82F6' }}>{totalMatches}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Total Matches</div>
-                </div>
-                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#10B981' }}>{perfectMatches}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Perfect</div>
-                </div>
-                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#A855F7' }}>{averageScore}%</div>
-                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Avg Score</div>
-                </div>
-                <div style={{ background: 'var(--light-gray)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#F59E0B' }}>
-                    {(user?.skillsOffered?.length || 0) + (user?.skillsWanted?.length || 0)}
+                <div style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', padding: '14px 12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '16px' }}>👥</span>
+                    <span style={{ fontSize: '22px', fontWeight: '800', color: '#1E40AF' }}>{totalMatches}</span>
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--gray)', fontWeight: '600', marginTop: '2px' }}>Your Skills</div>
+                  <div style={{ fontSize: '11px', color: '#1E40AF', fontWeight: '600', opacity: 0.8 }}>Total Matches</div>
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%)', padding: '14px 12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '16px' }}>⭐</span>
+                    <span style={{ fontSize: '22px', fontWeight: '800', color: '#6D28D9' }}>{perfectMatches}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#6D28D9', fontWeight: '600', opacity: 0.8 }}>Perfect Matches</div>
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)', padding: '14px 12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '16px' }}>⚡</span>
+                    <span style={{ fontSize: '22px', fontWeight: '800', color: '#15803D' }}>{newMatchesCount}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#15803D', fontWeight: '600', opacity: 0.8 }}>New Matches</div>
+                </div>
+
+                <div style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', padding: '14px 12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '16px' }}>📅</span>
+                    <span style={{ fontSize: '22px', fontWeight: '800', color: '#B45309' }}>{sessionsBookedCount}</span>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#B45309', fontWeight: '600', opacity: 0.8 }}>Sessions Booked</div>
                 </div>
               </div>
 
@@ -758,7 +780,8 @@ const Matches = () => {
                 color: '#1E40AF',
                 lineHeight: '1.5',
                 display: 'flex',
-                gap: '8px'
+                gap: '8px',
+                alignItems: 'flex-start'
               }}>
                 <span>💡</span>
                 <span>The more skills you add, the better your matches will be!</span>
