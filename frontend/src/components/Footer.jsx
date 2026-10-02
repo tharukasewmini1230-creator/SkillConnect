@@ -11,10 +11,12 @@ const Footer = () => {
           {/* Brand Column */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '700', fontSize: '18px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '700', fontSize: '18px' }}>
                 S
               </div>
-              <span style={{ fontSize: '20px', fontWeight: '700', color: '#fff' }}>SkillConnect</span>
+              <span style={{ fontSize: '20px', fontWeight: '700', color: '#fff' }}>
+                Skill<span style={{ color: '#A855F7' }}>Swap</span>
+              </span>
             </div>
             <p style={{ fontSize: '14px', lineHeight: '1.7', color: '#9ca3af' }}>
               A student skill exchange platform. Teach what you know, learn what you don't.
@@ -47,9 +49,9 @@ const Footer = () => {
           <div>
             <h4 style={{ color: '#fff', fontSize: '15px', fontWeight: '700', marginBottom: '18px' }}>Contact</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <li style={{ fontSize: '14px', color: '#9ca3af' }}>📧 info@skillconnect.lk</li>
+              <li style={{ fontSize: '14px', color: '#9ca3af' }}>📧 info@skillswap.lk</li>
               <li style={{ fontSize: '14px', color: '#9ca3af' }}>📍 Sri Lanka</li>
-              <li style={{ fontSize: '14px', color: '#9ca3af' }}>🎓 EE4207 Project</li>
+              <li style={{ fontSize: '14px', color: '#9ca3af' }}>🎓 EC4307 Project</li>
             </ul>
           </div>
         </div>
@@ -57,10 +59,10 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div style={{ borderTop: '1px solid #374151', paddingTop: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
           <p style={{ fontSize: '13px', color: '#6b7280' }}>
-            © {currentYear} SkillConnect. All rights reserved.
+            © {currentYear} SkillSwap. All rights reserved.
           </p>
           <p style={{ fontSize: '13px', color: '#6b7280' }}>
-            Built with ❤️ for EE4207 - Web Application Development
+            Built with ❤️ for EC4307 - Web Application Development
           </p>
         </div>
       </div>
