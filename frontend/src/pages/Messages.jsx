@@ -48,17 +48,38 @@ const Messages = () => {
   useEffect(() => {
     if (!socket) return;
 
+    console.log('🎧 Setting up socket listeners');
+
     const handleReceiveMessage = (message) => {
       console.log('📩 Received message:', message);
+      console.log('📩 Current selectedPartner:', selectedPartner?._id);
 
-      if (
-        selectedPartner &&
-        (message.sender._id === selectedPartner._id ||
-          message.receiver._id === selectedPartner._id)
-      ) {
-        setMessages((prev) => [...prev, message]);
-      }
+      // Always add message if it belongs to current conversation
+      const messagePartnerId =
+        message.sender._id === user?._id
+          ? message.receiver._id
+          : message.sender._id;
 
+      // Use functional update to avoid stale closure
+      setMessages((prevMessages) => {
+        // Check if message already exists (avoid duplicates)
+        const exists = prevMessages.some((m) => m._id === message._id);
+        if (exists) {
+          console.log('⚠️ Message already exists, skipping');
+          return prevMessages;
+        }
+
+        // If the message is for the currently selected partner, add it
+        if (selectedPartner && messagePartnerId === selectedPartner._id) {
+          console.log('✅ Adding message to current conversation');
+          return [...prevMessages, message];
+        }
+
+        console.log('⚠️ Message is for a different conversation');
+        return prevMessages;
+      });
+
+      // Always refresh conversations list
       fetchConversations();
     };
 
@@ -75,11 +96,12 @@ const Messages = () => {
     socket.on('user_stop_typing', handleStopTyping);
 
     return () => {
+      console.log('🎧 Removing socket listeners');
       socket.off('receive_message', handleReceiveMessage);
       socket.off('user_typing', handleUserTyping);
       socket.off('user_stop_typing', handleStopTyping);
     };
-  }, [socket, selectedPartner]);
+  }, [socket, selectedPartner?._id]);
 
   const fetchConversations = async () => {
     try {
@@ -125,10 +147,16 @@ const Messages = () => {
         content: newMessage.trim()
       });
 
-      setMessages([...messages, response.data]);
+      // Add to messages list (using functional update)
+      setMessages((prev) => {
+        const exists = prev.some((m) => m._id === response.data._id);
+        if (exists) return prev;
+        return [...prev, response.data];
+      });
+
       setNewMessage('');
 
-      // Send via socket for real-time delivery
+      // Send via socket for real-time delivery to receiver
       if (socket) {
         socket.emit('send_message', {
           receiverId: selectedPartner._id,

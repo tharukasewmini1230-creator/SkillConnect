@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
@@ -8,40 +8,68 @@ export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const socketRef = useRef(null);
 
   useEffect(() => {
+    // If no user, disconnect
     if (!user) {
-      // Disconnect if user logs out
-      if (socket) {
-        socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
         setSocket(null);
+        setOnlineUsers([]);
       }
       return;
     }
 
-    // Connect to Socket.IO server
+    // If already connected for this user, don't reconnect
+    if (socketRef.current && socketRef.current.connected) {
+      return;
+    }
+
+    // Create a new socket connection
     const newSocket = io('http://localhost:5000', {
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
     });
 
     newSocket.on('connect', () => {
-      console.log('🔌 Connected to Socket.IO server');
+      console.log('🔌 Connected to Socket.IO server:', newSocket.id);
       // Tell server who we are
       newSocket.emit('user_online', user._id);
     });
 
-    // Listen for online users updates
     newSocket.on('online_users', (users) => {
       setOnlineUsers(users);
     });
 
+    newSocket.on('disconnect', () => {
+      console.log('🔌 Disconnected from Socket.IO server');
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.error('🔌 Socket connection error:', err);
+    });
+
+    socketRef.current = newSocket;
     setSocket(newSocket);
 
-    // Cleanup on unmount
+    // Cleanup only when user actually changes or unmounts
     return () => {
-      newSocket.disconnect();
+      // Don't disconnect on every re-render, only when user changes
     };
-  }, [user]);
+  }, [user?._id]);
+
+  // Separate cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, []);
 
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
