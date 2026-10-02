@@ -41,7 +41,7 @@ const HowItWorks = () => {
       details: [
         'Visit the Explore page',
         'See students with the highest match score',
-        'Find your perfect skill exchange partner'
+        'Find your perfect skill swap partner'
       ]
     },
     {
@@ -114,7 +114,7 @@ const HowItWorks = () => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
-            }}>SkillConnect</span> Works
+            }}>SkillSwap</span> Works
           </h1>
 
           <p style={{
@@ -124,7 +124,7 @@ const HowItWorks = () => {
             maxWidth: '600px',
             margin: '0 auto'
           }}>
-            Learn how to exchange skills with fellow students in just 5 simple steps.
+            Learn how to swap skills with fellow students in just 5 simple steps.
             From signing up to leaving your first review, we've got you covered.
           </p>
         </div>
@@ -147,7 +147,7 @@ const HowItWorks = () => {
             color: 'var(--dark)',
             marginBottom: '15px'
           }}>
-            Welcome to SkillConnect!
+            Welcome to SkillSwap!
           </h2>
           <p style={{
             fontSize: '16px',
@@ -156,7 +156,7 @@ const HowItWorks = () => {
             maxWidth: '600px',
             margin: '0 auto'
           }}>
-            SkillConnect is a student-powered skill exchange platform. Instead of paying for courses,
+            SkillSwap is a student-powered skill exchange platform. Instead of paying for courses,
             you teach what you know and learn what you want - all from fellow students.
             Here's how to get started in 5 easy steps.
           </p>
@@ -297,7 +297,7 @@ const HowItWorks = () => {
           padding: '50px 40px',
           textAlign: 'center',
           color: '#fff',
-          boxShadow: '0 20px 40px rgba(79, 70, 229, 0.25)',
+          boxShadow: '0 20px 40px rgba(59, 130, 246, 0.25)',
           position: 'relative',
           overflow: 'hidden'
         }}>
@@ -321,7 +321,7 @@ const HowItWorks = () => {
               margin: '0 auto 30px',
               lineHeight: '1.7'
             }}>
-              Join hundreds of students already exchanging skills and growing together.
+              Join hundreds of students already swapping skills and growing together.
             </p>
 
             {!user ? (
