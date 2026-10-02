@@ -26,19 +26,23 @@ const createSession = async (req, res) => {
       mode
     });
 
+    // Notify the mentor (don't fail session if this fails)
+    try {
+      await createNotification({
+        recipient: mentor,
+        sender: req.user.id,
+        type: 'session_request',
+        title: '📅 New Session Request',
+        message: `${req.user.name} requested a session for "${skill}"`,
+        link: '/sessions'
+      });
+    } catch (notifErr) {
+      console.error('Notification error (ignored):', notifErr);
+    }
+
     const populatedSession = await Session.findById(session._id)
       .populate('requester', 'name email university')
       .populate('mentor', 'name email university');
-
-    // Notify the mentor about the new session request
-    await createNotification({
-      recipient: mentor,
-      sender: req.user.id,
-      type: 'session_request',
-      title: '📅 New Session Request',
-      message: `${req.user.name} requested a session for "${skill}"`,
-      link: '/sessions'
-    });
 
     res.status(201).json(populatedSession);
   } catch (error) {
@@ -83,43 +87,46 @@ const updateSessionStatus = async (req, res) => {
     }
 
     session.status = status;
-    // Create notification based on status change
-    if (status === 'Accepted') {
-      const notifyUser = session.requester.toString() === req.user.id ? session.mentor : session.requester;
-      await createNotification({
-        recipient: notifyUser,
-        sender: req.user.id,
-        type: 'session_accepted',
-        title: '✅ Session Accepted',
-        message: `Your session for "${session.skill}" has been accepted!`,
-        link: '/sessions'
-      });
-    } else if (status === 'Rejected') {
-      const notifyUser = session.requester.toString() === req.user.id ? session.mentor : session.requester;
-      await createNotification({
-        recipient: notifyUser,
-        sender: req.user.id,
-        type: 'session_rejected',
-        title: '❌ Session Rejected',
-        message: `Your session for "${session.skill}" was rejected`,
-        link: '/sessions'
-      });
-    } else if (status === 'Completed') {
-      const notifyUser = session.requester.toString() === req.user.id ? session.mentor : session.requester;
-      await createNotification({
-        recipient: notifyUser,
-        sender: req.user.id,
-        type: 'session_completed',
-        title: '🎉 Session Completed',
-        message: `Session for "${session.skill}" has been completed!`,
-        link: '/sessions'
-      });
-    }
     await session.save();
+
+    // Create notification based on status change
+    try {
+      const notifyUser = isMentor ? session.requester : session.mentor;
+
+      if (status === 'Accepted') {
+        await createNotification({
+          recipient: notifyUser,
+          sender: req.user.id,
+          type: 'session_accepted',
+          title: '✅ Session Accepted',
+          message: `Your session for "${session.skill}" has been accepted!`,
+          link: '/sessions'
+        });
+      } else if (status === 'Rejected') {
+        await createNotification({
+          recipient: notifyUser,
+          sender: req.user.id,
+          type: 'session_rejected',
+          title: '❌ Session Rejected',
+          message: `Your session for "${session.skill}" was rejected`,
+          link: '/sessions'
+        });
+      } else if (status === 'Completed') {
+        await createNotification({
+          recipient: notifyUser,
+          sender: req.user.id,
+          type: 'session_completed',
+          title: '🎉 Session Completed',
+          message: `Session for "${session.skill}" has been completed!`,
+          link: '/sessions'
+        });
+      }
+    } catch (notifErr) {
+      console.error('Notification error (ignored):', notifErr);
+    }
 
     // Add points when session is completed
     if (status === 'Completed') {
-      // Both users get +10 points for completing a session
       await addPointsToUser(session.requester, 10);
       await addPointsToUser(session.mentor, 10);
     }
