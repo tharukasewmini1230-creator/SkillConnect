@@ -64,26 +64,39 @@ const Matches = () => {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-      {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <div style={{
-          display: 'inline-block',
-          background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-          color: '#fff',
-          padding: '8px 20px',
-          borderRadius: '30px',
-          fontSize: '14px',
-          fontWeight: '600',
-          marginBottom: '20px'
-        }}>
-          🤝 Skill Exchange Matches
+            {/* Hero Section with Gradient Background */}
+      <div style={{
+        background: 'var(--hero-bg, linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%))',
+        padding: '60px 20px',
+        position: 'relative',
+        overflow: 'hidden',
+        marginBottom: '40px',
+        borderRadius: '20px'
+      }}>
+        <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.08)' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '280px', height: '280px', borderRadius: '50%', background: 'rgba(168, 85, 247, 0.08)' }} />
+
+        <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          <div style={{
+            display: 'inline-block',
+            background: 'rgba(59, 130, 246, 0.1)',
+            color: '#3B82F6',
+            padding: '8px 20px',
+            borderRadius: '30px',
+            fontSize: '14px',
+            fontWeight: '700',
+            marginBottom: '20px',
+            border: '1px solid rgba(59, 130, 246, 0.2)'
+          }}>
+            🤝 Skill Exchange Matches
+          </div>
+          <h1 style={{ fontSize: '42px', fontWeight: '800', color: 'var(--dark)', marginBottom: '15px', letterSpacing: '-1.5px' }}>
+            Your Perfect Matches
+          </h1>
+          <p style={{ fontSize: '17px', color: 'var(--gray)', maxWidth: '600px', margin: '0 auto', lineHeight: '1.7' }}>
+            Find students who can teach you what you want to learn, and want to learn what you can teach.
+          </p>
         </div>
-        <h1 style={{ fontSize: '36px', fontWeight: '800', color: 'var(--dark)', marginBottom: '10px', letterSpacing: '-0.5px' }}>
-          Your Perfect Matches
-        </h1>
-        <p style={{ fontSize: '16px', color: 'var(--gray)', maxWidth: '600px', margin: '0 auto' }}>
-          Find students who can teach you what you want to learn, and want to learn what you can teach.
-        </p>
       </div>
 
       {/* Filter Info Banner (only if filtered) */}
