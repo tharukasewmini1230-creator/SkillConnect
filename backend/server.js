@@ -43,7 +43,7 @@ app.use('/api/notifications', notificationRoutes);
 // BASIC TEST ROUTE
 // ============================================
 app.get('/', (req, res) => {
-  res.send('SkillConnect API is running...');
+  res.send('SkillSwap API is running...');
 });
 
 // ============================================

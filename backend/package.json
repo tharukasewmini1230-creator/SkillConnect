@@ -1,5 +1,5 @@
 {
-  "name": "skillconnect",
+  "name": "skillswap-backend",
   "version": "1.0.0",
   "description": "Student Skill Exchange and Learning Platform - EE4207",
   "main": "server.js",

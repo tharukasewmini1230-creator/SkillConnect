@@ -556,7 +556,7 @@ const Settings = () => {
               Appearance
             </h2>
             <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>
-              Customize how SkillConnect looks
+              Customize how SkillSwap looks
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
