@@ -46,7 +46,7 @@ const Register = () => {
       <div style={{ background: '#fff', padding: '60px 50px', display: 'flex', alignItems: 'center', justifyContent: 'center', order: 2 }}>
         <div style={{ width: '100%', maxWidth: '400px' }}>
           <h2 style={{ fontSize: '30px', fontWeight: '800', color: '#1f2937', marginBottom: '8px' }}>Create Account</h2>
-          <p style={{ color: '#6b7280', marginBottom: '30px', fontSize: '15px' }}>Join SkillConnect and start exchanging skills</p>
+          <p style={{ color: '#6b7280', marginBottom: '30px', fontSize: '15px' }}>Join SkillSwap and start exchanging skills</p>
 
           {error && (
             <div style={{ background: '#fee', color: '#dc2626', padding: '12px 16px', borderRadius: '10px', marginBottom: '20px', fontSize: '14px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -109,13 +109,13 @@ const Register = () => {
               style={{
                 width: '100%',
                 padding: '14px',
-                background: loading ? '#9ca3af' : 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                background: loading ? '#9ca3af' : 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
                 color: '#fff',
                 borderRadius: '10px',
                 fontSize: '16px',
                 fontWeight: '700',
                 cursor: loading ? 'not-allowed' : 'pointer',
-                boxShadow: loading ? 'none' : '0 4px 14px rgba(99, 102, 241, 0.3)'
+                boxShadow: loading ? 'none' : '0 4px 14px rgba(59, 130, 246, 0.3)'
               }}
             >
               {loading ? 'Creating account...' : 'Create Account →'}
@@ -124,7 +124,7 @@ const Register = () => {
 
           <p style={{ textAlign: 'center', marginTop: '22px', color: '#6b7280', fontSize: '14px' }}>
             Already have an account?{' '}
-            <Link to="/login" style={{ color: '#4f46e5', fontWeight: '700' }}>
+            <Link to="/login" style={{ color: '#3B82F6', fontWeight: '700' }}>
               Login here
             </Link>
           </p>
@@ -132,16 +132,16 @@ const Register = () => {
       </div>
 
       {/* Right Side - Brand Section */}
-      <div className="auth-brand-section" style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)', color: '#fff', padding: '60px 50px', display: 'flex', flexDirection: 'column', justifyContent: 'center', order: 1 }}>
+      <div className="auth-brand-section" style={{ background: 'linear-gradient(135deg, #A855F7 0%, #3B82F6 100%)', color: '#fff', padding: '60px 50px', display: 'flex', flexDirection: 'column', justifyContent: 'center', order: 1 }}>
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', marginBottom: '30px' }}>
             ✨
           </div>
           <h1 style={{ fontSize: '40px', fontWeight: '800', marginBottom: '20px', lineHeight: '1.2', letterSpacing: '-1px' }}>
-            Start Your Skill Exchange Journey
+            Start Your Skill Swap Journey
           </h1>
           <p style={{ fontSize: '17px', lineHeight: '1.7', opacity: 0.95, marginBottom: '40px' }}>
-            Join hundreds of students already sharing knowledge and learning new skills together.
+            Join hundreds of students already swapping skills and learning new things together.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
