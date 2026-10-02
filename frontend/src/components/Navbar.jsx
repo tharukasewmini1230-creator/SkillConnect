@@ -68,10 +68,14 @@ const Navbar = () => {
                 <stop offset="100%" stopColor="#A855F7" />
               </linearGradient>
             </defs>
-            <circle cx="15" cy="14" r="5" fill="#3B82F6" />
-            <path d="M5 32c0-5.5 4.5-10 10-10s10 4.5 10 10v2H5v-2z" fill="#3B82F6" />
-            <circle cx="28" cy="14" r="5" fill="#A855F7" />
-            <path d="M18 32c0-5.5 4.5-10 10-10s10 4.5 10 10v2H18v-2z" fill="#A855F7" />
+            {/* Rounded square background */}
+            <rect x="2" y="2" width="38" height="38" rx="10" fill="url(#logoGrad)" />
+            {/* Left person */}
+            <circle cx="15" cy="17" r="4.5" fill="#FFFFFF" />
+            <path d="M7 30c0-4.4 3.6-8 8-8s8 3.6 8 8v1H7v-1z" fill="#FFFFFF" />
+            {/* Right person */}
+            <circle cx="28" cy="17" r="4.5" fill="#FFFFFF" opacity="0.85" />
+            <path d="M20 30c0-4.4 3.6-8 8-8s8 3.6 8 8v1H20v-1z" fill="#FFFFFF" opacity="0.85" />
           </svg>
 
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
@@ -87,7 +91,7 @@ const Navbar = () => {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
-              }}>Connect</span>
+              }}>Swap</span>
             </span>
             <span style={{
               fontSize: '10px',
@@ -267,7 +271,7 @@ const Navbar = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ padding: '10px', borderRadius: '8px', background: 'var(--light-gray)' }}>
                         <p style={{ fontSize: '13px', color: 'var(--dark)', fontWeight: '500' }}>
-                          🎉 Welcome to SkillConnect!
+                          🎉 Welcome to SkillSwap!
                         </p>
                         <p style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '3px' }}>
                           Just now
