@@ -21,6 +21,7 @@ const formatUserResponse = (user) => ({
   points: user.points,
   avatar: user.avatar,
   authProvider: user.authProvider,
+  hasPassword: !!user.password,   
   token: generateToken(user._id)
 });
 
@@ -212,17 +213,19 @@ const updateProfile = async (req, res) => {
 
     const updatedUser = await user.save();
 
-    res.json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      university: updatedUser.university,
-      skillsOffered: updatedUser.skillsOffered,
-      skillsWanted: updatedUser.skillsWanted,
-      points: updatedUser.points,
-      avatar: updatedUser.avatar,
-      authProvider: updatedUser.authProvider
-    });
+  res.json({
+  _id: updatedUser._id,
+  name: updatedUser.name,
+  email: updatedUser.email,
+  university: updatedUser.university,
+  skillsOffered: updatedUser.skillsOffered,
+  skillsWanted: updatedUser.skillsWanted,
+  points: updatedUser.points,
+  avatar: updatedUser.avatar,
+  authProvider: updatedUser.authProvider,
+  hasPassword: !!updatedUser.password  
+});
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -272,11 +275,62 @@ const changePassword = async (req, res) => {
   }
 };
 
+// @desc    Set password for Google-authenticated users (who don't have a password yet)
+// @route   POST /api/auth/set-password
+const setPassword = async (req, res) => {
+  try {
+    const { newPassword, confirmPassword } = req.body;
+
+    // Validation
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'Please add all fields' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if user already has a password
+    if (user.password) {
+      return res.status(400).json({
+        message: 'You already have a password set. Please use "Change Password" instead.'
+      });
+    }
+
+    // Hash and save
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    // Keep authProvider as 'google' so user still uses Google login
+    // But now can also login with email/password
+    await user.save();
+
+    res.status(200).json({
+    message: 'Password set successfully! You can now login with email and password too.',
+    hasPassword: true   
+});
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   googleLogin,
   getMe,
   updateProfile,
-  changePassword
+  changePassword,
+  setPassword
 };

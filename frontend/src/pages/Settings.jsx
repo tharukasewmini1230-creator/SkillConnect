@@ -6,7 +6,7 @@ import Toast from '../components/Toast';
 import DashboardLayout from '../components/DashboardLayout';
 
 const Settings = () => {
-  const { user, updateProfile, refreshUser } = useAuth();
+  const { user, updateProfile, refreshUser, setPassword } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
   const [toast, setToast] = useState(null);
@@ -18,13 +18,23 @@ const Settings = () => {
   });
   const [profileLoading, setProfileLoading] = useState(false);
 
-  // Password form state
+  // Password change form state (for users who already have a password)
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
   const [passwordLoading, setPasswordLoading] = useState(false);
+
+  // Set password form state (for Google users without password)
+  const [googlePasswordData, setGooglePasswordData] = useState({
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [googlePasswordLoading, setGooglePasswordLoading] = useState(false);
+
+  // Check if user is a Google user
+  const isGoogleUser = user?.authProvider === 'google';
 
   // Notification preferences (localStorage only)
   const [notifications, setNotifications] = useState(() => {
@@ -56,7 +66,7 @@ const Settings = () => {
     }
   };
 
-  // Handle password change
+  // Handle password change (for local users)
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
 
@@ -91,6 +101,47 @@ const Settings = () => {
       });
     } finally {
       setPasswordLoading(false);
+    }
+  };
+
+  // Handle set password (for Google users)
+  const handleSetPasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    if (googlePasswordData.newPassword !== googlePasswordData.confirmPassword) {
+      setToast({ message: 'Passwords do not match', type: 'error' });
+      return;
+    }
+
+    if (googlePasswordData.newPassword.length < 6) {
+      setToast({ message: 'Password must be at least 6 characters', type: 'error' });
+      return;
+    }
+
+    setGooglePasswordLoading(true);
+
+    try {
+      const response = await setPassword(
+        googlePasswordData.newPassword,
+        googlePasswordData.confirmPassword
+      );
+
+      setToast({
+        message: response.message || 'Password set successfully! You can now login with email & password.',
+        type: 'success'
+      });
+
+      setGooglePasswordData({ newPassword: '', confirmPassword: '' });
+
+      // Refresh user
+      await refreshUser();
+    } catch (err) {
+      setToast({
+        message: err.response?.data?.message || 'Failed to set password',
+        type: 'error'
+      });
+    } finally {
+      setGooglePasswordLoading(false);
     }
   };
 
@@ -187,12 +238,7 @@ const Settings = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
             border: '1px solid var(--border)'
           }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: 'var(--dark)',
-              marginBottom: '8px'
-            }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
               Profile Information
             </h2>
             <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>
@@ -201,13 +247,7 @@ const Settings = () => {
 
             <form onSubmit={handleProfileSubmit}>
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: 'var(--dark)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
                   Full Name
                 </label>
                 <input
@@ -215,42 +255,19 @@ const Settings = () => {
                   value={profileData.name}
                   onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                   required
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    background: 'var(--light-gray)',
-                    color: 'var(--dark)'
-                  }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
                 />
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: 'var(--dark)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
                   Email Address
                 </label>
                 <input
                   type="email"
                   value={user?.email || ''}
                   disabled
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    background: 'var(--light-gray)',
-                    color: 'var(--gray)',
-                    cursor: 'not-allowed'
-                  }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--gray)', cursor: 'not-allowed' }}
                 />
                 <p style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '6px' }}>
                   Email cannot be changed
@@ -258,13 +275,7 @@ const Settings = () => {
               </div>
 
               <div style={{ marginBottom: '25px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: 'var(--dark)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
                   University
                 </label>
                 <input
@@ -272,15 +283,7 @@ const Settings = () => {
                   value={profileData.university}
                   onChange={(e) => setProfileData({ ...profileData, university: e.target.value })}
                   placeholder="e.g., University of Ruhuna"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    background: 'var(--light-gray)',
-                    color: 'var(--dark)'
-                  }}
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
                 />
               </div>
 
@@ -289,9 +292,7 @@ const Settings = () => {
                 disabled={profileLoading}
                 style={{
                   padding: '12px 30px',
-                  background: profileLoading
-                    ? 'var(--gray)'
-                    : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                  background: profileLoading ? 'var(--gray)' : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
                   color: '#fff',
                   borderRadius: '10px',
                   fontSize: '15px',
@@ -309,131 +310,189 @@ const Settings = () => {
 
         {/* PASSWORD TAB */}
         {activeTab === 'password' && (
-          <div style={{
-            background: 'var(--white)',
-            borderRadius: '16px',
-            padding: '30px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            border: '1px solid var(--border)'
-          }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: 'var(--dark)',
-              marginBottom: '8px'
-            }}>
-              Change Password
-            </h2>
-            <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>
-              Update your password to keep your account secure
-            </p>
+          <>
+            {isGoogleUser ? (
+              /* Google user — Set Password form */
+              <div style={{
+                background: 'var(--white)',
+                borderRadius: '16px',
+                padding: '30px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                border: '1px solid var(--border)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <div style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '20px'
+                  }}>
+                    🔐
+                  </div>
+                  <div>
+                    <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '2px' }}>
+                      Set a Password
+                    </h2>
+                    <p style={{ color: 'var(--gray)', fontSize: '13px' }}>
+                      You signed up with Google
+                    </p>
+                  </div>
+                </div>
 
-            <form onSubmit={handlePasswordSubmit}>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: 'var(--dark)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                  required
-                  placeholder="Enter current password"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    background: 'var(--light-gray)',
-                    color: 'var(--dark)'
-                  }}
-                />
-              </div>
+                <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '20px', marginTop: '12px' }}>
+                  Set a password to login with email + password too.
+                </p>
 
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: 'var(--dark)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  required
-                  placeholder="At least 6 characters"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    background: 'var(--light-gray)',
-                    color: 'var(--dark)'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '25px' }}>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: 'var(--dark)',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                  required
-                  placeholder="Re-enter new password"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px',
-                    fontSize: '15px',
-                    background: 'var(--light-gray)',
-                    color: 'var(--dark)'
-                  }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={passwordLoading}
-                style={{
-                  padding: '12px 30px',
-                  background: passwordLoading
-                    ? 'var(--gray)'
-                    : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-                  color: '#fff',
+                <div style={{
+                  background: 'var(--primary-light)',
                   borderRadius: '10px',
-                  fontSize: '15px',
-                  fontWeight: '700',
-                  border: 'none',
-                  cursor: passwordLoading ? 'not-allowed' : 'pointer',
-                  boxShadow: passwordLoading ? 'none' : '0 4px 12px rgba(245, 158, 11, 0.25)'
-                }}
-              >
-                {passwordLoading ? 'Changing...' : '🔒 Change Password'}
-              </button>
-            </form>
-          </div>
+                  padding: '12px 16px',
+                  marginBottom: '22px',
+                  fontSize: '13px',
+                  color: '#1E40AF',
+                  display: 'flex',
+                  gap: '8px',
+                  alignItems: 'flex-start',
+                  lineHeight: '1.5'
+                }}>
+                  <span>💡</span>
+                  <span>
+                    Currently you can only login with <strong>Google</strong>. Setting a password lets you login with <strong>email + password</strong> too.
+                  </span>
+                </div>
+
+                <form onSubmit={handleSetPasswordSubmit}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={googlePasswordData.newPassword}
+                      onChange={(e) => setGooglePasswordData({ ...googlePasswordData, newPassword: e.target.value })}
+                      required
+                      placeholder="At least 6 characters"
+                      style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '25px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={googlePasswordData.confirmPassword}
+                      onChange={(e) => setGooglePasswordData({ ...googlePasswordData, confirmPassword: e.target.value })}
+                      required
+                      placeholder="Re-enter your password"
+                      style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={googlePasswordLoading}
+                    style={{
+                      padding: '12px 30px',
+                      background: googlePasswordLoading ? 'var(--gray)' : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                      color: '#fff',
+                      borderRadius: '10px',
+                      fontSize: '15px',
+                      fontWeight: '700',
+                      border: 'none',
+                      cursor: googlePasswordLoading ? 'not-allowed' : 'pointer',
+                      boxShadow: googlePasswordLoading ? 'none' : '0 4px 12px rgba(59, 130, 246, 0.25)'
+                    }}
+                  >
+                    {googlePasswordLoading ? 'Setting password...' : '🔐 Set Password'}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              /* Local user — Change Password form */
+              <div style={{
+                background: 'var(--white)',
+                borderRadius: '16px',
+                padding: '30px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                border: '1px solid var(--border)'
+              }}>
+                <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
+                  Change Password
+                </h2>
+                <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>
+                  Update your password to keep your account secure
+                </p>
+
+                <form onSubmit={handlePasswordSubmit}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      required
+                      placeholder="Enter current password"
+                      style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      required
+                      placeholder="At least 6 characters"
+                      style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
+                    />
+                  </div>
+
+                  <div style={{ marginBottom: '25px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      required
+                      placeholder="Re-enter new password"
+                      style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    style={{
+                      padding: '12px 30px',
+                      background: passwordLoading ? 'var(--gray)' : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                      color: '#fff',
+                      borderRadius: '10px',
+                      fontSize: '15px',
+                      fontWeight: '700',
+                      border: 'none',
+                      cursor: passwordLoading ? 'not-allowed' : 'pointer',
+                      boxShadow: passwordLoading ? 'none' : '0 4px 12px rgba(245, 158, 11, 0.25)'
+                    }}
+                  >
+                    {passwordLoading ? 'Changing...' : '🔒 Change Password'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </>
         )}
 
         {/* NOTIFICATIONS TAB */}
@@ -445,12 +504,7 @@ const Settings = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
             border: '1px solid var(--border)'
           }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: 'var(--dark)',
-              marginBottom: '8px'
-            }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
               Notification Preferences
             </h2>
             <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>
@@ -489,18 +543,10 @@ const Settings = () => {
                     {pref.icon}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{
-                      fontSize: '14px',
-                      fontWeight: '700',
-                      color: 'var(--dark)',
-                      marginBottom: '3px'
-                    }}>
+                    <p style={{ fontSize: '14px', fontWeight: '700', color: 'var(--dark)', marginBottom: '3px' }}>
                       {pref.title}
                     </p>
-                    <p style={{
-                      fontSize: '12px',
-                      color: 'var(--gray)'
-                    }}>
+                    <p style={{ fontSize: '12px', color: 'var(--gray)' }}>
                       {pref.desc}
                     </p>
                   </div>
@@ -510,9 +556,7 @@ const Settings = () => {
                       width: '48px',
                       height: '26px',
                       borderRadius: '13px',
-                      background: notifications[pref.key]
-                        ? 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)'
-                        : 'var(--border)',
+                      background: notifications[pref.key] ? 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)' : 'var(--border)',
                       border: 'none',
                       cursor: 'pointer',
                       position: 'relative',
@@ -547,12 +591,7 @@ const Settings = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
             border: '1px solid var(--border)'
           }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: 'var(--dark)',
-              marginBottom: '8px'
-            }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
               Appearance
             </h2>
             <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>

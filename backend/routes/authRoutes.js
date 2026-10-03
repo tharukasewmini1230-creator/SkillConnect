@@ -6,7 +6,8 @@ const {
   googleLogin,
   getMe,
   updateProfile,
-  changePassword
+  changePassword,
+  setPassword
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -27,5 +28,8 @@ router.put('/profile', protect, updateProfile);
 
 // @route   PUT /api/auth/change-password
 router.put('/change-password', protect, changePassword);
+
+// @route   POST /api/auth/set-password
+router.post('/set-password', protect, setPassword);
 
 module.exports = router;

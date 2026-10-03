@@ -58,6 +58,21 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  // Set password for Google users (who don't have a password yet)
+  const setPassword = async (newPassword, confirmPassword) => {
+    const response = await API.post('/auth/set-password', {
+      newPassword,
+      confirmPassword
+    });
+
+    // Update user in localStorage — mark that they now have a password
+    const updatedUser = { ...user, hasPassword: true };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+
+    return response.data;
+  };
+
   // Update user profile
   const updateProfile = async (profileData) => {
     try {
@@ -92,7 +107,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, googleLogin, logout, updateProfile, refreshUser }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      register, 
+      login, 
+      googleLogin, 
+      setPassword,   
+      logout, 
+      updateProfile, 
+      refreshUser 
+    }}>
       {children}
     </AuthContext.Provider>
   );
