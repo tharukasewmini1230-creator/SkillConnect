@@ -11,7 +11,6 @@ const Navbar = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -68,12 +67,9 @@ const Navbar = () => {
                 <stop offset="100%" stopColor="#A855F7" />
               </linearGradient>
             </defs>
-            {/* Rounded square background */}
             <rect x="2" y="2" width="38" height="38" rx="10" fill="url(#logoGrad)" />
-            {/* Left person */}
             <circle cx="15" cy="17" r="4.5" fill="#FFFFFF" />
             <path d="M7 30c0-4.4 3.6-8 8-8s8 3.6 8 8v1H7v-1z" fill="#FFFFFF" />
-            {/* Right person */}
             <circle cx="28" cy="17" r="4.5" fill="#FFFFFF" opacity="0.85" />
             <path d="M20 30c0-4.4 3.6-8 8-8s8 3.6 8 8v1H20v-1z" fill="#FFFFFF" opacity="0.85" />
           </svg>
@@ -209,76 +205,10 @@ const Navbar = () => {
 
           {user ? (
             <>
-              {/* Notification Bell */}
-              <div style={{ position: 'relative' }}>
-                <button
-                  onClick={() => {
-                    setShowNotifications(!showNotifications);
-                    setShowUserMenu(false);
-                  }}
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'var(--light-gray)',
-                    color: 'var(--gray)',
-                    fontSize: '16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  🔔
-                </button>
-
-                {showNotifications && (
-                  <div style={{
-                    position: 'absolute',
-                    top: 'calc(100% + 10px)',
-                    right: 0,
-                    background: 'var(--white)',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 25px rgba(15, 23, 42, 0.12)',
-                    border: '1px solid var(--border)',
-                    minWidth: '300px',
-                    padding: '15px',
-                    zIndex: 1000
-                  }}>
-                    <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--dark)', marginBottom: '12px' }}>
-                      Notifications
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <div style={{ padding: '10px', borderRadius: '8px', background: 'var(--light-gray)' }}>
-                        <p style={{ fontSize: '13px', color: 'var(--dark)', fontWeight: '500' }}>
-                          🎉 Welcome to SkillSwap!
-                        </p>
-                        <p style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '3px' }}>
-                          Just now
-                        </p>
-                      </div>
-                      <div style={{ padding: '10px', borderRadius: '8px' }}>
-                        <p style={{ fontSize: '13px', color: 'var(--dark)', fontWeight: '500' }}>
-                          ✨ Add your skills to find matches
-                        </p>
-                        <p style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '3px' }}>
-                          Yesterday
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* User Menu */}
               <div style={{ position: 'relative' }}>
                 <button
-                  onClick={() => {
-                    setShowUserMenu(!showUserMenu);
-                    setShowNotifications(false);
-                  }}
+                  onClick={() => setShowUserMenu(!showUserMenu)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -375,6 +305,24 @@ const Navbar = () => {
                       }}
                     >
                       🎯 Explore Matches
+                    </Link>
+
+                    <Link
+                      to="/notifications"
+                      onClick={() => setShowUserMenu(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        padding: '10px 12px',
+                        borderRadius: '8px',
+                        fontSize: '14px',
+                        color: 'var(--dark)',
+                        fontWeight: '500',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      🔔 Notifications
                     </Link>
 
                     <Link

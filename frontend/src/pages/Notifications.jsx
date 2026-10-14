@@ -102,7 +102,7 @@ const Notifications = () => {
 
   return (
     <DashboardLayout>
-      <div style={{ padding: '30px 35px', maxWidth: '900px' }}>
+      <div style={{ padding: '30px 35px', maxWidth: '100%' }}>
 
         {/* HEADER */}
         <div style={{
