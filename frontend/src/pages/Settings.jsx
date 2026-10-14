@@ -6,17 +6,10 @@ import Toast from '../components/Toast';
 import DashboardLayout from '../components/DashboardLayout';
 
 const Settings = () => {
-  const { user, updateProfile, refreshUser, setPassword } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState('profile');
+  const { user } = useAuth();
+  const {theme, toggleTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState('password');
   const [toast, setToast] = useState(null);
-
-  // Profile form state
-  const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    university: user?.university || ''
-  });
-  const [profileLoading, setProfileLoading] = useState(false);
 
   // Password change form state (for users who already have a password)
   const [passwordData, setPasswordData] = useState({
@@ -46,25 +39,6 @@ const Settings = () => {
       pushAll: true
     };
   });
-
-  // Handle profile update
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
-    setProfileLoading(true);
-
-    try {
-      await updateProfile(profileData);
-      await refreshUser();
-      setToast({ message: 'Profile updated successfully!', type: 'success' });
-    } catch (err) {
-      setToast({
-        message: err.response?.data?.message || 'Failed to update profile',
-        type: 'error'
-      });
-    } finally {
-      setProfileLoading(false);
-    }
-  };
 
   // Handle password change (for local users)
   const handlePasswordSubmit = async (e) => {
@@ -155,7 +129,6 @@ const Settings = () => {
 
   // Tabs
   const tabs = [
-    { key: 'profile', label: 'Profile', icon: '👤' },
     { key: 'password', label: 'Password', icon: '🔒' },
     { key: 'notifications', label: 'Notifications', icon: '🔔' },
     { key: 'appearance', label: 'Appearance', icon: '🎨' }
@@ -199,7 +172,6 @@ const Settings = () => {
           borderRadius: '14px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
           width: '100%',
-          justifyContent: 'center', 
           flexWrap: 'wrap',
           border: '1px solid var(--border)'
         }}>
@@ -208,6 +180,7 @@ const Settings = () => {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               style={{
+                flex: 1,   // ← Add this
                 padding: '10px 18px',
                 borderRadius: '10px',
                 fontSize: '14px',
@@ -218,6 +191,7 @@ const Settings = () => {
                 color: activeTab === tab.key ? '#fff' : 'var(--gray)',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',   // ← Add this too
                 gap: '8px',
                 transition: 'all 0.25s ease',
                 border: 'none',
@@ -229,85 +203,6 @@ const Settings = () => {
             </button>
           ))}
         </div>
-
-        {/* PROFILE TAB */}
-        {activeTab === 'profile' && (
-          <div style={{
-            background: 'var(--white)',
-            borderRadius: '16px',
-            padding: '30px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-            border: '1px solid var(--border)'
-          }}>
-            <h2 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--dark)', marginBottom: '8px' }}>
-              Profile Information
-            </h2>
-            <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '25px' }}>
-              Update your personal information
-            </p>
-
-            <form onSubmit={handleProfileSubmit}>
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={profileData.name}
-                  onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                  required
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={user?.email || ''}
-                  disabled
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--gray)', cursor: 'not-allowed' }}
-                />
-                <p style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '6px' }}>
-                  Email cannot be changed
-                </p>
-              </div>
-
-              <div style={{ marginBottom: '25px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
-                  University
-                </label>
-                <input
-                  type="text"
-                  value={profileData.university}
-                  onChange={(e) => setProfileData({ ...profileData, university: e.target.value })}
-                  placeholder="e.g., University of Ruhuna"
-                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={profileLoading}
-                style={{
-                  padding: '12px 30px',
-                  background: profileLoading ? 'var(--gray)' : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-                  color: '#fff',
-                  borderRadius: '10px',
-                  fontSize: '15px',
-                  fontWeight: '700',
-                  border: 'none',
-                  cursor: profileLoading ? 'not-allowed' : 'pointer',
-                  boxShadow: profileLoading ? 'none' : '0 4px 12px rgba(59, 130, 246, 0.25)'
-                }}
-              >
-                {profileLoading ? 'Saving...' : 'Save Changes'}
-              </button>
-            </form>
-          </div>
-        )}
 
         {/* PASSWORD TAB */}
         {activeTab === 'password' && (
