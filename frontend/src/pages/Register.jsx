@@ -62,10 +62,9 @@ const Register = () => {
     flow: 'implicit',
   });
 
-  return (
-    <div style={{
+    return (
+    <div className="login-page-bg" style={{
       minHeight: 'calc(100vh - 68px)',
-      background: 'linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 50%, #FAF5FF 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -96,28 +95,27 @@ const Register = () => {
         maxWidth: '1100px',
         width: '100%',
         display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',   // ← Swap කරන්න
+        gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',   
         overflow: 'hidden',
         position: 'relative',
         zIndex: 1,
         border: '1px solid var(--border)'
       }}>
 
-        {/* ====== LEFT SIDE — Form Section ====== */}
-        <div style={{
+        {/* ====== Form Section ====== */}
+        <div className="register-form-section" style={{
           padding: '45px 45px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          background: '#fff',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          position: 'relative',
           order: 2
         }}>
 
-          {/* Top: Already have account link */}
-          <div style={{ textAlign: 'right', marginBottom: '25px' }}>
-            <span style={{ fontSize: '13px', color: '#64748B' }}>
-              Already have an account?{' '}
-            </span>
+          {/* Top-right: Already have an account? */}
+          <div style={{
+            position: 'absolute', top: '30px', right: '45px',
+            fontSize: '13px', color: 'var(--gray)'
+          }}>
+            Already have an account?{' '}
             <Link to="/login" style={{
               fontSize: '13px', color: '#3B82F6', fontWeight: '700',
               textDecoration: 'none'
@@ -128,14 +126,11 @@ const Register = () => {
 
           {/* Heading */}
           <h2 style={{
-            fontSize: '28px', fontWeight: '800', color: '#0F172A',
+            fontSize: '28px', fontWeight: '800', color: 'var(--dark)',
             marginBottom: '8px', letterSpacing: '-0.5px'
           }}>
             Create Account
           </h2>
-          <p style={{ fontSize: '14px', color: '#64748B', marginBottom: '25px', lineHeight: '1.6' }}>
-            Join SkillSwap and start exchanging skills
-          </p>
 
           {/* Error */}
           {error && (
@@ -154,100 +149,76 @@ const Register = () => {
           <form onSubmit={handleSubmit}>
             {/* Name */}
             <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#0F172A', fontSize: '13px', fontWeight: '600' }}>
+              <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>
                 Full Name
               </label>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
-                borderRadius: '12px', padding: '12px 16px'
-              }}>
-                <span style={{ fontSize: '16px', color: '#94A3B8' }}>👤</span>
+              <div className="form-input-wrapper">
+                <span style={{ fontSize: '16px', color: 'var(--gray)' }}>👤</span>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Your full name"
-                  style={{
-                    flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: '#0F172A', outline: 'none'
-                  }}
+                  className="form-input"
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', outline: 'none' }}
                 />
               </div>
             </div>
 
             {/* Email */}
             <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#0F172A', fontSize: '13px', fontWeight: '600' }}>
+              <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>
                 Email Address
               </label>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
-                borderRadius: '12px', padding: '12px 16px'
-              }}>
-                <span style={{ fontSize: '16px', color: '#94A3B8' }}>✉️</span>
+              <div className="form-input-wrapper">
+                <span style={{ fontSize: '16px', color: 'var(--gray)' }}>✉️</span>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="you@example.com"
-                  style={{
-                    flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: '#0F172A', outline: 'none'
-                  }}
+                  className="form-input"
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', outline: 'none' }}
                 />
               </div>
             </div>
 
             {/* Password */}
             <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#0F172A', fontSize: '13px', fontWeight: '600' }}>
+              <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>
                 Password
               </label>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
-                borderRadius: '12px', padding: '12px 16px'
-              }}>
-                <span style={{ fontSize: '16px', color: '#94A3B8' }}>🔒</span>
+              <div className="form-input-wrapper">
+                <span style={{ fontSize: '16px', color: 'var(--gray)' }}>🔒</span>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="At least 6 characters"
-                  style={{
-                    flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: '#0F172A', outline: 'none'
-                  }}
+                  className="form-input"
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', outline: 'none' }}
                 />
               </div>
             </div>
 
             {/* Confirm Password */}
             <div style={{ marginBottom: '22px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#0F172A', fontSize: '13px', fontWeight: '600' }}>
+              <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>
                 Confirm Password
               </label>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
-                borderRadius: '12px', padding: '12px 16px'
-              }}>
-                <span style={{ fontSize: '16px', color: '#94A3B8' }}>🔒</span>
+              <div className="form-input-wrapper">
+                <span style={{ fontSize: '16px', color: 'var(--gray)' }}>🔒</span>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   placeholder="Re-enter your password"
-                  style={{
-                    flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: '#0F172A', outline: 'none'
-                  }}
+                  className="form-input"
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', outline: 'none' }}
                 />
               </div>
             </div>
@@ -351,30 +322,6 @@ const Register = () => {
           order: 1   
         }} className="login-brand-section">
 
-          {/* Logo */}
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '30px' }}>
-            <div style={{
-              width: '44px', height: '44px', borderRadius: '12px',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: '800', fontSize: '20px'
-            }}>
-              S
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-              <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A', letterSpacing: '-0.5px' }}>
-                Skill<span style={{
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>Swap</span>
-              </span>
-              <span style={{ fontSize: '10px', color: '#64748B', fontWeight: '600', marginTop: '3px', letterSpacing: '0.3px' }}>
-                Student Skill Exchange and Learning Platform
-              </span>
-            </div>
-          </Link>
-
           {/* Headline */}
           <div style={{ marginBottom: '20px' }}>
             <p style={{
@@ -394,9 +341,6 @@ const Register = () => {
                 WebkitTextFillColor: 'transparent'
               }}>journey.</span>
             </h1>
-            <p style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.7', maxWidth: '380px' }}>
-              Join hundreds of students already swapping skills and learning new things together.
-            </p>
           </div>
 
           {/* Illustration */}
