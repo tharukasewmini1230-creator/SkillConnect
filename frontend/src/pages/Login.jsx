@@ -18,7 +18,6 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       await login(email, password);
       navigate('/');
@@ -29,7 +28,6 @@ const Login = () => {
     }
   };
 
-  // Google login using the hook
   const googleSignin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setError('');
@@ -53,15 +51,9 @@ const Login = () => {
     <div style={{
       minHeight: 'calc(100vh - 68px)',
       background: 'linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 50%, #FAF5FF 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '30px 20px',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-
-      {/* Background decorative blobs */}
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '30px 20px', position: 'relative', overflow: 'hidden'
+    }} className="login-page-bg">
       <div style={{
         position: 'absolute', top: '-150px', right: '-150px',
         width: '400px', height: '400px', borderRadius: '50%',
@@ -75,55 +67,23 @@ const Login = () => {
         pointerEvents: 'none'
       }} />
 
-      {/* Main card */}
       <div style={{
-        background: '#fff',
+        background: 'var(--white)',
         borderRadius: '24px',
         boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)',
-        maxWidth: '1100px',
-        width: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',
-        overflow: 'hidden',
-        position: 'relative',
-        zIndex: 1
+        maxWidth: '1100px', width: '100%',
+        display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',
+        overflow: 'hidden', position: 'relative', zIndex: 1,
+        border: '1px solid var(--border)'
       }}>
 
-        {/* ====== LEFT SIDE — Brand Section ====== */}
+        {/* ====== LEFT — Brand Section ====== */}
         <div style={{
           background: 'linear-gradient(160deg, #F8FAFF 0%, #EFF3FF 50%, #F5F0FF 100%)',
           padding: '45px 40px',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRight: '1px solid #EEF2FF'
-        }}>
-
-          {/* Logo */}
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '30px' }}>
-            <div style={{
-              width: '44px', height: '44px', borderRadius: '12px',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: '800', fontSize: '20px'
-            }}>
-              S
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-              <span style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A', letterSpacing: '-0.5px' }}>
-                Skill<span style={{
-                  background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}>Swap</span>
-              </span>
-              <span style={{ fontSize: '10px', color: '#64748B', fontWeight: '600', marginTop: '3px', letterSpacing: '0.3px' }}>
-                Student Skill Exchange and Learning Platform
-              </span>
-            </div>
-          </Link>
-
-          {/* Headline */}
+          display: 'flex', flexDirection: 'column',
+          borderRight: '1px solid var(--border)'
+        }} className="login-brand-section">
           <div style={{ marginBottom: '20px' }}>
             <p style={{
               fontSize: '12px', fontWeight: '700', color: '#6366F1',
@@ -131,51 +91,24 @@ const Login = () => {
             }}>
               WELCOME BACK
             </p>
-            <h1 style={{
-              fontSize: '34px', fontWeight: '800', color: '#0F172A',
+            <h1 className="login-left-heading" style={{
+              fontSize: '34px', fontWeight: '800',
               lineHeight: '1.2', letterSpacing: '-1px', marginBottom: '14px'
             }}>
               Learn from peers.<br />
               Build <span style={{
                 background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
               }}>your future.</span>
             </h1>
-            <p style={{ fontSize: '14px', color: '#64748B', lineHeight: '1.7', maxWidth: '380px' }}>
-              Connect with students who have the skills you need. Share what you know and grow together.
-            </p>
+            
           </div>
 
-          {/* Illustration */}
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '20px',
-            minHeight: '220px'
-          }}>
-            <img
-              src={educationIllustration}
-              alt="Students learning together"
-              style={{
-                width: '100%',
-                maxWidth: '360px',
-                height: 'auto',
-                display: 'block',
-                objectFit: 'contain'
-              }}
-            />
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', minHeight: '220px' }}>
+            <img src={educationIllustration} alt="Students learning" style={{ width: '100%', maxWidth: '360px', height: 'auto', objectFit: 'contain' }} />
           </div>
 
-          {/* Feature grid (4 mini cards) */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '14px',
-            marginTop: 'auto'
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginTop: 'auto' }}>
             {[
               { icon: '👥', title: 'Find Your Match', desc: 'Connect with students who can teach and learn with you.' },
               { icon: '📅', title: 'Book Sessions', desc: 'Schedule flexible learning sessions at your convenience.' },
@@ -183,10 +116,9 @@ const Login = () => {
               { icon: '🤝', title: 'Community', desc: 'Collaborate, share and grow your network.' }
             ].map((f, i) => (
               <div key={i} style={{
-                background: '#fff',
-                borderRadius: '12px',
-                padding: '14px',
-                border: '1px solid #EEF2FF',
+                background: 'var(--white)',
+                borderRadius: '12px', padding: '14px',
+                border: '1px solid var(--border)',
                 boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)'
               }}>
                 <div style={{
@@ -197,31 +129,27 @@ const Login = () => {
                 }}>
                   {f.icon}
                 </div>
-                <p style={{ fontSize: '12px', fontWeight: '700', color: '#0F172A', marginBottom: '3px' }}>
-                  {f.title}
-                </p>
-                <p style={{ fontSize: '10px', color: '#64748B', lineHeight: '1.4' }}>
-                  {f.desc}
-                </p>
+                <p style={{ fontSize: '12px', fontWeight: '700', color: 'var(--dark)', marginBottom: '3px' }}>{f.title}</p>
+                <p style={{ fontSize: '10px', color: 'var(--gray)', lineHeight: '1.4' }}>{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ====== RIGHT SIDE — Form Section ====== */}
+        {/* ====== RIGHT — Form Section ====== */}
         <div style={{
           padding: '45px 45px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          background: '#fff'
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          background: 'var(--white)',
+          position: 'relative'
         }}>
 
-          {/* Top-right: Create Account link */}
-          <div style={{ textAlign: 'right', marginBottom: '30px' }}>
-            <span style={{ fontSize: '13px', color: '#64748B' }}>
-              Don't have an account?{' '}
-            </span>
+          {/* Top-right: Don't have an account? */}
+          <div style={{
+            position: 'absolute', top: '30px', right: '45px',
+            fontSize: '13px', color: 'var(--gray)'
+          }}>
+            Don't have an account?{' '}
             <Link to="/register" style={{
               fontSize: '13px', color: '#3B82F6', fontWeight: '700',
               textDecoration: 'none'
@@ -232,41 +160,37 @@ const Login = () => {
 
           {/* Heading */}
           <h2 style={{
-            fontSize: '28px', fontWeight: '800', color: '#0F172A',
-            marginBottom: '8px', letterSpacing: '-0.5px'
+            fontSize: '28px', fontWeight: '800', color: 'var(--dark)',
+            marginBottom: '30px', letterSpacing: '-0.5px'
           }}>
             Login to SkillSwap
           </h2>
-          <p style={{ fontSize: '14px', color: '#64748B', marginBottom: '30px', lineHeight: '1.6' }}>
-            Welcome back! Please enter your details to continue.
-          </p>
 
-          {/* Error message */}
+          {/* Error */}
           {error && (
             <div style={{
-              background: '#FEF2F2', color: '#DC2626', padding: '12px 16px',
-              borderRadius: '10px', marginBottom: '20px', fontSize: '13px',
-              fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px',
-              border: '1px solid #FEE2E2'
+              background: 'var(--danger-light)', color: '#DC2626',
+              padding: '12px 16px', borderRadius: '10px',
+              marginBottom: '20px', fontSize: '13px', fontWeight: '500',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              border: '1px solid rgba(220, 38, 38, 0.2)'
             }}>
-              <span>⚠️</span>
-              <span>{error}</span>
+              <span>⚠️</span><span>{error}</span>
             </div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
-            {/* Email */}
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#0F172A', fontSize: '13px', fontWeight: '600' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '13px', fontWeight: '600' }}>
                 Email Address
               </label>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
+                background: 'var(--light-gray)', border: '1px solid var(--border)',
                 borderRadius: '12px', padding: '12px 16px'
               }}>
-                <span style={{ fontSize: '16px', color: '#94A3B8' }}>✉️</span>
+                <span style={{ fontSize: '16px', color: 'var(--gray)' }}>✉️</span>
                 <input
                   type="email"
                   value={email}
@@ -275,23 +199,22 @@ const Login = () => {
                   placeholder="Enter your email address"
                   style={{
                     flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: '#0F172A', outline: 'none'
+                    fontSize: '14px', color: 'var(--dark)', outline: 'none'
                   }}
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: '#0F172A', fontSize: '13px', fontWeight: '600' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '13px', fontWeight: '600' }}>
                 Password
               </label>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
-                background: '#F8FAFC', border: '1px solid #E2E8F0',
+                background: 'var(--light-gray)', border: '1px solid var(--border)',
                 borderRadius: '12px', padding: '12px 16px'
               }}>
-                <span style={{ fontSize: '16px', color: '#94A3B8' }}>🔒</span>
+                <span style={{ fontSize: '16px', color: 'var(--gray)' }}>🔒</span>
                 <input
                   type="password"
                   value={password}
@@ -300,13 +223,12 @@ const Login = () => {
                   placeholder="Enter your password"
                   style={{
                     flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: '#0F172A', outline: 'none'
+                    fontSize: '14px', color: 'var(--dark)', outline: 'none'
                   }}
                 />
               </div>
             </div>
 
-            {/* Forgot password */}
             <div style={{ textAlign: 'right', marginBottom: '22px' }}>
               <Link to="/forgot-password" style={{
                 fontSize: '13px', color: '#3B82F6', fontWeight: '600',
@@ -316,84 +238,34 @@ const Login = () => {
               </Link>
             </div>
 
-            {/* Login Button */}
-            <button
-              type="submit"
-              disabled={loading || googleLoading}
-              style={{
-                width: '100%',
-                padding: '14px',
-                background: loading ? '#94A3B8' : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
-                color: '#fff',
-                borderRadius: '12px',
-                fontSize: '15px',
-                fontWeight: '700',
-                border: 'none',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                boxShadow: loading ? 'none' : '0 8px 20px rgba(99, 102, 241, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'all 0.2s'
-              }}
-            >
-              {loading ? 'Logging in...' : (
-                <>
-                  <span>Login</span>
-                  <span>→</span>
-                </>
-              )}
+            <button type="submit" disabled={loading || googleLoading} style={{
+              width: '100%', padding: '14px',
+              background: loading ? 'var(--gray)' : 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
+              color: '#fff', borderRadius: '12px', fontSize: '15px', fontWeight: '700',
+              border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+              boxShadow: loading ? 'none' : '0 8px 20px rgba(99, 102, 241, 0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+            }}>
+              {loading ? 'Logging in...' : (<><span>Login</span><span>→</span></>)}
             </button>
           </form>
 
-          {/* Divider */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '14px',
-            margin: '22px 0'
-          }}>
-            <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }} />
-            <span style={{ color: '#94A3B8', fontSize: '12px', fontWeight: '500' }}>or</span>
-            <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '22px 0' }}>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            <span style={{ color: 'var(--gray)', fontSize: '12px', fontWeight: '500' }}>or</span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
           </div>
 
-          {/* Custom Google Button */}
-          <button
-            type="button"
-            onClick={() => googleSignin()}
-            disabled={googleLoading || loading}
-            style={{
-              width: '100%',
-              padding: '13px 16px',
-              background: '#fff',
-              color: '#3c4043',
-              border: '1px solid #dadce0',
-              borderRadius: '12px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: googleLoading ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              transition: 'all 0.2s',
-              opacity: googleLoading ? 0.6 : 1,
-              marginBottom: '12px'
-            }}
-            onMouseEnter={(e) => {
-              if (!googleLoading) {
-                e.currentTarget.style.background = '#f8f9fa';
-                e.currentTarget.style.boxShadow = '0 1px 3px rgba(60,64,67,0.15)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#fff';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
-          >
-            {googleLoading ? (
-              <span>Signing in with Google...</span>
-            ) : (
+          <button type="button" onClick={() => googleSignin()} disabled={googleLoading || loading} style={{
+            width: '100%', padding: '13px 16px',
+            background: 'var(--white)', color: 'var(--dark)',
+            border: '1px solid var(--border)', borderRadius: '12px',
+            fontSize: '14px', fontWeight: '600',
+            cursor: googleLoading ? 'not-allowed' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+            opacity: googleLoading ? 0.6 : 1, marginBottom: '12px'
+          }}>
+            {googleLoading ? <span>Signing in with Google...</span> : (
               <>
                 <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                   <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -406,56 +278,25 @@ const Login = () => {
             )}
           </button>
 
-          {/* GitHub Button (placeholder) */}
-          <button
-            type="button"
-            onClick={() => setError('GitHub login coming soon!')}
-            style={{
-              width: '100%',
-              padding: '13px 16px',
-              background: '#fff',
-              color: '#0F172A',
-              border: '1px solid #E2E8F0',
-              borderRadius: '12px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#F8FAFC';
-              e.currentTarget.style.borderColor = '#CBD5E1';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#fff';
-              e.currentTarget.style.borderColor = '#E2E8F0';
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0F172A">
+          <button type="button" onClick={() => setError('GitHub login coming soon!')} style={{
+            width: '100%', padding: '13px 16px',
+            background: 'var(--white)', color: 'var(--dark)',
+            border: '1px solid var(--border)', borderRadius: '12px',
+            fontSize: '14px', fontWeight: '600',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px'
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0.297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
             </svg>
             <span>Continue with GitHub</span>
           </button>
 
-          {/* Terms */}
-          <p style={{
-            fontSize: '12px', color: '#94A3B8',
-            textAlign: 'center', marginTop: '25px', lineHeight: '1.6'
-          }}>
+          <p style={{ fontSize: '12px', color: 'var(--gray)', textAlign: 'center', marginTop: '25px', lineHeight: '1.6' }}>
             By continuing, you agree to our{' '}
-            <Link to="/terms" style={{ color: '#3B82F6', fontWeight: '600', textDecoration: 'none' }}>
-              Terms of Service
-            </Link>
+            <Link to="/terms" style={{ color: '#3B82F6', fontWeight: '600', textDecoration: 'none' }}>Terms of Service</Link>
             {' '}·{' '}
-            <Link to="/privacy" style={{ color: '#3B82F6', fontWeight: '600', textDecoration: 'none' }}>
-              Privacy Policy
-            </Link>
+            <Link to="/privacy" style={{ color: '#3B82F6', fontWeight: '600', textDecoration: 'none' }}>Privacy Policy</Link>
           </p>
-
         </div>
       </div>
     </div>
