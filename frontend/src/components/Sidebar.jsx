@@ -27,7 +27,7 @@ const Sidebar = () => {
       section: 'Connect',
       items: [
         { path: '/messages', label: 'Messages', icon: '💬' },
-        { path: '/notifications', label: 'Notifications', icon: '🔔', badge: 2, comingSoon: true }
+        { path: '/notifications', label: 'Notifications', icon: '🔔' }
       ]
     },
     {

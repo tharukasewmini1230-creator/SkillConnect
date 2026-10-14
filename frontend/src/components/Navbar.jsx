@@ -232,24 +232,6 @@ const Navbar = () => {
                   }}
                 >
                   🔔
-                  <span style={{
-                    position: 'absolute',
-                    top: '-2px',
-                    right: '-2px',
-                    background: '#EF4444',
-                    color: '#fff',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid var(--white)'
-                  }}>
-                    3
-                  </span>
                 </button>
 
                 {showNotifications && (

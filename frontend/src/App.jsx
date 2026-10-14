@@ -18,6 +18,7 @@ import BookSession from './pages/BookSession';
 import Messages from './pages/Messages';
 import Achievements from './pages/Achievements';
 import { SocketProvider } from './context/SocketContext';
+import Notifications from './pages/Notifications';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -34,7 +35,7 @@ const Layout = ({ children }) => {
   const location = useLocation();
 
   // These pages have their own layout (with Sidebar), so no Navbar/Footer
-  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/leaderboard', '/settings', '/book', '/messages', '/achievements'];
+  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/leaderboard', '/settings', '/messages', '/achievements', '/notifications'];
   const shouldHideNavbar = pagesWithSidebar.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -74,6 +75,7 @@ function App() {
               <Route path="/book/:mentorId" element={<ProtectedRoute><BookSession /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
             </Routes>
           </Layout>
         </Router>
