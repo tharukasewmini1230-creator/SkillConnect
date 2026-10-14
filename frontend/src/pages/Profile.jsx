@@ -7,46 +7,25 @@ const Profile = () => {
 
   const [name, setName] = useState(user?.name || '');
   const [university, setUniversity] = useState(user?.university || '');
-  const [skillsOffered, setSkillsOffered] = useState(user?.skillsOffered?.join(', ') || '');
-  const [skillsWanted, setSkillsWanted] = useState(user?.skillsWanted?.join(', ') || '');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Parse skills - split by comma, trim whitespace, filter empty
-      const parsedOffered = skillsOffered
-        .split(',')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-
-      const parsedWanted = skillsWanted
-        .split(',')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-
-      console.log('Saving profile:', {
-        name,
-        university,
-        skillsOffered: parsedOffered,
-        skillsWanted: parsedWanted
-      });
+      console.log('Saving profile:', { name, university });
 
       const result = await updateProfile({
         name,
-        university,
-        skillsOffered: parsedOffered,
-        skillsWanted: parsedWanted
+        university
       });
 
       console.log('Profile updated:', result);
 
       setToast({ message: 'Profile updated successfully!', type: 'success' });
 
-      // Refresh the page after 1 second to update everything
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -133,7 +112,7 @@ const Profile = () => {
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '25px' }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
               University
             </label>
@@ -146,36 +125,23 @@ const Profile = () => {
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
-              Skills You Can Offer 🎓
-            </label>
-            <input
-              type="text"
-              value={skillsOffered}
-              onChange={(e) => setSkillsOffered(e.target.value)}
-              placeholder="e.g., Java, Python, Photoshop (separate with commas)"
-              style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
-            />
-            <p style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '6px' }}>
-              Separate each skill with a comma
-            </p>
-          </div>
-
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
-              Skills You Want to Learn 📖
-            </label>
-            <input
-              type="text"
-              value={skillsWanted}
-              onChange={(e) => setSkillsWanted(e.target.value)}
-              placeholder="e.g., React, C#, Public Speaking (separate with commas)"
-              style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '15px', background: 'var(--light-gray)', color: 'var(--dark)' }}
-            />
-            <p style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '6px' }}>
-              Separate each skill with a comma
-            </p>
+          {/* Info Box */}
+          <div style={{
+            background: 'var(--primary-light)',
+            borderRadius: '10px',
+            padding: '14px 18px',
+            marginBottom: '22px',
+            fontSize: '13px',
+            color: '#1E40AF',
+            display: 'flex',
+            gap: '10px',
+            alignItems: 'flex-start',
+            lineHeight: '1.5'
+          }}>
+            <span>💡</span>
+            <span>
+              To manage your skills, go to your <strong>Dashboard → My Skills</strong> section.
+            </span>
           </div>
 
           <button
