@@ -90,16 +90,17 @@ const Register = () => {
 
       {/* Main card */}
       <div style={{
-        background: '#fff',
+        background: 'var(--white)',
         borderRadius: '24px',
         boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)',
         maxWidth: '1100px',
         width: '100%',
         display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.1fr)',
+        gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1fr)',   // ← Swap කරන්න
         overflow: 'hidden',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        border: '1px solid var(--border)'
       }}>
 
         {/* ====== LEFT SIDE — Form Section ====== */}
@@ -108,7 +109,8 @@ const Register = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          background: '#fff'
+          background: '#fff',
+          order: 2
         }}>
 
           {/* Top: Already have account link */}
@@ -340,15 +342,14 @@ const Register = () => {
 
         </div>
 
-        {/* ====== RIGHT SIDE — Brand Section ====== */}
+        {/* ====== Brand Section (Left after reorder) ====== */}
         <div style={{
           background: 'linear-gradient(160deg, #F8FAFF 0%, #EFF3FF 50%, #F5F0FF 100%)',
           padding: '45px 40px',
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          borderLeft: '1px solid #EEF2FF'
-        }}>
+          display: 'flex', flexDirection: 'column',
+          borderRight: '1px solid var(--border)',   
+          order: 1   
+        }} className="login-brand-section">
 
           {/* Logo */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', marginBottom: '30px' }}>
