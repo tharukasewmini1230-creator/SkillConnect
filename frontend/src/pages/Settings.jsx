@@ -198,7 +198,8 @@ const Settings = () => {
           padding: '8px',
           borderRadius: '14px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          width: 'fit-content',
+          width: '100%',
+          justifyContent: 'center', 
           flexWrap: 'wrap',
           border: '1px solid var(--border)'
         }}>
