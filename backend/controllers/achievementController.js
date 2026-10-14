@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const Skill = require('../models/Skill');
 const Session = require('../models/Session');
 const Review = require('../models/Review');
 
@@ -9,9 +8,13 @@ const getAchievements = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Fetch user stats
+    // Fetch user
     const user = await User.findById(userId);
-    const skillsCount = await Skill.countDocuments({ user: userId });
+
+    // Count only skills user can TEACH (skillsOffered)
+    const skillsCount = user?.skillsOffered?.length || 0;
+
+    // Count completed sessions
     const sessionsAsRequester = await Session.countDocuments({
       requester: userId,
       status: 'Completed'
@@ -59,10 +62,10 @@ const getAchievements = async (req, res) => {
         key: 'ten_sessions',
         icon: '🏆',
         title: '10 Sessions',
-        description: 'Complete 10 learning sessions',
+        description: 'Complete 10 learning sessions as a learner',
         color: '#F59E0B',
-        unlocked: totalSessions >= 10,
-        progress: Math.min(totalSessions, 10),
+        unlocked: sessionsAsRequester >= 10,
+        progress: Math.min(sessionsAsRequester, 10),
         goal: 10
       },
       {
@@ -120,7 +123,9 @@ const getUserAchievements = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const skillsCount = await Skill.countDocuments({ user: userId });
+    // Count only skills user can TEACH (skillsOffered)
+    const skillsCount = user?.skillsOffered?.length || 0;
+
     const sessionsAsRequester = await Session.countDocuments({
       requester: userId,
       status: 'Completed'
@@ -136,7 +141,7 @@ const getUserAchievements = async (req, res) => {
       { key: 'first_skill', icon: '🌱', title: 'First Skill', description: 'Add first skill', color: '#10B981', unlocked: skillsCount >= 1 },
       { key: 'skill_master', icon: '🎓', title: 'Skill Master', description: 'Add 5 skills', color: '#3B82F6', unlocked: skillsCount >= 5 },
       { key: 'first_session', icon: '🎯', title: 'First Session', description: 'Complete first session', color: '#A855F7', unlocked: totalSessions >= 1 },
-      { key: 'ten_sessions', icon: '🏆', title: '10 Sessions', description: 'Complete 10 sessions', color: '#F59E0B', unlocked: totalSessions >= 10 },
+      { key: 'ten_sessions', icon: '🏆', title: '10 Sessions', description: 'Complete 10 learning sessions as a learner', color: '#F59E0B', unlocked: sessionsAsRequester >= 10 },
       { key: 'top_mentor', icon: '⭐', title: 'Top Mentor', description: '5 sessions as mentor', color: '#EF4444', unlocked: sessionsAsMentor >= 5 },
       { key: 'community_helper', icon: '🤝', title: 'Community Helper', description: 'Receive 3 reviews', color: '#EC4899', unlocked: reviewsReceived >= 3 }
     ];
