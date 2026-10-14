@@ -54,6 +54,8 @@ const Login = () => {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '30px 20px', position: 'relative', overflow: 'hidden'
     }} className="login-page-bg">
+
+      {/* Background decorative blobs */}
       <div style={{
         position: 'absolute', top: '-150px', right: '-150px',
         width: '400px', height: '400px', borderRadius: '50%',
@@ -67,6 +69,7 @@ const Login = () => {
         pointerEvents: 'none'
       }} />
 
+      {/* Main card */}
       <div style={{
         background: 'var(--white)',
         borderRadius: '24px',
@@ -79,7 +82,6 @@ const Login = () => {
 
         {/* ====== LEFT — Brand Section ====== */}
         <div style={{
-          background: 'linear-gradient(160deg, #F8FAFF 0%, #EFF3FF 50%, #F5F0FF 100%)',
           padding: '45px 40px',
           display: 'flex', flexDirection: 'column',
           borderRight: '1px solid var(--border)'
@@ -101,7 +103,6 @@ const Login = () => {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
               }}>your future.</span>
             </h1>
-            
           </div>
 
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', minHeight: '220px' }}>
@@ -137,10 +138,9 @@ const Login = () => {
         </div>
 
         {/* ====== RIGHT — Form Section ====== */}
-        <div style={{
+        <div className="login-form-section" style={{
           padding: '45px 45px',
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          background: 'var(--white)',
           position: 'relative'
         }}>
 
@@ -159,8 +159,8 @@ const Login = () => {
           </div>
 
           {/* Heading */}
-          <h2 style={{
-            fontSize: '28px', fontWeight: '800', color: 'var(--dark)',
+          <h2 className="form-heading" style={{
+            fontSize: '28px', fontWeight: '800',
             marginBottom: '30px', letterSpacing: '-0.5px'
           }}>
             Login to SkillSwap
@@ -182,14 +182,10 @@ const Login = () => {
           {/* Form */}
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '13px', fontWeight: '600' }}>
+              <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>
                 Email Address
               </label>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                background: 'var(--light-gray)', border: '1px solid var(--border)',
-                borderRadius: '12px', padding: '12px 16px'
-              }}>
+              <div className="form-input-wrapper">
                 <span style={{ fontSize: '16px', color: 'var(--gray)' }}>✉️</span>
                 <input
                   type="email"
@@ -197,23 +193,17 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="Enter your email address"
-                  style={{
-                    flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: 'var(--dark)', outline: 'none'
-                  }}
+                  className="form-input"
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', outline: 'none' }}
                 />
               </div>
             </div>
 
             <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '13px', fontWeight: '600' }}>
+              <label className="form-label" style={{ display: 'block', marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>
                 Password
               </label>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                background: 'var(--light-gray)', border: '1px solid var(--border)',
-                borderRadius: '12px', padding: '12px 16px'
-              }}>
+              <div className="form-input-wrapper">
                 <span style={{ fontSize: '16px', color: 'var(--gray)' }}>🔒</span>
                 <input
                   type="password"
@@ -221,10 +211,8 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter your password"
-                  style={{
-                    flex: 1, border: 'none', background: 'transparent',
-                    fontSize: '14px', color: 'var(--dark)', outline: 'none'
-                  }}
+                  className="form-input"
+                  style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '14px', outline: 'none' }}
                 />
               </div>
             </div>
