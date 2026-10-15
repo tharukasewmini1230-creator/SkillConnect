@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,6 +11,14 @@ const Navbar = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  // Debug: log avatar value
+  useEffect(() => {
+    if (user) {
+      console.log('🎯 Navbar — User avatar:', user.avatar);
+      console.log('🎯 Navbar — User name:', user.name);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -221,6 +229,7 @@ const Navbar = () => {
                     cursor: 'pointer'
                   }}
                 >
+                  {/* AVATAR WITH IMAGE SUPPORT */}
                   <div style={{
                     width: '32px',
                     height: '32px',
@@ -231,10 +240,40 @@ const Navbar = () => {
                     justifyContent: 'center',
                     color: '#fff',
                     fontWeight: '700',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    overflow: 'hidden',
+                    flexShrink: 0
                   }}>
-                    {user.name?.charAt(0).toUpperCase()}
+                    {user?.avatar && user.avatar.trim() !== '' ? (
+                      <img
+                        src={
+                          user.avatar.startsWith('http')
+                            ? user.avatar
+                            : `http://localhost:5000${user.avatar}`
+                        }
+                        alt={user.name || 'User'}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                        onError={(e) => {
+                          console.error('❌ Avatar failed to load:', e.target.src);
+                          e.target.style.display = 'none';
+                          if (e.target.parentElement) {
+                            e.target.parentElement.textContent = user?.name?.charAt(0).toUpperCase() || '?';
+                          }
+                        }}
+                        onLoad={() => {
+                          console.log('✅ Avatar loaded:', user.avatar);
+                        }}
+                      />
+                    ) : (
+                      user?.name?.charAt(0).toUpperCase() || '?'
+                    )}
                   </div>
+
                   <span style={{
                     color: 'var(--dark)',
                     fontSize: '14px',

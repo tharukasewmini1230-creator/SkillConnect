@@ -236,9 +236,34 @@ const DashboardLayout = ({ children }) => {
                   justifyContent: 'center',
                   color: '#fff',
                   fontWeight: '700',
-                  fontSize: '15px'
+                  fontSize: '15px',
+                  overflow: 'hidden',
+                  flexShrink: 0
                 }}>
-                  {user?.name?.charAt(0).toUpperCase()}
+                  {user?.avatar && user.avatar.trim() !== '' ? (
+                    <img
+                      src={
+                        user.avatar.startsWith('http')
+                          ? user.avatar
+                          : `http://localhost:5000${user.avatar}`
+                      }
+                      alt={user.name || 'User'}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        if (e.target.parentElement) {
+                          e.target.parentElement.textContent = user?.name?.charAt(0).toUpperCase() || '?';
+                        }
+                      }}
+                    />
+                  ) : (
+                    user?.name?.charAt(0).toUpperCase() || '?'
+                  )}
                 </div>
                 <span style={{
                   color: 'var(--dark)',

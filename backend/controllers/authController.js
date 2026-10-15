@@ -21,7 +21,7 @@ const formatUserResponse = (user) => ({
   points: user.points,
   avatar: user.avatar,
   authProvider: user.authProvider,
-  hasPassword: !!user.password,   
+  hasPassword: !!user.password,
   token: generateToken(user._id)
 });
 
@@ -72,7 +72,6 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // If user signed up with Google, they don't have a password
     if (user.authProvider === 'google' && !user.password) {
       return res.status(400).json({
         message: 'This account was created with Google. Please use "Continue with Google" to login.'
@@ -91,7 +90,6 @@ const loginUser = async (req, res) => {
 
 // @desc    Google OAuth Login / Signup
 // @route   POST /api/auth/google
-// Accepts BOTH: { credential: "<ID_TOKEN>" } OR { access_token: "<ACCESS_TOKEN>" }
 const googleLogin = async (req, res) => {
   try {
     const { credential, access_token } = req.body;
@@ -105,7 +103,6 @@ const googleLogin = async (req, res) => {
     const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
     if (credential) {
-      // Path 1: ID token (from GoogleLogin component)
       const ticket = await client.verifyIdToken({
         idToken: credential,
         audience: process.env.GOOGLE_CLIENT_ID
@@ -117,8 +114,6 @@ const googleLogin = async (req, res) => {
       picture = payload.picture;
       emailVerified = payload.email_verified;
     } else {
-      // Path 2: Access token (from useGoogleLogin hook)
-      // Fetch user info from Google's userinfo endpoint
       const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${access_token}` }
       });
@@ -143,11 +138,9 @@ const googleLogin = async (req, res) => {
       return res.status(400).json({ message: 'Google email is not verified' });
     }
 
-    // Check if user exists by email
     let user = await User.findOne({ email });
 
     if (user) {
-      // Existing user — link Google ID if not linked
       let needsSave = false;
 
       if (!user.googleId) {
@@ -158,7 +151,6 @@ const googleLogin = async (req, res) => {
         user.avatar = picture;
         needsSave = true;
       }
-      // If user was created locally but has no password (shouldn't happen but safety)
       if (user.authProvider === 'local' && !user.password) {
         user.authProvider = 'google';
         needsSave = true;
@@ -166,7 +158,6 @@ const googleLogin = async (req, res) => {
 
       if (needsSave) await user.save();
     } else {
-      // New user — create account
       user = await User.create({
         name: name || email.split('@')[0],
         email,
@@ -213,19 +204,18 @@ const updateProfile = async (req, res) => {
 
     const updatedUser = await user.save();
 
-  res.json({
-  _id: updatedUser._id,
-  name: updatedUser.name,
-  email: updatedUser.email,
-  university: updatedUser.university,
-  skillsOffered: updatedUser.skillsOffered,
-  skillsWanted: updatedUser.skillsWanted,
-  points: updatedUser.points,
-  avatar: updatedUser.avatar,
-  authProvider: updatedUser.authProvider,
-  hasPassword: !!updatedUser.password  
-});
-
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      university: updatedUser.university,
+      skillsOffered: updatedUser.skillsOffered,
+      skillsWanted: updatedUser.skillsWanted,
+      points: updatedUser.points,
+      avatar: updatedUser.avatar,
+      authProvider: updatedUser.authProvider,
+      hasPassword: !!updatedUser.password
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -275,13 +265,12 @@ const changePassword = async (req, res) => {
   }
 };
 
-// @desc    Set password for Google-authenticated users (who don't have a password yet)
+// @desc    Set password for Google-authenticated users
 // @route   POST /api/auth/set-password
 const setPassword = async (req, res) => {
   try {
     const { newPassword, confirmPassword } = req.body;
 
-    // Validation
     if (!newPassword || !confirmPassword) {
       return res.status(400).json({ message: 'Please add all fields' });
     }
@@ -300,26 +289,86 @@ const setPassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if user already has a password
     if (user.password) {
       return res.status(400).json({
         message: 'You already have a password set. Please use "Change Password" instead.'
       });
     }
 
-    // Hash and save
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     user.password = hashedPassword;
-    // Keep authProvider as 'google' so user still uses Google login
-    // But now can also login with email/password
     await user.save();
 
     res.status(200).json({
-    message: 'Password set successfully! You can now login with email and password too.',
-    hasPassword: true   
-});
+      message: 'Password set successfully! You can now login with email and password too.',
+      hasPassword: true
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Upload user avatar
+// @route   POST /api/auth/upload-avatar
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const avatarUrl = `/uploads/${req.file.filename}`;
+    user.avatar = avatarUrl;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Avatar uploaded successfully!',
+      avatar: avatarUrl
+    });
+  } catch (error) {
+    console.error('Upload avatar error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete user avatar
+// @route   DELETE /api/auth/avatar
+const deleteAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Optional: delete file from uploads folder
+    if (user.avatar && user.avatar.startsWith('/uploads/')) {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(__dirname, '..', user.avatar);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+        } catch (err) {
+          console.error('Error deleting file:', err);
+        }
+      }
+    }
+
+    user.avatar = '';
+    await user.save();
+
+    res.status(200).json({
+      message: 'Avatar removed successfully',
+      avatar: ''
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -332,5 +381,7 @@ module.exports = {
   getMe,
   updateProfile,
   changePassword,
-  setPassword
+  setPassword,
+  uploadAvatar,
+  deleteAvatar
 };

@@ -100,6 +100,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Upload user avatar
+  const uploadAvatar = async (file) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const response = await API.post('/auth/upload-avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    const updatedUser = { ...user, avatar: response.data.avatar };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+
+    return response.data;
+  };
+
+  // Delete user avatar
+  const deleteAvatar = async () => {
+    const response = await API.delete('/auth/avatar');
+
+    const updatedUser = { ...user, avatar: '' };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+
+    return response.data;
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -107,17 +134,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      register, 
-      login, 
-      googleLogin, 
-      setPassword,   
-      logout, 
-      updateProfile, 
-      refreshUser 
-    }}>
+    <AuthContext.Provider value={{ user, loading, register, login, googleLogin, setPassword, uploadAvatar, deleteAvatar, logout, updateProfile, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

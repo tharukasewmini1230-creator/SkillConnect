@@ -7,9 +7,12 @@ const {
   getMe,
   updateProfile,
   changePassword,
-  setPassword
+  setPassword,
+  uploadAvatar,
+  deleteAvatar
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 // @route   POST /api/auth/register
 router.post('/register', registerUser);
@@ -31,5 +34,11 @@ router.put('/change-password', protect, changePassword);
 
 // @route   POST /api/auth/set-password
 router.post('/set-password', protect, setPassword);
+
+// @route   POST /api/auth/upload-avatar
+router.post('/upload-avatar', protect, upload.single('avatar'), uploadAvatar);
+
+// @route   DELETE /api/auth/avatar
+router.delete('/avatar', protect, deleteAvatar);
 
 module.exports = router;

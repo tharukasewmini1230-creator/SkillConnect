@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const http = require('http');
+const path = require('path');              // ← Move to top
 const { Server } = require('socket.io');
 require('dotenv').config();
 
@@ -12,6 +13,9 @@ const app = express();
 // ============================================
 app.use(cors());
 app.use(express.json());
+
+// Serve static files (uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ============================================
 // IMPORT ROUTES
@@ -61,33 +65,25 @@ const io = new Server(httpServer, {
   }
 });
 
-// Store online users: Map<userId, socketId>
 const onlineUsers = new Map();
 
 io.on('connection', (socket) => {
   console.log('🔌 User connected:', socket.id);
 
-  // User joins (sends their userId)
   socket.on('user_online', (userId) => {
     onlineUsers.set(userId, socket.id);
     console.log(`✅ User ${userId} is online`);
-
-    // Broadcast online users list to everyone
     io.emit('online_users', Array.from(onlineUsers.keys()));
   });
 
-  // Send message via socket
   socket.on('send_message', (data) => {
     const { receiverId, message } = data;
     const receiverSocketId = onlineUsers.get(receiverId);
-
-    // If receiver is online, send message to them
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('receive_message', message);
     }
   });
 
-  // Typing indicator
   socket.on('typing', ({ receiverId, senderName }) => {
     const receiverSocketId = onlineUsers.get(receiverId);
     if (receiverSocketId) {
@@ -102,9 +98,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // User disconnects
   socket.on('disconnect', () => {
-    // Remove user from online list
     for (const [userId, socketId] of onlineUsers.entries()) {
       if (socketId === socket.id) {
         onlineUsers.delete(userId);
@@ -112,8 +106,6 @@ io.on('connection', (socket) => {
         break;
       }
     }
-
-    // Broadcast updated online users list
     io.emit('online_users', Array.from(onlineUsers.keys()));
   });
 });

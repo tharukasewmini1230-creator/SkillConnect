@@ -110,9 +110,30 @@ const Sidebar = () => {
               color: '#fff',
               fontWeight: '800',
               fontSize: '16px',
-              border: '2px solid #0F172A'
+              border: '2px solid #0F172A',
+              overflow: 'hidden'
             }}>
-              {user?.name?.charAt(0).toUpperCase()}
+              {user?.avatar ? (
+                <img
+                  src={
+                    user.avatar.startsWith('http')
+                      ? user.avatar
+                      : `http://localhost:5000${user.avatar}`
+                  }
+                  alt={user.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.textContent = user?.name?.charAt(0).toUpperCase();
+                  }}
+                />
+              ) : (
+                user?.name?.charAt(0).toUpperCase()
+              )}
             </div>
             <span style={{
               position: 'absolute',
@@ -212,13 +233,7 @@ const Sidebar = () => {
             {section.items.map((item, iIdx) => (
               <Link
                 key={iIdx}
-                to={item.comingSoon ? '#' : item.path}
-                onClick={(e) => {
-                  if (item.comingSoon) {
-                    e.preventDefault();
-                    alert(`${item.label} page is coming soon! 🚀`);
-                  }
-                }}
+                to={item.path}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -226,26 +241,24 @@ const Sidebar = () => {
                   padding: '10px 12px',
                   borderRadius: '8px',
                   marginBottom: '2px',
-                  background: isActive(item.path) && !item.comingSoon
+                  background: isActive(item.path)
                     ? 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)'
                     : 'transparent',
-                  color: isActive(item.path) && !item.comingSoon
-                    ? '#fff'
-                    : '#94A3B8',
+                  color: isActive(item.path) ? '#fff' : '#94A3B8',
                   fontSize: '13.5px',
-                  fontWeight: isActive(item.path) && !item.comingSoon ? '600' : '500',
+                  fontWeight: isActive(item.path) ? '600' : '500',
                   textDecoration: 'none',
                   transition: 'all 0.2s ease',
                   cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive(item.path) || item.comingSoon) {
+                  if (!isActive(item.path)) {
                     e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
                     e.currentTarget.style.color = '#fff';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive(item.path) || item.comingSoon) {
+                  if (!isActive(item.path)) {
                     e.currentTarget.style.background = 'transparent';
                     e.currentTarget.style.color = '#94A3B8';
                   }
@@ -255,21 +268,6 @@ const Sidebar = () => {
                 <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {item.label}
                 </span>
-                {item.badge > 0 && (
-                  <span style={{
-                    background: '#EF4444',
-                    color: '#fff',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    padding: '2px 6px',
-                    borderRadius: '10px',
-                    minWidth: '16px',
-                    textAlign: 'center',
-                    flexShrink: 0
-                  }}>
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             ))}
           </div>
