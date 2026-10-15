@@ -135,30 +135,6 @@ const Dashboard = () => {
 
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-        {/* GREETING */}
-        <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-          <div>
-            <h1 style={{ fontSize: '32px', color: 'var(--dark)', fontWeight: '800', marginBottom: '5px', letterSpacing: '-0.5px' }}>
-              {getGreeting()}, {user?.name?.split(' ')[0]}! 👋
-            </h1>
-            <p style={{ color: 'var(--gray)', fontSize: '15px' }}>
-              Here's what's happening with your learning journey.
-            </p>
-          </div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 22px',
-            background: 'linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(168,85,247,0.08) 100%)',
-            borderRadius: '14px', border: '1px dashed rgba(99,102,241,0.35)', position: 'relative'
-          }}>
-            <span style={{ position: 'absolute', top: '-10px', left: '-10px', fontSize: '16px', color: '#A855F7' }}>✦</span>
-            <span style={{ position: 'absolute', bottom: '-10px', right: '-10px', fontSize: '16px', color: '#6366F1' }}>✦</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'flex-end' }}>
-              <span style={{ fontSize: '18px', fontWeight: '800', fontStyle: 'italic', background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>Better Skills</span>
-              <span style={{ fontSize: '18px', fontWeight: '800', fontStyle: 'italic', background: 'linear-gradient(135deg, #A855F7 0%, #6366F1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>Brighter Future</span>
-            </div>
-          </div>
-        </div>
-
         {/* STATS CARDS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '18px', marginBottom: '30px' }}>
           <div style={{ background: 'var(--white)', padding: '24px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '18px' }}>
