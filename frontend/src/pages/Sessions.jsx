@@ -113,9 +113,6 @@ const Sessions = () => {
           }}>
             📅 My Sessions
           </h1>
-          <p style={{ fontSize: '14px', color: 'var(--gray)' }}>
-            Manage your learning sessions and requests
-          </p>
         </div>
 
         {/* STATS CARDS */}

@@ -117,9 +117,6 @@ const StudyHub = () => {
             }}>
               📚 Study Hub
             </h1>
-            <p style={{ fontSize: '14px', color: 'var(--gray)' }}>
-              Free community-shared study materials — notes, guides, and PDFs
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
