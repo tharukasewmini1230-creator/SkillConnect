@@ -17,6 +17,13 @@ const BookSession = () => {
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
 
+  // Real mentor stats
+  const [mentorStats, setMentorStats] = useState({
+    sessionsCompleted: 0,
+    reviewsCount: 0,
+    averageRating: 0
+  });
+
   // Form state
   const [formData, setFormData] = useState({
     date: '',
@@ -25,29 +32,40 @@ const BookSession = () => {
     message: ''
   });
 
+  // ============================================
+  // FETCH DATA ON MOUNT
+  // ============================================
   useEffect(() => {
-    fetchMentorData();
+    if (!mentorId) return;
+
+    const fetchAll = async () => {
+      await fetchMentorData();
+      await fetchMentorStats();
+    };
+
+    fetchAll();
   }, [mentorId]);
 
-    const fetchMentorData = async () => {
+  // ============================================
+  // FETCH MENTOR DATA
+  // ============================================
+  const fetchMentorData = async () => {
     try {
-      // Check if user is trying to book themselves
+      // Prevent self-booking
       if (mentorId === user?._id) {
         setToast({ message: 'You cannot book a session with yourself! 😅', type: 'error' });
-        setLoading(false);
         return;
       }
 
-      // Get all users to find the mentor
+      // Try to find mentor from skills list
       const usersRes = await API.get('/skills');
-      
-      // Find a skill post from this mentor to get their user info
+
       const mentorSkillPost = usersRes.data.find(
         (s) => String(s.user?._id) === String(mentorId)
       );
 
+      // If no skill posts, try matches API
       if (!mentorSkillPost) {
-        // If no skill posts, try to get mentor info from matches API
         const matchesRes = await API.get('/match');
         const match = matchesRes.data.find(
           (m) => String(m.user?._id) === String(mentorId)
@@ -55,14 +73,11 @@ const BookSession = () => {
 
         if (!match) {
           setToast({ message: 'Mentor not found', type: 'error' });
-          setLoading(false);
           return;
         }
 
-        // Use match data
         setMentor(match.user);
-        
-        // Use the skills they can teach (from match data)
+
         if (match.theyCanTeachMe && match.theyCanTeachMe.length > 0) {
           setSkills(match.theyCanTeachMe.map((skill, i) => ({
             _id: `skill-${i}`,
@@ -73,18 +88,16 @@ const BookSession = () => {
         } else {
           setToast({ message: 'This mentor has no offered skills yet', type: 'error' });
         }
-        
-        setLoading(false);
         return;
       }
 
-      // If mentor has skill posts, use those
+      // Mentor has skill posts
       setMentor(mentorSkillPost.user);
-      
+
       const mentorOfferedSkills = usersRes.data.filter(
         (s) => String(s.user?._id) === String(mentorId) && s.type === 'Offer'
       );
-      
+
       if (mentorOfferedSkills.length > 0) {
         setSkills(mentorOfferedSkills);
         setSelectedSkill(mentorOfferedSkills[0].title);
@@ -94,7 +107,7 @@ const BookSession = () => {
         const match = matchesRes.data.find(
           (m) => String(m.user?._id) === String(mentorId)
         );
-        
+
         if (match && match.theyCanTeachMe && match.theyCanTeachMe.length > 0) {
           setSkills(match.theyCanTeachMe.map((skill, i) => ({
             _id: `skill-${i}`,
@@ -114,6 +127,30 @@ const BookSession = () => {
     }
   };
 
+  // ============================================
+  // FETCH MENTOR STATS
+  // ============================================
+  const fetchMentorStats = async () => {
+    try {
+      const [achieveRes, reviewsRes] = await Promise.all([
+        API.get(`/achievements/user/${mentorId}`).catch(() => ({ data: null })),
+        API.get(`/reviews/user/${mentorId}`).catch(() => ({ data: null }))
+      ]);
+
+      setMentorStats({
+        // Show teaching sessions (mentor role) only
+        sessionsCompleted: achieveRes?.data?.stats?.sessionsAsMentor || 0,
+        reviewsCount: reviewsRes?.data?.totalReviews || 0,
+        averageRating: reviewsRes?.data?.averageRating || 0
+      });
+    } catch (err) {
+      console.error('Error fetching mentor stats:', err);
+    }
+  };
+
+  // ============================================
+  // SUBMIT SESSION REQUEST
+  // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -149,14 +186,12 @@ const BookSession = () => {
     }
   };
 
-  const getTimeSlots = () => {
-    return [
-      '09:00 AM', '10:00 AM', '11:00 AM',
-      '12:00 PM', '01:00 PM', '02:00 PM',
-      '03:00 PM', '04:00 PM', '05:00 PM',
-      '06:00 PM', '07:00 PM', '08:00 PM'
-    ];
-  };
+  const getTimeSlots = () => [
+    '09:00 AM', '10:00 AM', '11:00 AM',
+    '12:00 PM', '01:00 PM', '02:00 PM',
+    '03:00 PM', '04:00 PM', '05:00 PM',
+    '06:00 PM', '07:00 PM', '08:00 PM'
+  ];
 
   const formatDate = (dateStr) => {
     if (!dateStr) return 'Not selected';
@@ -169,6 +204,9 @@ const BookSession = () => {
     });
   };
 
+  // ============================================
+  // LOADING STATE
+  // ============================================
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -177,6 +215,9 @@ const BookSession = () => {
     );
   }
 
+  // ============================================
+  // MENTOR NOT FOUND
+  // ============================================
   if (!mentor) {
     return (
       <div className="container" style={{ padding: '60px 20px', textAlign: 'center' }}>
@@ -201,6 +242,9 @@ const BookSession = () => {
     );
   }
 
+  // ============================================
+  // MAIN RENDER
+  // ============================================
   return (
     <div style={{ background: 'var(--background)', minHeight: '100vh', paddingBottom: '60px' }}>
 
@@ -208,7 +252,7 @@ const BookSession = () => {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-            {/* HEADER BANNER WITH ILLUSTRATION */}
+      {/* HEADER BANNER */}
       <div style={{
         background: 'var(--hero-bg, linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #FAF5FF 100%))',
         padding: '40px 20px 60px',
@@ -227,7 +271,6 @@ const BookSession = () => {
           gap: '30px',
           alignItems: 'center'
         }}>
-          {/* LEFT: Text */}
           <div>
             <Link to="/matches" style={{
               display: 'inline-flex',
@@ -263,14 +306,12 @@ const BookSession = () => {
             </p>
           </div>
 
-          {/* RIGHT: Illustration + Decorative Text */}
           <div style={{
             position: 'relative',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
           }}>
-            {/* Illustration */}
             <img
               src={bookIllustration}
               alt="Students learning together"
@@ -281,48 +322,6 @@ const BookSession = () => {
                 borderRadius: '20px'
               }}
             />
-
-            {/* Decorative "Better Together" Text */}
-            <div style={{
-              position: 'absolute',
-              top: '5%',
-              right: '-20px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px'
-            }}>
-              <span style={{
-                fontSize: '18px',
-                fontWeight: '800',
-                fontStyle: 'italic',
-                background: 'linear-gradient(135deg, #3B82F6 0%, #A855F7 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontFamily: 'Georgia, serif',
-                letterSpacing: '-0.5px',
-                lineHeight: 1.1,
-                transform: 'rotate(-8deg)'
-              }}>
-                Better
-              </span>
-              <span style={{
-                fontSize: '18px',
-                fontWeight: '800',
-                fontStyle: 'italic',
-                background: 'linear-gradient(135deg, #A855F7 0%, #6366F1 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontFamily: 'Georgia, serif',
-                letterSpacing: '-0.5px',
-                lineHeight: 1.1,
-                transform: 'rotate(-8deg)'
-              }}>
-                Together
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -350,7 +349,7 @@ const BookSession = () => {
           alignItems: 'center'
         }}>
 
-          {/* Left: Skill Info */}
+          {/* Skill Info */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '18px' }}>
               <div style={{
@@ -423,11 +422,22 @@ const BookSession = () => {
               color: 'var(--dark)',
               fontWeight: '600'
             }}>
-              ⭐ 4.8 <span style={{ color: 'var(--gray)', fontWeight: '400' }}>(12 reviews)</span>
+              {mentorStats.averageRating > 0 ? (
+                <>
+                  ⭐ {mentorStats.averageRating.toFixed(1)}{' '}
+                  <span style={{ color: 'var(--gray)', fontWeight: '400' }}>
+                    ({mentorStats.reviewsCount} review{mentorStats.reviewsCount !== 1 ? 's' : ''})
+                  </span>
+                </>
+              ) : (
+                <span style={{ color: 'var(--gray)', fontWeight: '400', fontSize: '13px' }}>
+                  No reviews yet
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Right: Mentor Info */}
+          {/* Mentor Info */}
           <div style={{
             background: 'var(--light-gray)',
             borderRadius: '16px',
@@ -446,9 +456,26 @@ const BookSession = () => {
                 color: '#fff',
                 fontWeight: '800',
                 fontSize: '22px',
-                flexShrink: 0
+                flexShrink: 0,
+                overflow: 'hidden'
               }}>
-                {mentor.name?.charAt(0).toUpperCase()}
+                {mentor.avatar ? (
+                  <img
+                    src={
+                      mentor.avatar.startsWith('http')
+                        ? mentor.avatar
+                        : `http://localhost:5000${mentor.avatar}`
+                    }
+                    alt={mentor.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.textContent = mentor.name?.charAt(0).toUpperCase();
+                    }}
+                  />
+                ) : (
+                  mentor.name?.charAt(0).toUpperCase()
+                )}
               </div>
               <div style={{ minWidth: 0 }}>
                 <h3 style={{
@@ -481,35 +508,62 @@ const BookSession = () => {
               marginBottom: '15px'
             }}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--dark)' }}>12+</div>
-                <div style={{ fontSize: '10px', color: 'var(--gray)', fontWeight: '600' }}>Sessions</div>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--dark)' }}>
+                  {mentorStats.sessionsCompleted}
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--gray)', fontWeight: '600' }}>Teaching</div>
               </div>
               <div style={{ textAlign: 'center', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}>
-                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--dark)' }}>5y</div>
-                <div style={{ fontSize: '10px', color: 'var(--gray)', fontWeight: '600' }}>Experience</div>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--dark)' }}>
+                  {mentorStats.averageRating > 0 ? mentorStats.averageRating.toFixed(1) : '—'}
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--gray)', fontWeight: '600' }}>Rating</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--dark)' }}>28</div>
-                <div style={{ fontSize: '10px', color: 'var(--gray)', fontWeight: '600' }}>Students</div>
+                <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--dark)' }}>
+                  {mentorStats.reviewsCount}
+                </div>
+                <div style={{ fontSize: '10px', color: 'var(--gray)', fontWeight: '600' }}>Reviews</div>
               </div>
             </div>
 
-            <div style={{
-              background: 'var(--white)',
-              padding: '12px 14px',
-              borderRadius: '10px',
-              fontSize: '12px',
-              color: 'var(--gray)',
-              lineHeight: '1.6',
-              fontStyle: 'italic',
-              borderLeft: '3px solid #3B82F6'
-            }}>
-              "I love teaching and helping students build real projects. Let's learn together!"
-            </div>
+            {mentor.skillsOffered && mentor.skillsOffered.length > 0 && (
+              <div style={{
+                background: 'var(--white)',
+                padding: '12px 14px',
+                borderRadius: '10px',
+                borderLeft: '3px solid #3B82F6'
+              }}>
+                <p style={{
+                  fontSize: '10px',
+                  color: 'var(--gray)',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  marginBottom: '6px'
+                }}>
+                  Can Teach
+                </p>
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                  {mentor.skillsOffered.slice(0, 4).map((skill, i) => (
+                    <span key={i} style={{
+                      background: 'var(--primary-light)',
+                      color: '#3B82F6',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '11px',
+                      fontWeight: '600'
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* MAIN GRID: Form (Left) + Summary (Right) */}
+        {/* MAIN GRID: FORM + SUMMARY */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0, 1.6fr) minmax(0, 1fr)',
@@ -519,7 +573,7 @@ const BookSession = () => {
           {/* LEFT: FORM */}
           <form onSubmit={handleSubmit}>
 
-            {/* SKILL SELECTOR (if multiple skills) */}
+            {/* Skill Selector (if multiple) */}
             {skills.length > 1 && (
               <div style={{
                 background: 'var(--white)',
@@ -566,7 +620,7 @@ const BookSession = () => {
               </div>
             )}
 
-            {/* DATE PICKER */}
+            {/* Date Picker */}
             <div style={{
               background: 'var(--white)',
               borderRadius: '16px',
@@ -605,7 +659,7 @@ const BookSession = () => {
               />
             </div>
 
-            {/* TIME SLOTS */}
+            {/* Time Slots */}
             <div style={{
               background: 'var(--white)',
               borderRadius: '16px',
@@ -662,7 +716,7 @@ const BookSession = () => {
               </div>
             </div>
 
-            {/* MODE SELECTOR */}
+            {/* Mode Selector */}
             <div style={{
               background: 'var(--white)',
               borderRadius: '16px',
@@ -710,7 +764,7 @@ const BookSession = () => {
               </div>
             </div>
 
-            {/* MESSAGE */}
+            {/* Message */}
             <div style={{
               background: 'var(--white)',
               borderRadius: '16px',
@@ -736,7 +790,7 @@ const BookSession = () => {
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 rows="4"
                 maxLength="500"
-                placeholder={`Hi ${mentor.name?.split(' ')[0]}, I'm interested in learning ${selectedSkill}. I'd love to discuss the basics and get some project guidance...`}
+                placeholder={`Hi ${mentor.name?.split(' ')[0]}, I'm interested in learning ${selectedSkill}...`}
                 style={{
                   width: '100%',
                   padding: '14px 16px',
@@ -757,7 +811,7 @@ const BookSession = () => {
 
           </form>
 
-          {/* RIGHT: SUMMARY (STICKY) */}
+          {/* RIGHT: SUMMARY */}
           <div>
             <div style={{
               background: 'var(--white)',
@@ -782,43 +836,35 @@ const BookSession = () => {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--gray)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🎯 Skill
-                  </span>
+                  <span style={{ fontSize: '13px', color: 'var(--gray)' }}>🎯 Skill</span>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--dark)', textAlign: 'right', maxWidth: '60%' }}>
                     {selectedSkill}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--gray)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    👨‍🏫 Mentor
-                  </span>
+                  <span style={{ fontSize: '13px', color: 'var(--gray)' }}>👨‍🏫 Mentor</span>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--dark)', textAlign: 'right' }}>
                     {mentor.name}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--gray)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    📅 Date
-                  </span>
+                  <span style={{ fontSize: '13px', color: 'var(--gray)' }}>📅 Date</span>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: formData.date ? 'var(--dark)' : 'var(--gray)', textAlign: 'right', maxWidth: '60%' }}>
                     {formData.date ? formatDate(formData.date) : 'Not selected'}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--gray)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    🕐 Time
-                  </span>
+                  <span style={{ fontSize: '13px', color: 'var(--gray)' }}>🕐 Time</span>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: formData.time ? 'var(--dark)' : 'var(--gray)', textAlign: 'right' }}>
                     {formData.time || 'Not selected'}
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--gray)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '13px', color: 'var(--gray)' }}>
                     {formData.mode === 'Online' ? '💻' : '📍'} Mode
                   </span>
                   <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--dark)' }}>
@@ -834,12 +880,8 @@ const BookSession = () => {
                 marginBottom: '20px'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '14px', color: 'var(--gray)', fontWeight: '600' }}>
-                    Duration
-                  </span>
-                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--dark)' }}>
-                    1 Hour
-                  </span>
+                  <span style={{ fontSize: '14px', color: 'var(--gray)', fontWeight: '600' }}>Duration</span>
+                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--dark)' }}>1 Hour</span>
                 </div>
               </div>
 

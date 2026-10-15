@@ -151,7 +151,14 @@ const getUserAchievements = async (req, res) => {
     res.status(200).json({
       achievements: allAchievements,
       unlockedCount,
-      totalCount: allAchievements.length
+      totalCount: allAchievements.length,
+      stats: {
+        skillsCount,
+        sessionsAsRequester,
+        sessionsAsMentor,
+        totalSessions,
+        reviewsReceived
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
