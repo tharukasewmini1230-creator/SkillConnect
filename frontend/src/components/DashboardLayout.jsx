@@ -24,7 +24,7 @@ const DashboardLayout = ({ children }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/matches?skill=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
   };

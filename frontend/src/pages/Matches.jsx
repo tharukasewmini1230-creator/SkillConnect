@@ -330,7 +330,9 @@ const Matches = () => {
 
             {skillFilter !== 'All' && (
               <div style={{
-                background: 'var(--primary-light)',
+                background: theme === 'dark'
+                  ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%)'
+                  : 'var(--primary-light)',
                 borderRadius: '12px',
                 padding: '14px 20px',
                 marginBottom: '10px',
@@ -339,11 +341,17 @@ const Matches = () => {
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '10px',
-                border: '1px solid #BFDBFE'
+                border: theme === 'dark'
+                  ? '1px solid rgba(96, 165, 250, 0.4)'
+                  : '1px solid #BFDBFE'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '18px' }}>🔍</span>
-                  <span style={{ fontSize: '14px', color: '#1E40AF', fontWeight: '600' }}>
+                  <span style={{
+                    fontSize: '14px',
+                    color: theme === 'dark' ? '#93C5FD' : '#1E40AF',
+                    fontWeight: '600'
+                  }}>
                     Showing matches for: <strong>{skillFilter}</strong>
                   </span>
                 </div>
@@ -364,7 +372,6 @@ const Matches = () => {
                 </button>
               </div>
             )}
-
             {loading ? (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
                 <div className="spinner"></div>
