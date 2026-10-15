@@ -169,28 +169,25 @@ const Profile = () => {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-              {user?.avatar ? (
-                  <img
-                    src={
-                      user.avatar.startsWith('http')
-                        ? user.avatar
-                        : `http://localhost:5000${user.avatar}`
-                    }
-                    alt={user.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover'
-                    }}
-                    onError={(e) => {
-                      // Don't remove — just hide visibility
-                      e.target.style.visibility = 'hidden';
-                    }}
-                  />
-                ) : null}
-                {!user?.avatar && (
-                  user?.name?.charAt(0).toUpperCase()
-                )}
+                            {user?.avatar ? (
+                <img
+                  src={
+                    user.avatar.startsWith('http')
+                      ? user.avatar
+                      : `http://localhost:5000${user.avatar}`
+                  }
+                  alt={user.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  onError={(e) => {
+                    e.target.style.opacity = '0';
+                  }}
+                />
+              ) : null}
+              {!user?.avatar && user?.name?.charAt(0).toUpperCase()}
 
                 {/* Hover Overlay */}
                 <div style={{

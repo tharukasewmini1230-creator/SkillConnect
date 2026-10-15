@@ -128,8 +128,8 @@ const Sidebar = () => {
                     objectFit: 'cover'
                   }}
                   onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.parentElement.textContent = user?.name?.charAt(0).toUpperCase();
+                    e.target.style.visibility = 'hidden';
+                    e.target.style.opacity = '0';
                   }}
                 />
               ) : (

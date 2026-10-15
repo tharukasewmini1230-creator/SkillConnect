@@ -473,7 +473,7 @@ const Matches = () => {
                               alt={match.user.name}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               onError={(e) => {
-                                e.target.style.display = 'none';
+                                e.target.style.visibility = 'hidden';
                                 e.target.parentElement.textContent = match.user.name?.charAt(0).toUpperCase();
                               }}
                             />

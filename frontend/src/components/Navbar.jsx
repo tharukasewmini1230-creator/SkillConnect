@@ -260,7 +260,7 @@ const Navbar = () => {
                         }}
                         onError={(e) => {
                           console.error('❌ Avatar failed to load:', e.target.src);
-                          e.target.style.display = 'none';
+                          e.target.style.visibility = 'hidden';
                           if (e.target.parentElement) {
                             e.target.parentElement.textContent = user?.name?.charAt(0).toUpperCase() || '?';
                           }
