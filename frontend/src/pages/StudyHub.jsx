@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,14 +11,13 @@ const StudyHub = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [showOnlyMine, setShowOnlyMine] = useState(false);
 
   // Filters
-  const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [type, setType] = useState('All');
 
@@ -42,21 +41,13 @@ const StudyHub = () => {
 
   const handleDownload = async (resource) => {
     try {
-      // Increment counter
-      await API.get(`/resources/${resource._id}/download`);
-      
-      // Trigger download
-      const link = document.createElement('a');
-      link.href = `http://localhost:5000/api/resources/${resource._id}/download`;
-      // For protected routes, we need the token
-      // Actually — download route is public (no protect)
-      // So direct link works
-      window.open(`http://localhost:5000/api/resources/${resource._id}/download`, '_blank');
-      
       setToast({ message: `Downloading ${resource.file.originalName}...`, type: 'success' });
-      
-      // Refresh to update count
-      setTimeout(fetchResources, 1000);
+
+      // Trigger download in new tab
+      window.open(`http://localhost:5000/api/resources/${resource._id}/download`, '_blank');
+
+      // Refresh after a delay to update count
+      setTimeout(fetchResources, 1500);
     } catch (err) {
       console.error('Download error:', err);
       setToast({ message: 'Download failed', type: 'error' });
@@ -78,29 +69,24 @@ const StudyHub = () => {
     }
   };
 
-  // Client-side filter
+  // Filter
   const filteredResources = resources.filter((r) => {
-    const matchesSearch = !search || 
-      r.title.toLowerCase().includes(search.toLowerCase()) ||
-      r.description.toLowerCase().includes(search.toLowerCase()) ||
-      r.skillTags.some((tag) => tag.toLowerCase().includes(search.toLowerCase()));
-
     const matchesCategory = category === 'All' || r.category === category;
     const matchesType = type === 'All' || r.type === type;
+    const matchesOwnership = !showOnlyMine || r.user?._id === user?._id;
 
-    return matchesSearch && matchesCategory && matchesType;
+    return matchesCategory && matchesType && matchesOwnership;
   });
 
   const clearFilters = () => {
-    setSearch('');
     setCategory('All');
     setType('All');
-    setSearchParams({});
+    setShowOnlyMine(false);
   };
 
   const categories = ['All', 'Programming', 'Design', 'Languages', 'Music', 'Academic', 'Other'];
   const types = ['All', 'Notes', 'Cheat Sheet', 'Book', 'Tutorial', 'Reference', 'Other'];
-  const hasActiveFilters = search || category !== 'All' || type !== 'All';
+  const hasActiveFilters = category !== 'All' || type !== 'All' || showOnlyMine;
 
   return (
     <DashboardLayout>
@@ -136,28 +122,52 @@ const StudyHub = () => {
             </p>
           </div>
 
-          <Link to="/study-hub/upload" style={{ textDecoration: 'none' }}>
-            <button style={{
-              padding: '12px 24px',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '14px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-            }}>
-              <span style={{ fontSize: '16px' }}>📤</span>
-              Upload Resource
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setShowOnlyMine(!showOnlyMine)}
+              style={{
+                padding: '12px 20px',
+                background: showOnlyMine
+                  ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                  : 'var(--white)',
+                color: showOnlyMine ? '#fff' : 'var(--gray)',
+                border: showOnlyMine ? 'none' : '1px solid var(--border)',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              <span>👤</span>
+              {showOnlyMine ? 'My Resources' : 'All Resources'}
             </button>
-          </Link>
+
+            <Link to="/study-hub/upload" style={{ textDecoration: 'none' }}>
+              <button style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+              }}>
+                <span style={{ fontSize: '16px' }}>📤</span>
+                Upload Resource
+              </button>
+            </Link>
+          </div>
         </div>
 
-        {/* SEARCH + FILTER BAR */}
+        {/* FILTERS */}
         <div style={{
           background: 'var(--white)',
           borderRadius: '16px',
@@ -166,50 +176,6 @@ const StudyHub = () => {
           border: '1px solid var(--border)',
           boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)'
         }}>
-          {/* Search Bar */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            background: 'var(--light-gray)',
-            borderRadius: '12px',
-            padding: '12px 18px',
-            marginBottom: '16px',
-            border: '1px solid transparent'
-          }}>
-            <span style={{ fontSize: '16px', color: 'var(--gray)' }}>🔍</span>
-            <input
-              type="text"
-              placeholder="Search by title, description, or skill..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                flex: 1,
-                border: 'none',
-                background: 'transparent',
-                fontSize: '14px',
-                color: 'var(--dark)',
-                outline: 'none'
-              }}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--gray)',
-                  fontSize: '16px',
-                  cursor: 'pointer',
-                  padding: '4px 8px'
-                }}
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Filters */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: '160px' }}>
               <label style={{
@@ -235,7 +201,8 @@ const StudyHub = () => {
                   color: 'var(--dark)',
                   fontSize: '13px',
                   cursor: 'pointer',
-                  fontWeight: '600'
+                  fontWeight: '600',
+                  outline: 'none'
                 }}
               >
                 {categories.map((c) => (
@@ -268,7 +235,8 @@ const StudyHub = () => {
                   color: 'var(--dark)',
                   fontSize: '13px',
                   cursor: 'pointer',
-                  fontWeight: '600'
+                  fontWeight: '600',
+                  outline: 'none'
                 }}
               >
                 {types.map((t) => (
@@ -300,7 +268,7 @@ const StudyHub = () => {
           </div>
         </div>
 
-        {/* RESULTS HEADER */}
+        {/* RESULTS COUNT */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -337,7 +305,7 @@ const StudyHub = () => {
             </p>
             <p style={{ color: 'var(--gray)', fontSize: '14px', marginBottom: '20px' }}>
               {hasActiveFilters
-                ? 'Try a different search or clear the filters.'
+                ? 'Try different filters or clear them.'
                 : 'Be the first to share a study resource!'}
             </p>
             {hasActiveFilters ? (
