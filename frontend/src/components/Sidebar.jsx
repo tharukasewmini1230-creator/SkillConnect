@@ -20,7 +20,8 @@ const Sidebar = () => {
         { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
         { path: '/dashboard', label: 'My Skills', icon: '🎓' },
         { path: '/matches', label: 'Find Skills', icon: '🔍' },
-        { path: '/sessions', label: 'My Sessions', icon: '📅' }
+        { path: '/sessions', label: 'My Sessions', icon: '📅' },
+        { path: '/study-hub', label: 'Study Hub', icon: '📚' }
       ]
     },
     {

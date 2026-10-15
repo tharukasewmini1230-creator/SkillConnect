@@ -19,6 +19,8 @@ import Messages from './pages/Messages';
 import Achievements from './pages/Achievements';
 import { SocketProvider } from './context/SocketContext';
 import Notifications from './pages/Notifications';
+import StudyHub from './pages/StudyHub';
+import UploadResource from './pages/UploadResource';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
