@@ -76,6 +76,8 @@ function App() {
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+              <Route path="/study-hub" element={<ProtectedRoute><StudyHub /></ProtectedRoute>} />
+              <Route path="/study-hub/upload" element={<ProtectedRoute><UploadResource /></ProtectedRoute>} />
             </Routes>
           </Layout>
         </Router>
