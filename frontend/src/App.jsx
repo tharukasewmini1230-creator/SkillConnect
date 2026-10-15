@@ -35,7 +35,7 @@ const Layout = ({ children }) => {
   const location = useLocation();
 
   // These pages have their own layout (with Sidebar), so no Navbar/Footer
-  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/leaderboard', '/settings', '/messages', '/achievements', '/notifications'];
+  const pagesWithSidebar = ['/dashboard', '/sessions', '/profile', '/leaderboard', '/settings', '/messages', '/achievements', '/notifications', '/matches'];
   const shouldHideNavbar = pagesWithSidebar.some((path) =>
     location.pathname.startsWith(path)
   );

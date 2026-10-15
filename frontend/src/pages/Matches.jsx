@@ -4,6 +4,7 @@ import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import Toast from '../components/Toast';
+import DashboardLayout from '../components/DashboardLayout';
 import matchIllustration from '../assets/match-illustration.png';
 
 const Matches = () => {
@@ -71,17 +72,18 @@ const Matches = () => {
   const headingColor = theme === 'dark' ? '#F8FAFC' : '#0F172A';
 
   return (
-    <div style={{ paddingBottom: '60px' }}>
-      {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
-      )}
+    <DashboardLayout>
+      <div style={{ paddingBottom: '60px' }}>
+        {toast && (
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+        )}
 
       {/* HERO SECTION */}
       <div style={{
         background: theme === 'dark'
           ? 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #2E1065 100%)'
           : 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
-        padding: '60px 20px 30px',
+        padding: '20px 30px',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -132,15 +134,6 @@ const Matches = () => {
                 backgroundClip: 'text'
               }}>Matches</span>
             </h1>
-
-            <p style={{
-              fontSize: '17px',
-              color: theme === 'dark' ? '#CBD5E1' : '#64748B',
-              maxWidth: '500px',
-              lineHeight: '1.7'
-            }}>
-              Find people who can teach you what you want to learn and what you can teach.
-            </p>
           </div>
 
           <div style={{
@@ -154,7 +147,7 @@ const Matches = () => {
               alt="Skill exchange"
               style={{
                 width: '100%',
-                maxWidth: '360px',
+                maxWidth: '280px',
                 height: 'auto',
                 filter: 'drop-shadow(0 15px 25px rgba(30, 41, 59, 0.1))'
               }}
@@ -225,9 +218,6 @@ const Matches = () => {
                       <h3 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.3px', marginBottom: '2px' }}>
                         Your Skills
                       </h3>
-                      <p style={{ fontSize: '12px', opacity: 0.9 }}>
-                        These are the skills you can teach and want to learn.
-                      </p>
                     </div>
                   </div>
 
@@ -793,28 +783,13 @@ const Matches = () => {
                   <div style={{ fontSize: '11px', color: '#B45309', fontWeight: '600', opacity: 0.8 }}>Sessions Booked</div>
                 </div>
               </div>
-
-              <div style={{
-                marginTop: '16px',
-                padding: '12px',
-                background: 'var(--primary-light)',
-                borderRadius: '10px',
-                fontSize: '12px',
-                color: '#1E40AF',
-                lineHeight: '1.5',
-                display: 'flex',
-                gap: '8px',
-                alignItems: 'flex-start'
-              }}>
-                <span>💡</span>
-                <span>The more skills you add, the better your matches will be!</span>
-              </div>
             </div>
 
           </div>
         </div>
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 
