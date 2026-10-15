@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import Toast from '../components/Toast';
 import matchIllustration from '../assets/match-illustration.png';
 
 const Matches = () => {
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [matches, setMatches] = useState([]);
@@ -56,7 +58,6 @@ const Matches = () => {
   const totalMatches = matches.length;
   const perfectMatches = matches.filter((m) => m.isPerfectMatch).length;
 
-  // Count new matches (users created in last 7 days)
   const newMatchesCount = matches.filter((m) => {
     if (!m.user?.createdAt) return false;
     const userCreatedAt = new Date(m.user.createdAt);
@@ -64,8 +65,10 @@ const Matches = () => {
     return userCreatedAt >= sevenDaysAgo;
   }).length;
 
-  // Sessions booked (dummy for now, can be replaced with real API later)
   const sessionsBookedCount = 0;
+
+  // Theme-aware text color
+  const headingColor = theme === 'dark' ? '#F8FAFC' : '#0F172A';
 
   return (
     <div style={{ paddingBottom: '60px' }}>
@@ -75,7 +78,9 @@ const Matches = () => {
 
       {/* HERO SECTION */}
       <div style={{
-        background: 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
+        background: theme === 'dark'
+          ? 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #2E1065 100%)'
+          : 'linear-gradient(135deg, #EFF6FF 0%, #EEF2FF 50%, #F5F3FF 100%)',
         padding: '60px 20px 30px',
         position: 'relative',
         overflow: 'hidden'
@@ -98,14 +103,14 @@ const Matches = () => {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              background: 'rgba(99, 102, 241, 0.1)',
-              color: '#6366F1',
+              background: 'rgba(99, 102, 241, 0.15)',
+              color: '#818CF8',
               padding: '8px 18px',
               borderRadius: '30px',
               fontSize: '13px',
               fontWeight: '700',
               marginBottom: '20px',
-              border: '1px solid rgba(99, 102, 241, 0.2)'
+              border: '1px solid rgba(99, 102, 241, 0.3)'
             }}>
               <span>🔗</span>
               <span>Skill Matching</span>
@@ -114,12 +119,13 @@ const Matches = () => {
             <h1 style={{
               fontSize: '48px',
               fontWeight: '800',
-              color: 'var(--dark)',
               marginBottom: '22px',
               letterSpacing: '-1.5px',
-              lineHeight: '1.1'
+              lineHeight: '1.1',
+              color: headingColor
             }}>
-              Skill Exchange <span style={{
+              Skill Exchange{' '}
+              <span style={{
                 background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #A855F7 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -129,7 +135,7 @@ const Matches = () => {
 
             <p style={{
               fontSize: '17px',
-              color: 'var(--gray)',
+              color: theme === 'dark' ? '#CBD5E1' : '#64748B',
               maxWidth: '500px',
               lineHeight: '1.7'
             }}>
@@ -457,9 +463,26 @@ const Matches = () => {
                           color: '#fff',
                           fontWeight: '700',
                           fontSize: '20px',
-                          flexShrink: 0
+                          flexShrink: 0,
+                          overflow: 'hidden'
                         }}>
-                          {match.user.name?.charAt(0).toUpperCase()}
+                          {match.user.avatar ? (
+                            <img
+                              src={
+                                match.user.avatar.startsWith('http')
+                                  ? match.user.avatar
+                                  : `http://localhost:5000${match.user.avatar}`
+                              }
+                              alt={match.user.name}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.parentElement.textContent = match.user.name?.charAt(0).toUpperCase();
+                              }}
+                            />
+                          ) : (
+                            match.user.name?.charAt(0).toUpperCase()
+                          )}
                         </div>
                         <div>
                           <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark)', marginBottom: '2px' }}>

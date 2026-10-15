@@ -477,3 +477,14 @@ body[data-theme='dark'] .form-input:-webkit-autofill:active {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Hero heading text — theme aware */
+.hero-heading-text,
+span.hero-heading-text {
+  color: #0F172A !important;
+}
+
+body[data-theme='dark'] span.hero-heading-text,
+body[data-theme='dark'] .hero-heading-text {
+  color: #F8FAFC !important;
+}
