@@ -285,7 +285,7 @@ const Dashboard = () => {
         )}
 
         {/* ===== MY SKILLS SECTION ===== */}
-        <div>
+        <div id="my-skills">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
             <div>
               <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--dark)', marginBottom: '5px' }}>My Skills</h3>

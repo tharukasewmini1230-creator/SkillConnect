@@ -231,7 +231,7 @@ const Matches = () => {
                     </div>
                   </div>
 
-                  <Link to="/profile" style={{ textDecoration: 'none' }}>
+                  <Link to="/dashboard" style={{ textDecoration: 'none' }}>
                     <button style={{
                       padding: '9px 18px',
                       background: '#fff',
@@ -287,7 +287,7 @@ const Matches = () => {
                       </div>
                     ) : (
                       <p style={{ opacity: 0.85, fontSize: '12px' }}>
-                        <Link to="/profile" style={{ color: '#FDE68A', fontWeight: '700', textDecoration: 'underline' }}>
+                        <Link to="/dashboard" style={{ color: '#FDE68A', fontWeight: '700', textDecoration: 'underline' }}>
                           Add skills →
                         </Link>
                       </p>
