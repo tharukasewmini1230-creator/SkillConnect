@@ -169,7 +169,7 @@ const Profile = () => {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                {user?.avatar ? (
+              {user?.avatar ? (
                   <img
                     src={
                       user.avatar.startsWith('http')
@@ -182,9 +182,13 @@ const Profile = () => {
                       height: '100%',
                       objectFit: 'cover'
                     }}
-                    onError={(e) => { e.target.style.display = 'none'; }}
+                    onError={(e) => {
+                      // Don't remove — just hide visibility
+                      e.target.style.visibility = 'hidden';
+                    }}
                   />
-                ) : (
+                ) : null}
+                {!user?.avatar && (
                   user?.name?.charAt(0).toUpperCase()
                 )}
 
