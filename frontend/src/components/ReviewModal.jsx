@@ -150,7 +150,6 @@ const ReviewModal = ({ session, reviewee, onClose, onSuccess }) => {
             </p>
           </div>
 
-          {/* Comment */}
           <div style={{ marginBottom: '24px' }}>
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>
               Your Review
@@ -197,7 +196,7 @@ const ReviewModal = ({ session, reviewee, onClose, onSuccess }) => {
                 cursor: loading ? 'not-allowed' : 'pointer'
               }}
             >
-              {loading ? 'Submitting...' : '⭐ Submit Review'}
+            {loading ? 'Submitting...' : '⭐ Submit Review'}
             </button>
             <button
               type="button"
