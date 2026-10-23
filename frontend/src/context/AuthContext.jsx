@@ -33,14 +33,11 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // Google Login — accepts either credential (ID token) OR access_token
+  // Google Login - accepts either credential (ID token) OR access_token
   const googleLogin = async (tokenData) => {
-    // tokenData can be:
-    //   - a string (access_token or credential)  → old call signature
-    //   - an object with { credential } or { access_token }
+    
     let payload;
     if (typeof tokenData === 'string') {
-      // Detect if it looks like a JWT (contains 2 dots) → credential, else access_token
       if (tokenData.split('.').length === 3) {
         payload = { credential: tokenData };
       } else {
@@ -65,7 +62,7 @@ export const AuthProvider = ({ children }) => {
       confirmPassword
     });
 
-    // Update user in localStorage — mark that they now have a password
+    // Update user in localStorage - mark that they now have a password
     const updatedUser = { ...user, hasPassword: true };
     localStorage.setItem('user', JSON.stringify(updatedUser));
     setUser(updatedUser);
