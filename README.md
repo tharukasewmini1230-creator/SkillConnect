@@ -590,7 +590,7 @@ SkillConnect/
 ---
 
 ## Project Report
-The complete project report is available in the `docs` folder.
+The complete project report is available in the [docs](docs) folder.
 
 ---
 
