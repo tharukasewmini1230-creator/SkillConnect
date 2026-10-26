@@ -589,6 +589,11 @@ SkillConnect/
 
 ---
 
+## Project Report
+The complete project report is available in the `docs` folder.
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you find a bug or want to add a feature:
@@ -634,6 +639,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 Made with ❤️ by **Tharuka Sewmini**
 
-**🎓 EC4307 — Web Application Development | 2026**
+**🎓 EC4307 - Web Application Development | 2026**
 
 </div>
