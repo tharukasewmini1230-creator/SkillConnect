@@ -18,6 +18,10 @@ const Dashboard = () => {
   const [newSkill, setNewSkill] = useState('');
   const [skillType, setSkillType] = useState('Offer');
 
+  // Edit Skill Modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingSkill, setEditingSkill] = useState({ oldName: '', newName: '', type: '' });
+
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -101,6 +105,50 @@ const Dashboard = () => {
     } catch (err) {
       setToast({
         message: err.response?.data?.message || 'Failed to remove skill',
+        type: 'error'
+      });
+    }
+  };
+
+  // ===== EDIT SKILL =====
+  const handleEditSkillSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingSkill.newName.trim()) return;
+
+    try {
+      const currentOffered = user?.skillsOffered || [];
+      const currentWanted = user?.skillsWanted || [];
+      const newName = editingSkill.newName.trim();
+
+      if (editingSkill.type === 'Offer' && currentOffered.includes(newName) && newName !== editingSkill.oldName) {
+        setToast({ message: 'Skill already exists in "Can Teach" list', type: 'error' });
+        return;
+      }
+      if (editingSkill.type === 'Request' && currentWanted.includes(newName) && newName !== editingSkill.oldName) {
+        setToast({ message: 'Skill already exists in "Want to Learn" list', type: 'error' });
+        return;
+      }
+
+      const newOffered = editingSkill.type === 'Offer' 
+        ? currentOffered.map(s => s === editingSkill.oldName ? newName : s) 
+        : currentOffered;
+      
+      const newWanted = editingSkill.type === 'Request' 
+        ? currentWanted.map(s => s === editingSkill.oldName ? newName : s) 
+        : currentWanted;
+
+      await updateProfile({
+        skillsOffered: newOffered,
+        skillsWanted: newWanted
+      });
+
+      await refreshUser();
+      setToast({ message: 'Skill updated successfully!', type: 'success' });
+      setShowEditModal(false);
+      setEditingSkill({ oldName: '', newName: '', type: '' });
+    } catch (err) {
+      setToast({
+        message: err.response?.data?.message || 'Failed to update skill',
         type: 'error'
       });
     }
