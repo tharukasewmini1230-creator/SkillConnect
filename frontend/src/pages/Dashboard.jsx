@@ -426,6 +426,21 @@ const Dashboard = () => {
                   {user.skillsOffered.map((skill, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'var(--light-gray)', borderRadius: '10px', gap: '10px' }}>
                       <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--dark)' }}>{skill}</span>
+
+                      <button
+                        onClick={() => {
+                          setEditingSkill({ oldName: skill, newName: skill, type: 'Offer' });
+                          setShowEditModal(true);
+                        }}
+                        style={{
+                          padding: '5px 12px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6',
+                          border: 'none', borderRadius: '6px', fontSize: '11px', fontWeight: '700', cursor: 'pointer',
+                          marginRight: '8px'
+                        }}
+                        >
+                        Edit
+                      </button>
+                      
                       <button
                         onClick={() => handleRemoveSkill(skill, 'Offer')}
                         style={{
