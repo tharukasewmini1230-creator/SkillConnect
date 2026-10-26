@@ -354,6 +354,36 @@ const Dashboard = () => {
             </button>
           </div>
 
+      {/* ===== EDIT SKILL MODAL ===== */}
+      {showEditModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'var(--white)', padding: '30px', borderRadius: '16px', width: '90%', maxWidth: '400px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'var(--dark)', marginBottom: '20px' }}>✏️ Edit Skill</h3>
+            <form onSubmit={handleEditSkillSubmit}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--dark)', fontSize: '14px', fontWeight: '600' }}>Skill Name</label>
+                <input
+                  type="text"
+                  value={editingSkill.newName}
+                  onChange={(e) => setEditingSkill({ ...editingSkill, newName: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '14px', background: 'var(--light-gray)', color: 'var(--dark)' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <button type="button" onClick={() => setShowEditModal(false)} style={{ padding: '10px 20px', background: 'var(--light-gray)', color: 'var(--gray)', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
+                  Cancel
+                </button>
+                <button type="submit" style={{ padding: '10px 20px', background: 'linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
           {/* Add form */}
           {showForm && (
             <div style={{ background: 'var(--white)', padding: '30px', borderRadius: '16px', boxShadow: '0 4px 14px rgba(0,0,0,0.08)', marginBottom: '30px', border: '1px solid var(--border)' }}>
